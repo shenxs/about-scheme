@@ -14,9 +14,9 @@
    (rectangle 30 3 "solid" "green") ))
 (define Tank (rectangle Tank-Width Tank-Height "solid" "blue"))
 (define Missile (triangle 10 "solid" "red"))
-(define Tank-Vel 4)
+(define Tank-Vel 2)
 (define Missile-Vel 10)
-(define Ufo-Vel 4)
+(define Ufo-Vel 1)
 ;;(make-game Posn tank Posn/false)
 (define-struct game [ufo tank missile])
 ;;(make-tank x v)
@@ -47,7 +47,7 @@
 ;;确定posn是否在画布内，是否超出画布
 ;;超出->false,没超出->true
 (define (in-rich? p)
-  (if (and (< (posn-x p) Width) (< (posn-y p) Height)) true false))
+  (if (and (< 0 (posn-x p) Width) (< 0 (posn-y p) Height) ) true false))
 
 (define (creat-random-number n)
   (+ n (* (random 5) (if (odd? (random 10)) 1 -1) )))
@@ -55,22 +55,29 @@
 (define (ufo-next u)
   (make-posn (creat-random-number (posn-x u))
              (+ (posn-y u) Ufo-Vel) ))
+;;posn->posn/false
+;;如果在范围内就在y坐标减去速度，如果超出范围则改为false
 (define (missile-next mis)
   (cond
-    [(posn? mis) (make-posn (posn-x mis) (- (posn-y mis) Missile-Vel))]
+    [(posn? mis) (if (in-rich? mis ) (make-posn (posn-x mis) (- (posn-y mis) Missile-Vel) )false)]
     [else mis]))
+;;tank-tank
+(define (tank-next-bytime t)
+  (make-tank
+   (+ (tank-loc t) (tank-vel t))
+   (if (not (<= 0 (tank-loc t) Width) ) (* -1 (tank-vel t)) (tank-vel t))))
 ;;state->state
 (define (time-hander s)
   (make-game (ufo-next (game-ufo s))
-             (make-tank (+ (tank-loc (game-tank s)) (tank-vel (game-tank s)) ) (tank-vel (game-tank s))  )
+             (tank-next-bytime (game-tank s))
              (missile-next (game-missile s))))
 ;;//////////////////////
 ;;主函数定义
 (define (run asd)
-  (big-bang (make-game (make-posn (/ Width 2) 0) (make-tank 0 4) false )
+  (big-bang (make-game (make-posn (/ Width 2) 0) (make-tank 0 Tank-Vel) false )
    [to-draw drawer]
   ;; [on-key ...]
-   [on-tick time-hander  0.1]
-   [stop-when stop-render]
+   [on-tick time-hander  ]
+   ;;[stop-when stop-render]
    ))
 (run 1)
