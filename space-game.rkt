@@ -3,7 +3,7 @@
 #reader(lib "htdp-beginner-reader.ss" "lang")((modname space-game) (read-case-sensitive #t) (teachpacks ((lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "image.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "image.rkt" "teachpack" "2htdp")) #f)))
 ;;///////////////////////////////////////
 ;;常量和类型定义
-(define Height 300)
+(define Height 500)
 (define Width 200)
 (define Tank-Height 10)
 (define Tank-Width 40)
@@ -50,9 +50,11 @@
 (define (in-rich? p)
   (if (and (<= 0 (posn-x p) Width) (<= 0 (posn-y p) Height) ) true false))
 ;;number->number
-;;产生一个在n左右为5的平均数
+;;产生一个在n左右为5的平均数,新的数字在画布的范围内
 (define (creat-random-number n)
-  (+ n (* (random 5) (if (odd? (random 10)) 1 -1) )))
+  (cond
+    [(> (- Width 5) n 5) (+ n (* (random 5) (if (odd? (random 10)) 1 -1) ))]
+    [else  n ]))
 ;;posn,posn->number
 ;;计算两个点之间的距离
 (define (distance p1 p2)
