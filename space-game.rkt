@@ -17,6 +17,7 @@
 (define Tank-Vel 2)
 (define Missile-Vel 10)
 (define Ufo-Vel 1)
+(define Judge-Distance 10)
 ;;(make-game Posn tank Posn/false)
 (define-struct game [ufo tank missile])
 ;;(make-tank x v)
@@ -48,9 +49,18 @@
 ;;超出->false,没超出->true
 (define (in-rich? p)
   (if (and (<= 0 (posn-x p) Width) (<= 0 (posn-y p) Height) ) true false))
-
+;;number->number
+;;产生一个在n左右为5的平均数
 (define (creat-random-number n)
   (+ n (* (random 5) (if (odd? (random 10)) 1 -1) )))
+;;posn,posn->number
+;;计算两个点之间的距离
+(define (distance p1 p2)
+  (sqrt (+
+         (* (- (posn-x p1) (posn-x p2)) (- (posn-x p1) (posn-x p2)))
+         (* (- (posn-y p1) (posn-y p2)) (- (posn-y p1) (posn-y p2))))))
+
+
 ;;ufo->ufo
 (define (ufo-next u)
   (make-posn (creat-random-number (posn-x u))
@@ -79,8 +89,10 @@
                [(key=? key "left") (* -1 Tank-Vel)]
                [(key=? key "right") Tank-Vel]
                [else (tank-vel tank)])))
-(define (missile-next-by-key mis key )
-   mis)
+(define (missile-next-by-key tank mis key )
+   (cond
+     [(and (not (posn? mis)) (key=? key " ")) (make-posn (tank-loc tank) (- Height Tank-Height))]
+     [else mis]))
 ;;state->state
 (define (time-hander s)
   (make-game (ufo-next (game-ufo s))
@@ -90,12 +102,19 @@
 (define (key-hander g k)
   (make-game (game-ufo g)
              (tank-next-bykey (game-tank g) k )
-             (missile-next-by-key (game-missile g) k)))
+             (missile-next-by-key  (game-tank g) (game-missile g) k)))
 
 (define (stop-render g)
   (cond
     [(not (in-rich? (game-ufo g))) true]
+    [(and (posn? (game-missile g)) (< (distance (game-ufo g) (game-missile g)) Judge-Distance)) true]
     [else false]))
+(define (judge g)
+  (cond
+    [(not (in-rich? (game-ufo g)))
+     (overlay (text "Game Over" 24 "red") (drawer g))]
+    [(and (posn? (game-missile g)) (< (distance (game-ufo g) (game-missile g)) Judge-Distance))
+     (overlay (text "You Win" 24 "indigo") (drawer g))]))
 ;;//////////////////////
 ;;主函数定义
 (define (run asd)
@@ -103,6 +122,6 @@
    [to-draw drawer]
    [on-key key-hander]
    [on-tick time-hander  ]
-   [stop-when stop-render]
+   [stop-when stop-render judge]
    ))
 (run 1)
