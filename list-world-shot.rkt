@@ -8,7 +8,7 @@
 
 ;;图片常量
 (define Background (empty-scene Width Height))
-(define Shot (triangle 3 "solid" "red"))
+(define Shot (triangle 6 "solid" "red"))
 
 ;;a list of shot is one of
 ;-'()
