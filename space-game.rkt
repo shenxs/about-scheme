@@ -3,7 +3,7 @@
 #reader(lib "htdp-beginner-reader.ss" "lang")((modname space-game) (read-case-sensitive #t) (teachpacks ((lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "image.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "image.rkt" "teachpack" "2htdp")) #f)))
 ;;///////////////////////////////////////
 ;;常量和类型定义
-(define Height 500)
+(define Height 300)
 (define Width 200)
 (define Tank-Height 10)
 (define Tank-Width 40)
