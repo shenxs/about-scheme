@@ -5,6 +5,7 @@
 ;(read-file "ttt.txt")
 ;(read-lines "ttt.txt")
 ;(read-words "ttt.txt")
+;(read-words/line "ttt.dat")
 ;(read-words/line "ttt.txt")
 ;(read-words-and-numbers/line "ttt.txt")
 
@@ -51,4 +52,15 @@
   (words-on-line
     (read-words/line file-name)))
 
-(file-statistic "ttt.txt")
+;;a line of string-> string
+(define (append-a-line l)
+  (cond
+    [(empty? l) "\n"]
+    [else (string-append (first l) " " (append-a-line (rest l)))]))
+;;逆read-lines
+;;list of string -> string
+(define (collapse ll)
+ (cond
+   [(empty? ll) ""]
+   [else (string-append (append-a-line (first ll))  (collapse (rest ll)))]) )
+(write-file "ttt.dat" (collapse (read-words/line "ttt.txt")))
