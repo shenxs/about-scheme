@@ -17,7 +17,7 @@
 (define Tank-Vel 2)
 (define Missile-Vel 10)
 (define Ufo-Vel 1)
-(define Judge-Distance 10)
+(define Judge-Distance 7)
 ;;(make-game Posn tank Posn/false)
 (define-struct game [ufo tank missile])
 ;;(make-tank x v)
