@@ -58,9 +58,35 @@
     [(empty? l) "\n"]
     [else (string-append (first l) " " (append-a-line (rest l)))]))
 ;;逆read-lines
-;;list of string -> string
+;;list of list string -> string
 (define (collapse ll)
  (cond
    [(empty? ll) ""]
    [else (string-append (append-a-line (first ll))  (collapse (rest ll)))]) )
-(write-file "ttt.dat" (collapse (read-words/line "ttt.txt")))
+;;(write-file "ttt.dat" (collapse (read-words/line "ttt.txt")))
+
+
+;;remove specific artical
+(define (append-a-line.v2 l)
+  (cond
+    [(empty? l) "\n"]
+    [(string=? "a" (first l)) (append-a-line.v2 (rest l)) ]
+    [(string=? "an" (first l)) (append-a-line.v2 (rest l)) ]
+    [(string=? "the" (first l)) (append-a-line.v2 (rest l)) ]
+    [else (string-append (first l) " " (append-a-line.v2 (rest l)))]))
+;;lls->no-artical lls
+(define (remove-artical lls)
+  (cond
+    [(empty? lls) ""]
+    [else (string-append (append-a-line.v2 (first lls)) (remove-artical (rest lls)))]))
+
+
+
+;;filename-> no-artical-filename
+;;remove-all specific artical
+
+(define (no-artical n)
+  (write-file
+   (string-append "no-artical-" n)
+   (remove-artical (read-words/line n))))
+(no-artical "ttt.dat")
