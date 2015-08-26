@@ -19,17 +19,17 @@
 
 
 ;; 数出一行有多少单词
-(define (count-words line )
+(define (count-words-line line )
   (cond
     [(empty? line) 0]
-    [else (+ 1 (count-words (rest line)))]))
+    [else (+ 1 (count-words-line (rest line)))]))
 
 ; LLS(list of list of string) -> List-of-numbers
 ; determines the number of words on each line 
 (define (words-on-line lls)
   (cond
     [(empty? lls) '()]
-    [else (cons (count-words (first lls)) (words-on-line (rest lls)) )]))
+    [else (cons (count-words-line (first lls)) (words-on-line (rest lls)) )]))
 
 (check-expect (words-on-line lls0) '())
 (check-expect (words-on-line lls1) (cons 2 (cons 0 '())))
@@ -89,4 +89,40 @@
   (write-file
    (string-append "no-artical-" n)
    (remove-artical (read-words/line n))))
-(no-artical "ttt.dat")
+;(no-artical "ttt.dat")
+
+
+(check-expect (string->int " ") 32)
+;;letter -> ascii字符串
+(define (code1 s)
+  (number->string(string->int s)))
+
+;;letter -> 三位数字的字符串
+(define (encode-letter s)
+  (cond
+    [(< (string->int s) 10 ) (string-append "00" (code1 s))]
+    [(< (string->int s) 100 ) (string-append "0" (code1 s))]
+    [else (code1 s)]
+    ))
+;;string->T/F
+;;决定一个字符是否为单字符
+(define (1string? s)
+  (if (= (string-length s) 1) true false))
+;;lw->number
+;;how many 1string in the list of words
+(define (count-1string lw)
+  (cond
+    [(empty? lw) 0]
+    [else
+     (+   (if (1string? (first lw)) 1 0)   (count-1string (rest lw)))]))
+
+
+;;a file -> count the number of 1Strings, words, and lines
+;;练习175
+(define (foo175 n)
+  (cons (count-1string (read-words n))
+        (cons (length (read-words n))
+              (cons (length (read-lines n)) '()))))
+
+(foo175 "no-artical-ttt.dat")
+(foo175 "ttt.txt")
