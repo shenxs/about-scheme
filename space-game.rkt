@@ -1,6 +1,6 @@
 ;; The first three lines of this file were inserted by DrRacket. They record metadata
 ;; about the language level of this file in a form that our tools can easily process.
-#reader(lib "htdp-beginner-reader.ss" "lang")((modname space-game) (read-case-sensitive #t) (teachpacks ((lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "image.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "image.rkt" "teachpack" "2htdp")) #f)))
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname space-game) (read-case-sensitive #t) (teachpacks ((lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp")) #f)))
 ;;///////////////////////////////////////
 ;;常量和类型定义
 (define Height 300)
@@ -92,9 +92,9 @@
                [(key=? key "right") Tank-Vel]
                [else (tank-vel tank)])))
 (define (missile-next-by-key tank mis key )
-   (cond
-     [(and (not (posn? mis)) (key=? key " ")) (make-posn (tank-loc tank) (- Height Tank-Height))]
-     [else mis]))
+  (cond
+    [(and (not (posn? mis)) (key=? key " ")) (make-posn (tank-loc tank) (- Height Tank-Height))]
+    [else mis]))
 ;;state->state
 (define (time-hander s)
   (make-game (ufo-next (game-ufo s))
@@ -121,9 +121,9 @@
 ;;主函数定义
 (define (run asd)
   (big-bang (make-game (make-posn (/ Width 2) 0) (make-tank 0 Tank-Vel) false )
-   [to-draw drawer]
-   [on-key key-hander]
-   [on-tick time-hander  ]
-   [stop-when stop-render judge]
-   ))
+            [to-draw drawer]
+            [on-key key-hander]
+            [on-tick time-hander  ]
+            [stop-when stop-render judge]
+            ))
 (run 1)
