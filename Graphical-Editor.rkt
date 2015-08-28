@@ -47,8 +47,14 @@
 ;Editor -> image
 ;把 editor 变成中间有光标的图像
 (define (editor-render e)
-  ...)
-
+  (overlay/align
+    "left" "middle"
+    ( beside
+        (text (implode (rev (editor-pre e))) FONT-SIZE FONT-COLOR)
+        CURSOR
+        (text (implode (editor-post e)) FONT-SIZE FONT-COLOR))
+    MT))
+;
 ;string-> T/F
 ;判断一个字符串是否长度为1
 (define (1string? str)
@@ -57,12 +63,29 @@
 ;对键盘事件做出响应
 (define (key-render e k)
   (cond
-    [(1string? k) (make-editor (cons k (editor-pre e)) (editor-post e))]))
+    [(key=? k "left") (if (empty? (editor-pre e))
+                        e
+                        (make-editor (rest (editor-pre e)) (cons (first (editor-pre e)) (editor-post e))))]
+    [(key=? k "right") (if (empty? (editor-post e))
+                         e
+                         (make-editor (cons (first (editor-post e)) (editor-pre e)) (rest (editor-post e))))]
+    [(key=? k "\r") e]
+    [(key=? k "\u007f") (if (empty? (editor-post e))
+                          e
+                          (make-editor (editor-pre e) (rest (editor-post e) )))]
+    [(key=? k "\b") (make-editor
+                     (if (empty? (editor-pre e))
+                         '()
+                         (rest (editor-pre e)))
+                     (editor-post e))]
+    [(1string? k) (make-editor (cons k (editor-pre e)) (editor-post e))]
+    [else e]))
 
 (check-expect (key-render (create-editor "" "") "e")
               (create-editor "e" ""))
 
 (define (main s)
   (big-bang (create-editor s "")
-    [to-draw editor-render]
-    [on-key key-render]))
+            [to-draw editor-render]
+            [on-key key-render]))
+(main "all good")
