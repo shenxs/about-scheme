@@ -62,7 +62,7 @@
 
 ;1string ,list of words ->list of words
 ;将一个字母插入到 a list of word
-;这里前面两个判断中第一个是判断low是否进入函数时就为空
+;这里前面((两个判断中第一个是判断low是否进入函数时就为空
 ;第二个判断条件在递归时会触发
 ;这样写可以区分递归时碰到empty元素时是递归一开始list就为空还是到达递归结束时才碰到的empty元素
 (define (insert2words c low)
@@ -81,7 +81,14 @@
     [else (cons
             (append (append pre (list c)) post)
             (heart (append pre (list (first post))) (rest post) c))]))
-
+;;去除列表中因为word中存在重复字母而造成的重复单词
+(define (removeRepeat los)
+  (cond
+    [(empty? los) '()]
+    [(= 1 (length los) ) los]
+    [else(if (member? (first los) (rest los))
+           (removeRepeat (rest los))
+           (cons (first los) (removeRepeat (rest los)))) ]))
 (define (alternativeWords s)
-  (in-dictionary (words->strings (arrangements (string->word s)))))
-(alternativeWords "rat")
+  (removeRepeat (in-dictionary (words->strings (arrangements (string->word s))))) )
+(alternativeWords "hash")
