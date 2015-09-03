@@ -53,8 +53,23 @@
 ;这里先不做处理
 (define (target-next t)
   t)
+;posn->T/F
+;判断一个posn是否在画布内
+(define (in-rich? p)
+  (if ( and (<= MinMove (posn-x p) Width) (<= MinMove (posn-y p) Height )) true false))
 
+;产生一个不在蛇内的新的点
+;list of posn ->Posn
+(define (RandomTar a) (make-posn (* 5 (+ 1 (random 19)))
+                             (* 5 (+ 1 (random 19)))))
+;产生合理的目标,不能是在snake上
+(define (acceptTar body)
+  (...))
 
+;Posn,Posn-> T/F
+;判断两个点是否相等
+(define (rich-target? p1 p2)
+  (if (and (= (posn-x p1) (posn-x p2)) (= (posn-y p1) (posn-y p2))) true false))
 ;string ,game ->game
 ;d----direction
 (define (snake-drict-change g d)
@@ -109,24 +124,32 @@
 ;根据snake的方向移动snake
 ;判断是否有target并生成新的target
 (define (time-hander g)
-  (make-game
-    (snake-go (game-snake g))
-    (target-next (game-target g))))
+  (cond
+    [(and (posn? (game-target g) )
+          (rich-target? (game-target g) (first (snake-body (game-snake g))) ))
+     (make-game (make-snake (snake-direction (game-snake g)) (cons (game-target g) (snake-body (game-snake g)) )) false)]
+    [else (make-game (snake-go (game-snake g)) (target-next (game-target g))) ]))
 ;game->T/F
 (define (judger g)
-  (...))
+  (cond
+    [(not (in-rich? (first (snake-body (game-snake g))))) true]
+    [(member? (first (snake-body (game-snake g)))
+              (rest (snake-body (game-snake g)))) true]
+    [else false]))
 
 ;game->img
 ;
 (define (game-over-hander g)
-  (...))
+  ( overlay
+    (text (string-append "游戏结束,此次得分:" (number->string (- (length (snake-body (game-snake g))) 1))) 12 "black")
+    (drawer g)))
 ;;主函数
 (define (main G)
   (big-bang G
     [to-draw drawer]
     [on-key key-hander]
-    [on-tick time-hander 0.1]
-    ;[stop-when judger game-over-hander]
+    [on-tick time-hander 0.15 ]
+    [stop-when judger game-over-hander]
     ))
 (main (make-game (make-snake "no" (list StartPosnOfSnake)) false))
-
+;;还有函数要完成,游戏的逻辑还有问题,吃下目标这一步需要改,产生新的目标的函数逻辑也还在设计(突然不知道要怎么写)中....
