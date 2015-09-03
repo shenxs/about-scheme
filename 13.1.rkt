@@ -7,16 +7,16 @@
 ;;String->list of String
 ;找到给定单词的所有可能字母组合
 
-;(check-member-of (alternativeWords "cat")
-;                 (list "act" "cat")
-;                 (list "cat" "act"))
+(check-member-of (alternativeWords "cat")
+                 (list "act" "cat")
+                 (list "cat" "act"))
 
 (define (allWordsFromRat? w)
   (and (member? "rat" w)
-       (member? "atr" w)
+       (member? "art" w)
        (member? "tar" w)))
 
-;(check-satisfied (alternativeWords "rat") allWordsFromRat?)
+(check-satisfied (alternativeWords "rat") allWordsFromRat?)
 
 
 
@@ -61,9 +61,14 @@
 
 
 ;1string ,list of words ->list of words
+;将一个字母插入到 a list of word
+;这里前面两个判断中第一个是判断low是否进入函数时就为空
+;第二个判断条件在递归时会触发
+;这样写可以区分递归时碰到empty元素时是递归一开始list就为空还是到达递归结束时才碰到的empty元素
 (define (insert2words c low)
   (cond
     [(empty? low) (heart '() '() c)]
+    [(empty? (rest low)) (heart '() (first low) c)]
     [else (append (heart '() (first low) c ) (insert2words c (rest low)))]))
 
 ;;这个程序的核心
@@ -79,7 +84,4 @@
 
 (define (alternativeWords s)
   (in-dictionary (words->strings (arrangements (string->word s)))))
-
-(words->strings (arrangements (string->word "rat")))
-(arrangements (string->word "rat"))
 (alternativeWords "rat")
