@@ -8,7 +8,6 @@
 ;上下左右控制方向
 ;碰壁或者蛇咬到自己则游戏结束
 ;
-
 ;;一些固定数据常量
 (define MinMove 5);设定最小的移动单位,target只可以出现再5的倍数的坐标上
 (define Height (* 40 MinMove))
@@ -52,7 +51,10 @@
 ;判断target并给出下一个target
 ;这里先不做处理
 (define (target-next t)
-  t)
+  (cond
+    [(posn? t) t]
+    [(false? t) (RandomTar 0)]
+    [else (error "未知错误")]))
 ;posn->T/F
 ;判断一个posn是否在画布内
 (define (in-rich? p)
@@ -60,16 +62,22 @@
 
 ;产生一个不在蛇内的新的点
 ;list of posn ->Posn
-(define (RandomTar a) (make-posn (* 5 (+ 1 (random 19)))
-                             (* 5 (+ 1 (random 19)))))
+(define (RandomTar a) (make-posn (* (* 2 MinMove) (+ 1 (random 19)))
+                             (* (* 2 MinMove) (+ 1 (random 19)))))
 ;产生合理的目标,不能是在snake上
 (define (acceptTar body)
   (...))
 
-;Posn,Posn-> T/F
-;判断两个点是否相等
-(define (rich-target? p1 p2)
-  (if (and (= (posn-x p1) (posn-x p2)) (= (posn-y p1) (posn-y p2))) true false))
+;Posn,Posn, string(方向)-> T/F
+;普安段蛇是否吃到目标
+(define (rich-target? p1 p2 d)
+  (cond
+    [(and (string=? "up" d) (= (* 2 MinMove) (- (posn-y p2) (posn-y p1)  )) (= (posn-x p1) (posn-x p2)) ) true]
+    [(and (string=? "down" d) (= (* 2 MinMove) (- (posn-y p1) (posn-y p2) )) (= (posn-x p1) (posn-x p2)) ) true]
+    [(and (string=? "left" d) (= (* 2 MinMove) (- (posn-x p2) (posn-x p1)  )) (= (posn-y p1) (posn-y p2))) true]
+    [(and (string=? "right" d) (= (* 2 MinMove) (- (posn-x p1) (posn-x p2)  )) (= (posn-y p1) (posn-y p2))) true]
+    [else false]
+    ))
 ;string ,game ->game
 ;d----direction
 (define (snake-drict-change g d)
@@ -87,10 +95,10 @@
 (define (snake-new d body)
   (cons
     (cond
-      [(string=? d "up") (make-posn (posn-x (first body)) (- (posn-y (first body)) MinMove ))]
-      [(string=? d "down") (make-posn (posn-x (first body)) (+ MinMove (posn-y (first body)) ))]
-      [(string=? d "left") (make-posn (- (posn-x (first body)) MinMove)  (posn-y (first body)) )]
-      [(string=? d "right") (make-posn (+ MinMove (posn-x (first body))) (posn-y (first body)) )])
+      [(string=? d "up") (make-posn (posn-x (first body)) (- (posn-y (first body)) (* 2 MinMove) ))]
+      [(string=? d "down") (make-posn (posn-x (first body)) (+ (* 2 MinMove) (posn-y (first body)) ))]
+      [(string=? d "left") (make-posn (- (posn-x (first body))  (* 2 MinMove))  (posn-y (first body)) )]
+      [(string=? d "right") (make-posn (+  (* 2 MinMove) (posn-x (first body))) (posn-y (first body)) )])
     (cutLast body)))
 ;;snake->snake
 ;根据sanke的direction产生新的snake
@@ -126,7 +134,7 @@
 (define (time-hander g)
   (cond
     [(and (posn? (game-target g) )
-          (rich-target? (game-target g) (first (snake-body (game-snake g))) ))
+          (rich-target? (game-target g) (first (snake-body (game-snake g))) (snake-direction (game-snake g)) ))
      (make-game (make-snake (snake-direction (game-snake g)) (cons (game-target g) (snake-body (game-snake g)) )) false)]
     [else (make-game (snake-go (game-snake g)) (target-next (game-target g))) ]))
 ;game->T/F
@@ -148,8 +156,7 @@
   (big-bang G
     [to-draw drawer]
     [on-key key-hander]
-    [on-tick time-hander 0.15 ]
+    [on-tick time-hander 0.2 ]
     [stop-when judger game-over-hander]
     ))
-(main (make-game (make-snake "no" (list StartPosnOfSnake)) false))
-;;还有函数要完成,游戏的逻辑还有问题,吃下目标这一步需要改,产生新的目标的函数逻辑也还在设计(突然不知道要怎么写)中....
+(main (make-game (make-snake "no" (list StartPosnOfSnake )) false))
