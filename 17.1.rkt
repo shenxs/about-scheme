@@ -13,6 +13,7 @@
 
 
 ;Exercise 239
+;list of X ,(X,Y->Y) ,Y ->Y
 (define (fold2 l f last-case)
   (cond
     [(empty? l) last-case]
