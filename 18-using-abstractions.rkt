@@ -1,13 +1,14 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-advanced-reader.ss" "lang")((modname 18-using-abstractions) (read-case-sensitive #t) (teachpacks ((lib "abstraction.rkt" "teachpack" "2htdp") (lib "image.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #t #t none #f ((lib "abstraction.rkt" "teachpack" "2htdp") (lib "image.rkt" "teachpack" "2htdp")) #f)))
 ;18章,使用抽象
 ;之前17章一小节太少,所以这次18章就不分小节了
 ;似乎下一章19,就可以看到lambda,下一章要叫初识lambda(是不是有点着急,好了先看这一章)
-#lang racket
 ;一旦你拥有了抽象函数,你就应该尽可能的使用他们
 ;跟重要的是你的读者更加容易理解你的意图
 ;如果抽象函数来自这门语言的标准函数库,就会更加容易理解
 ;这章会了解已有的内建函数,还会介绍一个新的语法  local
 ;
-
 
 ; N [N->X] -> [list of X]
 ; (build-list n f) == (list (f 0) (f 1) (f (- n 1)))
@@ -119,3 +120,86 @@
     [(= 0 n )  '()]
     [(> n 0) (add-at-end (f (- n 1)) (my_build_list (-  n 1) f))]))
 ;(my_build_list 8 f1)
+
+;18.2 local function definitions 本地函数定义
+;介绍local函数
+;#|  ...|#是注释,vim自动注释
+#| (define (listing.v2 l) |#
+  #| (local |#
+    #| ((define (string-append-with-space s t) |#
+            #| (string-append " " s t))) |#
+    #| (foldr string-append-with-space |#
+           #| " " |#
+           #| (sort (map address-first-name l) |#
+                 #| string<?)))) |#
+;local 的作用和private类似,私有代码在外部不能访问
+;这里string-append-with-space 大概只能在函数内部使用
+;(local (... 一系列的定义...) 主函数)
+;这一系列的定义就像是一个完整的程序一样,常量,相互引用
+
+;Exercise 246
+;使用local重写画多边形的函数
+(define (render-polygon p)
+  (local(
+         ;;背景
+         (define MT (empty-scene 50 50))
+         ;在im上连接p q两个点
+         (define (render-line im p q)
+           (scene+line
+             im (posn-x p) (posn-y p) (posn-x q) (posn-y q) "red" ))
+         ;找到p中的最后一个元素
+         (define (last p)
+           (cond
+             [(empty? (rest (rest (rest p)))) (third p)]
+             [else (last (rest p))]))
+         ;从第一个到最后一个连接p中的点
+         (define (connect-dots p)
+           (cond
+             [(empty? p) MT]
+             [else
+               (render-line (connect-dots (rest p)) (first p) (second p))]))
+         (define first-last (connect-dots p)))
+    ;-IN-
+    (render-line first-last (first p) (last p))))
+
+
+
+;Exercise 247
+;重新排列一个单词
+(define (arrangements w)
+  (local(
+;1string ,list of words ->list of words
+;将一个字母插入到 a list of word
+;这里前面((两个判断中第一个是判断low是否进入函数时就为空
+;第二个判断条件在递归时会触发
+;这样写可以区分递归时碰到empty元素时是递归一开始list就为空还是到达递归结束时才碰到的empty元素
+(define (insert2words c low)
+  (cond
+    [(empty? low) (heart '() '() c)]
+    [(empty? (rest low)) (heart '() (first low) c)]
+    [else (append (heart '() (first low) c ) (insert2words c (rest low)))]))
+
+;;这个程序的核心
+;pre 必须为'() post可以是word
+;c 为要插入的字母
+;输出是将c 插入到post的所有位置  ->a list of words
+(define (heart pre post c)
+  (cond
+    [(empty? post) (list (append pre (list c)))]
+    [else (cons
+            (append (append pre (list c)) post)
+            (heart (append pre (list (first post))) (rest post) c))]))
+)
+    ;-IN-
+    (cond
+      [(empty? w) '() ]
+      [else (insert2words (first w) (arrangements (rest w)))])))
+
+;;local 可以把以前需要写在函数外面的辅助函数放到local内部,private专门调用
+;而且local可以使得程序更加高效
+
+#| (local (define some-value (s-express)) |#
+  #| (...some-value ...some-value..)) |#
+;可以事先算一边some-value,然后在主体中调用的时候就不用再做计算,可以大大提升程序效率
+;nice!!!
+
