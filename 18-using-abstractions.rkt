@@ -206,6 +206,7 @@
 
 ;Exercise 248
 ;使用local设计简化函数
+(define-struct ir [name price])
 
 (define (extract1 an-inv)
   (cond
@@ -219,4 +220,36 @@
            (cons first_inv rest_inv)]
           [else (extract1 rest_inv)]))]))
 
+;Exercise 250
+;N->N*N的对角矩阵
+
+;Number->list of lsits of number)
+(define (diagonal n)
+  (cond
+    [(= 0 n) '()]
+    ;[(= 1 n) (list (list 1))]
+    [else
+      (local(
+             ;在每一个现有行最后加0
+             ;list of lists of Number->list of lists of Number
+             (define (add_zero lol)
+               (cond
+                 [(empty? lol) '()]
+                 [else (cons (add_at_end 0 (first lol)) (add_zero (rest lol)))]))
+             ;创造000000...1
+             (define (build n)
+               (cond
+                 [(= 0 (sub1 n)) (cons 1 '())]
+                 [else (cons 0 (build (sub1 n)))]))
+             (define last_line (build n))
+             ;插入到列表最后
+             (define (add_at_end item l)
+               (cond
+                 [(empty? l) (cons item l)]
+                 [else (cons (first l) (add_at_end item (rest l)))]))
+             ;
+             )
+        ;-IN-
+        (add_at_end last_line (add_zero (diagonal (sub1 n)))))]))
+(diagonal 3)
 
