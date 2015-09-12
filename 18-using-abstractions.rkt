@@ -203,3 +203,20 @@
 ;可以事先算一边some-value,然后在主体中调用的时候就不用再做计算,可以大大提升程序效率
 ;nice!!!
 
+
+;Exercise 248
+;使用local设计简化函数
+
+(define (extract1 an-inv)
+  (cond
+    [(empty? an-inv) '()]
+    [else
+      (local(
+             (define first_inv (first an-inv))
+             (define rest_inv (rest an-inv)))
+        (cond
+          [(<= (ir-price first_inv 1.0))
+           (cons first_inv rest_inv)]
+          [else (extract1 rest_inv)]))]))
+
+
