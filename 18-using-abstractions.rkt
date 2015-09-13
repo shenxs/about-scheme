@@ -295,3 +295,67 @@
            (make-posn (+ 3 (posn-x p)) (posn-y p)))
          )
     (map add_3_to_x_of_posn lop)))
+
+
+;去除posn列表中y值大于100的元素
+(define (keep-good lop)
+  (local(
+         ;;decide wheather a posn is good
+         ;posn->T/F
+         (define (good? p)
+           (<= (posn-y p) 100))
+         )
+    (filter good? lop)))
+
+;判断一系列的点lop是否都距离某个点p的距离小于d
+(define (close? lop pt d)
+  (local(
+         ;;posn,posn->boolean
+         (define (close-to? p)
+           (local(
+                  ;x1-x2
+                  (define x1-x2 (- (posn-x p) (posn-x pt)))
+                  ;y1-y2
+                  (define y1-y2 (- (posn-y p) (posn-y pt))))
+             (< (sqrt (+ (* x1-x2 x1-x2) (* y1-y2 y1-y2))) d)))
+         )
+    (andmap close-to?  lop)))
+
+
+
+;;18.6 Design with abstractions
+;使用抽象来设计程序
+;
+;这章只有讲解
+;
+;
+;STEP1
+;依从已有的设计方法的前三步,特别的你需要提炼你的程序申明(用一种更加普适的方式)
+;要有一个目的申明,这个function的设计目的.
+;一个例子-或者一些-,理论上的输入输出
+;一个参数类型说明
+;
+;STEP2
+;现在我们从第一步找到对应的抽象(build-list filter sort andmap foldr foldl...  )
+;从一个已有的输入输出抽象到一个更加普适的输入输出(抽象的东西往往更具普世价值)
+
+
+;STEP3
+;写下函数的大致模板
+;使用local来写下abstraction的主体
+;使用local来写下需要用到的辅助函数(两者都不一定需要完整地,也可以是template)
+
+
+
+
+
+;;STEP4
+;now we can finish the helper function(s)
+;彻底完成辅助函数
+
+
+
+;STEP5
+;last but not the least
+;to test 做测试
+
