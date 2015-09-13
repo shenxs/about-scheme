@@ -251,5 +251,47 @@
              )
         ;-IN-
         (add_at_end last_line (add_zero (diagonal (sub1 n)))))]))
-(diagonal 3)
+;(diagonal 3)
+;18.4 Computing with local
+;计算中使用local
 
+
+#| ((local ((define (f x) (+ (* 4 (sqr x)) 3))) f) |#
+ #| 1) |#
+
+
+;;一开始觉得奇怪的语法
+;local语句的主体就body,所以最后就相当于(f 1)
+;在展开local语句时
+;step1我们先把body中的函数重命名(不能和现有函数重名)
+;step2:应用到body中
+;因为表达式的结果也可以是函数
+;
+;Exercise 254
+
+
+
+#| ((local ((define (f x) (+ x 3)) |#
+         #| (define (g x) (* 4 x))) |#
+   #| (if (odd? (f (g 1))) |#
+     #| f |#
+     #| g)) 2) |#
+;18.5 Using abstract ,by example
+;要上实例了 ,实战
+;举个栗子
+
+
+
+;sample problem
+;在list of posn 的每一个坐标的x上加三
+
+
+;list of posn -> list of posn
+(define (add_3_to_all lop)
+  (local(
+         ;给一个posn的x加三
+         ;posn->posn
+         (define (add_3_to_x_of_posn p)
+           (make-posn (+ 3 (posn-x p)) (posn-y p)))
+         )
+    (map add_3_to_x_of_posn lop)))
