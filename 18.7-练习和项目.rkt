@@ -40,4 +40,141 @@
            (> (ir-price a) (ir-price b))))
     (sort loir cmp)))
 
+;Exercise 257
+;找到列表中价格低于ua的元素
+(define (eliminate-exp ua loIR)
+  (local(
+         ;判断是否小于ua
+         (define (small? a)
+           (<= (ir-price a) ua)))
+    (filter small? loIR)))
+
+
+;除去名叫ty的ir元素
+;X ,list of IR->list of ir
+(define (recall ty loIR)
+  (local(
+         ;IR->boolean
+         (define (not-ty? a)
+           (not (string=? (ir-name a) ty))))
+   (filter not-ty? loIR) ))
+
+;两个列表,挑出两个列表公有的部分
+;[list of X],[list of X]->[list of X]
+(define (selection list1 list2)
+  (local(
+         ;string->boolean
+         ;决定一个元素是否在list2中存在
+         (define (in_list2? a)
+           (find a list2))
+         ;determine wheather a is in l
+         ;由于要用到递归,所以我们再定义一个函数,拥有两个参数
+         (define (find a l)
+           (cond
+             [(empty? l) false]
+             [else (if (string=? a  (first l)) true (find a (rest l)))]))
+         )
+    (filter in_list2? list1)))
+
+
+;Exercise 258
+
+
+;N->(lsit 0 1 2 3 4 5 6 7 8 ..... (- n 1)
+;
+(define (build_naturl_number_list_from_zero n)
+  (local(
+         ;N->N
+         (define (f n)
+           n)
+         )
+    (build-list  n f)))
+
+
+(define (build_naturl_number_list_from_1 n)
+  (local(
+         (define (f n)
+           (+ n 1))
+         )
+    (build-list n f)))
+
+
+
+;;N->(list 1 1/10 1/100 ...)
+(define (build_fengshu_list n)
+  (local(
+         ;N->1/(10^n)
+         (define (f n)
+           (/ 1 (foo n)))
+         ;N->10^n
+         (define (foo n)
+           (cond
+             [(= 0 n) 1]
+             [else (* 10 (foo (sub1 n)))]))
+         )
+    (build-list n f)))
+;(build_fengshu_list 6)
+
+
+;N->n个偶数
+;M->list of numhber
+(define (creat_even_number n)
+  (local(
+         (define (f n)
+           (* 2 (+ n 1)))
+         )
+    (build-list n f)))
+(creat_even_number 8)
+
+
+;;tabulate制表函数
+;Number {Number -> Y]->[list of y]
+(define (tabulate n function)
+  (build-list n function))
+
+
+
+;Exercise 259
+;give a name and a list of name
+;i使用ormap判断是否list中的name都是包含啊name
+;但是我觉得使用andmap才对吧
+(define (find-name target_name lon)
+  (local(
+         ;确定是否为子列
+         (define (sub? name)
+           (local(
+                  (define L (string-length target_name))
+                  )(cond
+                    [(< (string-length name) L) false]
+                    [(string=? target_name (substring name 0 L)) true]
+                    [else false]))))
+    (andmap sub?　lon )))
+
+
+;;Exercise 260
+;自己设计append函数,利用foldr
+;[list of X] {list of X]->[list of X]
+;(check-expect (my_append (list 1 2 3 ) (list 4 5 6 7) )   (list 1 2 3 4 5 6 7))
+;在;ist1的末尾连接list2
+(define (my_append l1 l2)
+  (local(
+         (define (f a b)
+           (cons a b))
+         )
+    (foldr f l2 l1 )))
+;;;so easy以为会很复杂结果是如此的简单
+
+;;Exercise 261
+;使用foldr实现map
+;
+(define (my_map f alox )
+  (local(
+         (define (foo a  b)
+           (cond
+             [(empty? b) (cons (f a) '())]
+             [else  (cons (f a (f b)) )]))
+         )
+    (foldr foo '() alox )))
+
+
 
