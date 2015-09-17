@@ -169,12 +169,24 @@
 ;
 (define (my_map f alox )
   (local(
-         (define (foo a  b)
+         (define (cons_f a  b)
            (cond
              [(empty? b) (cons (f a) '())]
-             [else  (cons (f a (f b)) )]))
+             [else  (cons (f a)  b) ]))
          )
-    (foldr foo '() alox )))
+    (foldr cons_f '() alox )))
+(define (abc n)
+  (+ n 1))
+(my_map abc (list 1 2 3 4 5 ))
 
-
-
+;Exercise 262
+;前缀吗和后缀吗
+(define (prefix l)
+  (local(
+         ;;得到一个前缀码的基本操作
+         (define (cut a b)
+           (cond
+             [(empty? b) (...)]
+             [else (cons )]))
+         )
+    (foldr cut '() l )))

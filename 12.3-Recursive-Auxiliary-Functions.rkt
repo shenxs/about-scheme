@@ -107,6 +107,6 @@
   (cond
     [(empty? l) '()]
     [else (cons l (suffix (rest l)))]))
-;(prefix (list 1 2 3 4 5 6))
+(prefix (list 1 2 3 4 5 6))
 ;(suffix (list 1 2 3 4 5 6))
-2015-08-30 17:20:34
+;2015-08-30 17:20:34

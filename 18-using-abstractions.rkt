@@ -103,7 +103,7 @@
   (cond
     [(empty? alox) base]
     [else (f (first alox) (my-foldr f base (rest alox)))]))
-;(my-foldr cons '() '(a b c))
+;(my-foldr cons '() '(a b c)
 (define (my-foldl f base alox)
   (my-foldr f base (reverse alox)))
 
