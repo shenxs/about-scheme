@@ -124,7 +124,7 @@
            (* 2 (+ n 1)))
          )
     (build-list n f)))
-(creat_even_number 8)
+;(creat_even_number 8)
 
 
 ;;tabulate制表函数
@@ -177,16 +177,27 @@
     (foldr cons_f '() alox )))
 (define (abc n)
   (+ n 1))
-(my_map abc (list 1 2 3 4 5 ))
+;(my_map abc (list 1 2 3 4 5 ))
 
 ;Exercise 262
 ;前缀吗和后缀吗
-(define (prefix l)
-  (local(
-         ;;得到一个前缀码的基本操作
-         (define (cut a b)
-           (cond
-             [(empty? b) (...)]
-             [else (cons )]))
-         )
-    (foldr cut '() l )))
+
+;;这个坑先留着一时不知道怎么写
+
+#| (define (prefix l) |#
+  #| (local( |#
+         #| ;从列表l得到截止为a的列表 |#
+         #| ;item,list ->list |#
+         #| (define (foo a l) |#
+           #| (cond |#
+             #| [(= a (first l)) (cons a '())] |#
+             #| [else (cons (first l) (foo a  (rest l)))])) |#
+         #| ;;得到一个前缀码的基本操作 |#
+         #| (define (cut a b) |#
+           #| (cond |#
+             #| [(empty? b) '()] |#
+             #| [else (cons (foo a l) b)])) |#
+         #| ) |#
+    #| (foldr cut '() l ))) |#
+#| (prefix (list 1 2 3 4 5)) |#
+
