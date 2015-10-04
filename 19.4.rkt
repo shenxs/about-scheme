@@ -6,13 +6,15 @@
   (local(
          ;[list of number]->[list of Number]
          (define (isort alist )
-           (insert (first alist ) (isort (rest alist ))))
+           (cond
+             [(empty? alist ) '()]
+             [else (insert (first alist) (isort (rest alist)))]))
          ;将n插入到已经排好序的alon中去
          (define (insert n alon)
            (cond
              [(empty? alon ) (cons n '())]
              [(cmp n (first alon)) (cons n alon)]
-             [else (insert n (rest alon))]))
+             [else (cons (first alon) (insert n (rest alon)) )]))
          )
     (isort alon0)))
 
