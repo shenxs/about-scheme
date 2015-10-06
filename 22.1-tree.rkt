@@ -54,4 +54,32 @@
     (sum_age a_ftree)
     (count_person a_ftree)))
 
-(average_age Gustav)
+;;Exercise 298
+;得到一颗家族树的所有
+
+(define (eye-color a_ftree)
+  (cond
+    [(no_parent? a_ftree) '()]
+    [else (append (list (child-eye a_ftree)) (eye-color (child-father a_ftree) ) (eye-color (child-mother a_ftree)) )]))
+
+#| (eye-color Gustav ) |#
+#| (eye-color Adam) |#
+
+
+;;Exercise 299
+;child->Boolean
+;判断一个child是否有一个拥有一个蓝色眼睛的祖先
+;a_ftree == a family tree
+(define (blue_eyed_child? a_ftree)
+  (cond
+    [(no_parent? a_ftree) false]
+    [(string=? "blue" (child-eye a_ftree)) true]
+    [else (or (blue_eyed_child? (child-father a_ftree))
+              (blue_eyed_child? (child-mother a_ftree)))]))
+
+(define (blue_eyed_ancestor a_ftree)
+  (or (blue_eyed_child? (child-mother a_ftree) )
+      (blue_eyed_child? (child-father a_ftree))))
+
+;(blue_eyed_ancestor  Adam)
+
