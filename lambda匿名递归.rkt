@@ -9,16 +9,13 @@
     [(= 0 n) 1]
     [else (* n (f (- n 1)))]))
 
-
 ;;将上面的显示的自我调用的递归函数变成通过λ实现的匿名递归
-
 (define almost_factorial
   (lambda (f)
     (lambda (n)
       (if (= n 0)
           1
           (* n (f (- n 1)))))))
-
 
 (define almost_fibonacci
   (lambda (f)
@@ -38,7 +35,6 @@
 ;(Y almost_f)<==>(almost_f f)<==>(almost_f (Y almost_f))
 ;(λ (almost_f) (almost_f (Y almost_f))))
 ;(λ (x) (x x))
-
 (define (Y0 f)
   (f (Y0 f)))
 
@@ -51,4 +47,43 @@
 (define (Y2 f)
     (f (λ (x) (x (Y2 x)))))
 
-(Y almost_fibonacci)
+(define eternity
+    (lambda (x)
+      (eternity x)))  
+
+(((lambda (n!)     ;; 展开后成为 n0! 函数
+   (lambda (n)
+     (cond
+       [(zero? n) 1]
+       [else (* n (n! (- n 1)))])))
+ eternity) 4)
+
+
+((lambda (f)        ;; 函数 n1!
+   (lambda (n)
+     (cond
+       [(zero? 0) 1]
+       [else (* n (f (- n 1)))])))
+ ((lambda (n!)      ;; 函数 n0!
+   (lambda (n)
+     (cond
+       [(zero? n) 1]
+       [else (* n (n! (- n 1)))])))
+  eternity))
+
+((lambda (f)         ;; 函数 n<=2!
+   (lambda (n)
+     (cond
+       [(zero? n) 1]
+       [else (* n (f (- n 1)))])))
+ ((lambda (f)        ;; 函数 n<=1!
+   (lambda (n)
+     (cond
+       [(zero? 0) 1]
+       [else (* n (f (- n 1)))])))
+  ((lambda (n!)      ;; 函数 n0!
+    (lambda (n)
+      (cond
+        [(zero? n) 1]
+        [else (* n (n! (- n 1)))])))
+  eternity)))
