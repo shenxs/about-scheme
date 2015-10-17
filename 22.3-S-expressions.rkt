@@ -77,6 +77,7 @@
           )
     (count-sexp sexp sy)))
 
+;Exercise 304
 ;计算s表达式的深度
 ;atom元素的深度等于1
 
@@ -92,7 +93,27 @@
     [(atom? sl) 1]
     [(empty? sl) 0 ]
     [else (max (+ 1 (depth (first sl))) (depth (rest sl)))]))
-         
-(depth '(1 2 4 (2 (2 ( + 6 (6 9)) ) 5) 1  ))
 
-(depth '(a))
+;(depth '(1 2 4 (2 (2 ( + 6 (6 9)) ) 5) 1  ))
+;(depth '(a))
+
+
+;;Exercise 305
+;S-expression ,old(symbol),new(symbol)->S-expression
+;将S-expression 中的old替换为new
+
+(define (substitute S_expression old new)
+  (cond
+    [(empty? S_expression ) '()]
+    [(number? S_expression) S_expression]
+    [(atom? S_expression) (if (symbol=? S_expression old) new S_expression)]
+    [else (cons (substitute (first S_expression) old new) (substitute (rest S_expression) old new) )]
+    ))
+
+(substitute '(2 3 (3 4 haha ha) ha ) 'ha 'wa )
+
+
+
+
+
+
