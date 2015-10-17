@@ -59,7 +59,7 @@
             1
             (* n (f (- n 1))))))
    (self self)))
-;(define f6 (part-f1 part-f1))
+(define f6 (part-f1 part-f1))
 
 ;;抄袭结束
 
