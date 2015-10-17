@@ -36,4 +36,38 @@
 ((λ (n)
     ((λ (x) (x x n))
      (λ (f n)
-        (if (= n 0 )1 (* n (f f (- n 1))))))) 1000)
+        (if (= n 0 ) 1 (* n (f f (- n 1))))))) 6)
+;成功,没有函数名的递归函数
+
+
+;;使之化简,然后一般化
+;先把n拿出来试试
+(define (f5 n)
+  ((λ (x) (x x n))
+   (λ (f n)
+      (if (= n 0) 1 (* n (f f (- n 1)))))))
+
+;将两个参数的匿名函数转换成嵌套的单参匿名函数
+(f5 6)
+
+
+;;以下内容为博客转载,非原创
+(define (part-f1 self)
+  ((lambda (f)
+     (lambda (n)
+       (if (= n 0)
+            1
+            (* n (f (- n 1))))))
+   (self self)))
+;(define f6 (part-f1 part-f1))
+
+;;抄袭结束
+
+(define almost_f
+  (lambda (f)
+    (lambda (n)
+      (if (= n 0)
+        1
+        (* n (f (- n 1)))))))
+
+
