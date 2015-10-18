@@ -110,10 +110,30 @@
     [else (cons (substitute (first S_expression) old new) (substitute (rest S_expression) old new) )]
     ))
 
-(substitute '(2 3 (3 4 haha ha) ha ) 'ha 'wa )
+#| (substitute '(2 3 (3 4 haha ha) ha ) 'ha 'wa ) |#
 
 
+;S-expression is one of
+;string
+;symbol
+;number
+;SL
+;SL is one of
+;--'()
+;--(cons S-expre SL)
 
 
+;;使用新的数据定义设计count_v3
 
+(define (count_v3 S_expression sy)
+(local (
+        (define (count sexp sy)
+          (cond
+            [(string? sexp) 0]
+            [(symbol? sexp) (if (symbol=? sexp sy) 1 0)]
+            [(number? sexp) 0]
+            [(empty? sexp) 0]
+            [else (+ (count (first sexp) sy) (count (rest sexp) sy))])))
+  (count S_expression sy)))
 
+(count_v3 '(ha 33 434 (ha (ah ha))) 'ha)
