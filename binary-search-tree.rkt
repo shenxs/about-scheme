@@ -6,7 +6,7 @@
 (define NONE (make-no-info))
 
 (define-struct node [ssn name left right])
-;;一个二元搜索树节点,ssn 和 name 都是节点值,所存放的内容ssn<Number> name<Sysmbol>
+;;一个二元树节点,ssn 和 name 都是节点值,所存放的内容ssn<Number> name<Sysmbol>
 ;left and right 是node类型或者NONE
 
 
@@ -28,4 +28,23 @@
 (define a-bt (make-node 23 'lj (make-node 4 'fy NONE (make-node 2828 'sxs NONE NONE)) NONE))
 
 ;(search_bt 2828 a-bt )
+
+;BT->list of number
+;将一棵树中所有的元素的ssn转化为数字的链表
+(define (inorder BT)
+  (cond
+    [(no-info? BT) '()]
+    [else (append (inorder (node-left BT))
+                  (list (node-ssn BT) )
+                  (inorder (node-right BT)))]))
+;(inorder a-bt)
+
+
+;;二元搜索树的要求,升序或者降序 依次为 left BT right
+
+
+;不妨设是从左向右
+
+
+
 
