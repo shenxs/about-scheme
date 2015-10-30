@@ -9,6 +9,13 @@
 (check-expect (substitute '(world hello) 'hello 'bye) '(world bye))
 (check-expect (substitute '(((world) bye) bye) 'bye '42) '(((world) 42) 42))
 
+(define (atom? x)
+  (cond
+    [(symbol? x) true]
+    [(string? x) true]
+    [(number? x) true]
+    [else false]))
+
 (define (substitute sexp old new)
   (local (; S-expr -> S-expr
           (define (subst-sexp sexp)
@@ -39,3 +46,42 @@
     ; — IN —
     (subst-sexp sexp)))
 
+
+(define (substitute.v2 sexp old new)
+  (local (; S-expr -> S-expr
+          (define (subst-sexp sexp)
+            (cond
+              [(atom? sexp) (subst-atom sexp)]
+              [else (subst-sl sexp)]))
+
+          ; SL -> S-expr
+          (define (subst-sl sl)
+            (map subst-sexp sl))
+
+          ; Atom -> S-expr
+          (define (subst-atom at)
+            (if (eq? at old) new at)))
+    ; — IN —
+    (subst-sexp sexp)))
+
+(define (substitute.v3 sexp old new)
+  (local(;S-expr->S-expr
+         (define (subst-sexp sexp)
+           (cond
+             [(atom? sexp) (if (eq? sexp old) new sexp )]
+             [else (map subst-sexp sexp)]))
+
+         ;SL -> S-expr
+         (define (subst-sl sexp)
+           (map subst-sl sexp))
+         )
+    ;-- IN--
+    (subst-sexp sexp)
+    ))
+
+;;最终化简的结果
+
+(define (Substitute sexp old new)
+  (cond
+    [(atom? sexp) (if (eq? sexp old) new old)]
+    [else (map ( λ (s) (Substitute s old new)) sexp) ]))
