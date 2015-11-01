@@ -27,7 +27,7 @@
     [(symbol? dir) 1]
     [else (+ (how-many (first dir)) (how-many (rest dir)))]))
 
-(how-many (cons 'flie1 (cons 'file2 (cons 'file3 '()))))
+;(how-many (cons 'flie1 (cons 'file2 (cons 'file3 '()))))
 
 
 ;现在我们就要细化我们的模型啦
@@ -45,3 +45,21 @@
 ; – (cons Dir.v2 LOFD)
 
 ; A File.v2 is a Symbol.
+
+;Exercise 318
+;model2 设计数据例子
+(define dir-tree.v2
+  (make-dir 'd (list 'file1 'file2 (make-dir 'dir2-name (list 'file3)) 'filename )))
+
+(define (how-many.v2 d)
+  (local(
+         (define (count-content c)
+           (cond
+             [(empty? c) 0]
+             [(symbol? c) 1]
+             [(dir? c ) (how-many.v2 c)]
+             [else (+ (count-content (first c)) (count-content (rest c)))]))
+         )
+    (count-content (dir-content d))))
+
+;(how-many.v2 dir-tree.v2)
