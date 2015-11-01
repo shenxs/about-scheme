@@ -63,3 +63,6 @@
     (count-content (dir-content d))))
 
 ;(how-many.v2 dir-tree.v2)
+
+
+;model 3
