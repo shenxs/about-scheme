@@ -66,3 +66,55 @@
 
 
 ;model 3
+;模型3,现在我们把file也作为一种struct 因为file本身也会有许多不同的属性,仅仅将其作为一种symbol处理未免丧失了太多的信息.
+
+(define-struct file [name size content])
+;File.v3 (make-file symbol number string)
+
+;Here is the refined data definition:
+; A Dir.v3 is a structure:
+;   (make-dir.v3 Symbol Dir* File*)
+
+; A Dir* is one of:
+; – '()
+; – (cons Dir.v3 Dir*)
+
+; A File* is one of:
+; – '()
+; – (cons File.v3 File*)
+
+(define tree3 (make-dir 'dirname (list (make-file 'filename 4 "") (make-file 'file2name 7 "") (make-dir 'dir2name (list (make-file 'file3name 6 "")))  (make-file 'file4name 1 "") )) )
+
+(define (how-many.v3 d)
+  (local(
+         (define (count-content c)
+           (cond
+             [(empty? c) 0]
+             [(file? c) 1]
+             [(dir? c) (how-many.v3 c)]
+             [else (+ (count-content (first c) )  (count-content(rest c)))])))
+    (count-content (dir-content d))))
+
+(how-many.v3 tree3)
+
+;Exercise 323
+;
+;Dir.v3 is one of
+;--(make-dir symbol '())
+;--(make-dir symbol LOFD)
+;;LOFD is list of file and dir
+
+;使用foldr 化简函数
+
+(define (how-many.v4 d)
+  (local(
+
+         ;file/dir/'() number ->number
+         (define (f c n)
+           (cond
+             [(file? c) (+ 1 n)]
+             [(dir? c) (+ n (how-many.v4 c))]
+             [(empty? c) n]))
+         )
+    (foldr f 0 (dir-content d))))
+(how-many.v4 tree3)
