@@ -67,3 +67,25 @@
 
 
 (ls d0)
+
+
+;du
+;dir->Number
+;计算出整个文件树下面的文件的总共大小
+;一个文件夹的大小记为1
+(define (du d)
+  (local(
+         ;计算文件的大小
+         (define (du-dirs d)
+           (cond
+             [(empty? d) 0]
+             [else (+ 1 (du (first d)) (du-dirs (rest d))) ]))
+         (define (du-files f)
+           (cond
+             [(empty? f) 0]
+             [else (+ (file-size (first f)) (du-files (rest f)) )]))
+         ;计算文件夹的大小
+         )
+    (+ 1 (du-dirs (dir-dirs d)) (du-files (dir-files d)))))
+
+(du d0)
