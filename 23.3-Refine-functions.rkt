@@ -1,6 +1,6 @@
 #lang racket
 (require htdp/dir)
-(define d0 (create-dir "/home/richard/playground/ShanXun-master"))
+(define d0 (create-dir "/home/richard/.ssh"))
 
 (define (how-many d)
   (local(
@@ -25,7 +25,7 @@
 (how-many d0)
 
 
-(define (find d target-name)
+(define (find? d target-name)
   (local(
          (define (find-in-files target-name files)
            (cond
@@ -37,10 +37,33 @@
            (cond
              [(empty? dirs) false]
              [else (or (find-in-files target-name (dir-files (first dirs) ))
-                       (find-in-dirs target-name (rest dirs)))]))
+                       (
+                        find-in-dirs target-name (rest dirs)))]))
 
          )
     (or (find-in-files target-name (dir-files d))
         (find-in-dirs target-name (dir-dirs d)))))
 
-;(find d0 'fucq.py)
+;(find? d0 'fucq.py)
+
+;ls
+;列出当前文件夹下的文件夹以及文件;
+;dir->string
+
+(define (ls d)
+  (local(
+         ;list of dirs->list of symbol
+         (define (ls-dir d)
+           (cond
+             [(empty? d) '()]
+             [else (cons (dir-name (first d)) (ls-dir (rest d)))]))
+         ;list of files->list of symbol
+         (define (ls-files f)
+           (cond
+             [(empty? f) '()]
+             [else (cons (file-name (first f)) (ls-files (rest f)))]))
+         )
+    (append (ls-dir (dir-dirs d)) (ls-files (dir-files d)))))
+
+
+(ls d0)
