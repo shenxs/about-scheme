@@ -87,5 +87,4 @@
          ;计算文件夹的大小
          )
     (+ 1 (du-dirs (dir-dirs d)) (du-files (dir-files d)))))
-
 (du d0)
