@@ -1,0 +1,37 @@
+#lang racket
+;这章是讲处理xml文档的
+;xml可能已经过时了,但是json等等的处理原理相通
+
+;;标签的参数,包括参数名和参数值
+;(make-attribute symbol string)
+(define-struct attribute [name value])
+;标签,包括名字.属性,内容
+;(make-element string (list of attribute) (list any))
+(define-struct element [name attributes content])
+
+
+'(machine ((initial "red"))
+          (action ((state "red") (next "green")))
+          (action ((state "green") (next "yellow")))
+          (action ((state "yellow") (next "red"))))
+
+
+;用symbol来表示Xexpr(即X-expression)
+
+;- v.0
+'(cons Symbol '())
+
+;v1
+'(cons Symbol [list of Xexpr])
+
+;v2
+'(cons Symbol [list-of X-expr.v2])
+'(cons Symbol (cons [list-of attribute] [list-of X-expr.v2]))
+
+;attribute
+'(Symbol string)
+
+
+;Exercise 351
+'(cons transition (cons (cons '(from "seen-e") '(to "seen-f")) '()))
+'(cons ul (cons li (cons word (cons word '()))))
