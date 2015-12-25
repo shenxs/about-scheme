@@ -35,10 +35,42 @@
 '(cons ul (cons li (cons word (cons word '()))))
 
 (define a0 '((initial "red")))
- 
+
 (define e0 '(machine))
 (define e1 `(machine ,a0))
 (define e2 '(machine (action)))
 (define e3 '(machine () (action)))
 (define e4 `(machine ,a0 (action) (action)))
+
+
+
+
+(define (list_of_attributes? x)
+  (cond
+    [(empty? x) true]
+    [else (cons? (first x))]))
+
+(define (xeper-attributes xe)
+  (local ((define optional-loa+content (rest xe)))
+    (cond
+      [(empty? optional-loa+content ) '()]
+      [else
+        (local ((define may_attributes (first optional-loa+content)))
+          (if (list_of_attributes? may_attributes)
+            may_attributes
+            '()))])))
+
+
+(define (xeper-name xe)
+  (first xe))
+
+(define (xexper-content xe)
+  (local ((define optional-loa+content (rest xe)))
+    (cond
+      [(empty? optional-loa+content) '() ]
+      [else (local ((define may_attributes (first optional-loa+content)))
+              (if (list_of_attributes? may_attributes)
+                (rest optional-loa+content)
+                optional-loa+content))])))
+
 
