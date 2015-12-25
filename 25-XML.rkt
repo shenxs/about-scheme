@@ -15,7 +15,6 @@
           (action ((state "green") (next "yellow")))
           (action ((state "yellow") (next "red"))))
 
-
 ;用symbol来表示Xexpr(即X-expression)
 
 ;- v.0
@@ -31,7 +30,15 @@
 ;attribute
 '(Symbol string)
 
-
 ;Exercise 351
 '(cons transition (cons (cons '(from "seen-e") '(to "seen-f")) '()))
 '(cons ul (cons li (cons word (cons word '()))))
+
+(define a0 '((initial "red")))
+ 
+(define e0 '(machine))
+(define e1 `(machine ,a0))
+(define e2 '(machine (action)))
+(define e3 '(machine () (action)))
+(define e4 `(machine ,a0 (action) (action)))
+
