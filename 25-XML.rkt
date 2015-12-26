@@ -10,29 +10,29 @@
 (define-struct element [name attributes content])
 
 
-'(machine ((initial "red"))
-          (action ((state "red") (next "green")))
-          (action ((state "green") (next "yellow")))
-          (action ((state "yellow") (next "red"))))
+#| '(machine ((initial "red")) |#
+          #| (action ((state "red") (next "green"))) |#
+          #| (action ((state "green") (next "yellow"))) |#
+          #| (action ((state "yellow") (next "red")))) |#
 
-;用symbol来表示Xexpr(即X-expression)
+#| ;用symbol来表示Xexpr(即X-expression) |#
 
-;- v.0
-'(cons Symbol '())
+#| ;- v.0 |#
+#| '(cons Symbol '()) |#
 
-;v1
-'(cons Symbol [list of Xexpr])
+#| ;v1 |#
+#| '(cons Symbol [list of Xexpr]) |#
 
-;v2
-'(cons Symbol [list-of X-expr.v2])
-'(cons Symbol (cons [list-of attribute] [list-of X-expr.v2]))
+#| ;v2 |#
+#| '(cons Symbol [list-of X-expr.v2]) |#
+#| '(cons Symbol (cons [list-of attribute] [list-of X-expr.v2])) |#
 
-;attribute
-'(Symbol string)
+#| ;attribute |#
+#| '(Symbol string) |#
 
-;Exercise 351
-'(cons transition (cons (cons '(from "seen-e") '(to "seen-f")) '()))
-'(cons ul (cons li (cons word (cons word '()))))
+#| ;Exercise 351 |#
+#| '(cons transition (cons (cons '(from "seen-e") '(to "seen-f")) '())) |#
+#| '(cons ul (cons li (cons word (cons word '())))) |#
 
 (define a0 '((initial "red")))
 
@@ -50,7 +50,7 @@
     [(empty? x) true]
     [else (cons? (first x))]))
 
-(define (xeper-attributes xe)
+(define (xexpr-attributes xe)
   (local ((define optional-loa+content (rest xe)))
     (cond
       [(empty? optional-loa+content ) '()]
@@ -61,10 +61,10 @@
             '()))])))
 
 
-(define (xeper-name xe)
+(define (xexpr-name xe)
   (first xe))
 
-(define (xexper-content xe)
+(define (xexpr-content xe)
   (local ((define optional-loa+content (rest xe)))
     (cond
       [(empty? optional-loa+content) '() ]
@@ -74,3 +74,4 @@
                 optional-loa+content))])))
 
 
+(xexpr-content e4)
