@@ -73,5 +73,23 @@
                 (rest optional-loa+content)
                 optional-loa+content))])))
 
+;Exercise 358
 
-(xexpr-content e4)
+;word?
+;判断一个isl值是否为xword
+
+;xword 的格式为'(word ((text string)))
+;(word ((text "one")))
+;(word ((text "two"))))
+(define (xword? x)
+  (and (symbol=? 'word (first x))
+       (symbol=? 'text (first (first (second x))))))
+
+(define (word-text x)
+  (if (xword? x)
+    (second (first (second x)))
+    (error "这不是一个xword")))
+
+
+
+
