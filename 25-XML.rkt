@@ -1,7 +1,5 @@
-;; The first three lines of this file were inserted by DrRacket. They record metadata
-;; about the language level of this file in a form that our tools can easily process.
-#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname 25-XML) (read-case-sensitive #t) (teachpacks ((lib "image.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t quasiquote repeating-decimal #f #t none #f ((lib "image.rkt" "teachpack" "2htdp")) #f)))
-
+#lang racket
+(require 2htdp/image)
 ;这章是讲处理xml文档的
 ;xml可能已经过时了,但是json等等的处理原理相通
 
@@ -220,20 +218,11 @@
 ;           (li (word (text "two")))))
 (define (render-item an-item)
   (local ((define content (first (xexpr-content an-item))))
-     (cond
-       [(word? content)
-        (beside/align 'center
-                              BULLET
-                              (text (word-text content) SIZE 'black))]
-       [else (render-enum content)])))
+(beside/align 'center BULLET
+              (cond
+                [(word? content) (text (word-text content) SIZE 'black)]
+                [else (render-enum content)]))))
 
-(define ceshi
-  '(ul
-    (li
-       (word (text "one")))
-       (ul
-           (li (word (text "two"))))))
-(render-enum ceshi)
 ;Exercise 361
 ;直接从v2版本的定义开始构建rander函数估计是一样的
 ;所以略过
@@ -242,16 +231,49 @@
 ;加上似乎代码更加漂亮
 
 
+(define ceshi '(ul (li (word ((text "123"))))
+                  (li (ul (li (word ((text "456"))))))
+                  (li (word ((text "hello"))))))
 ;Exercise 363
 ;数一下enum中一共有几个hello
 ;enum->Number
 
-;; (define (count-hello xe)
-  ;; (local ((define content (xexpr-content xe))
-          ;; (define (add-hello fst-item so-far)
-            ;; (+ (count-item fst-item) so-far)))
-    ;; (foldr add-hello 0 content)))
+(define (count-hello xe str)
+  (local ((define content (xexpr-content xe))
+          ;Xitem.v2->number
+          (define (add fst so_far)
+            (+ (how-many str fst) so_far))
+          )
+    (foldr add 0 content)))
 
-;; (define (count-item an_item)
-  ;; (local ((define (content (first (xexpr-content an_item)))))
-    ;; ))
+(define (how-many str an-item)
+  (local ((define content (first (xexpr-content an-item ))))
+    (cond
+      [(word? content)
+       (cond
+         [(string=? str (word-text content)) 1]
+         [else 0])]
+      [else (count-hello content str)])))
+ceshi
+(count-hello ceshi "hello")
+
+
+;Exercise 364
+;将xenum 中的hello全部替换为bye
+(define (replace-hello xe str)
+  (local ((define content (xexpr-content xe))
+          (define (replace fst so-far)
+            (cons (replace-item fst str) so-far)))
+    (cons 'ul (foldr replace '() content))))
+
+(define (replace-item an-item str)
+  (local ((define content (first (xexpr-content an-item))))
+    (cons 'li
+          (cond
+        [(word? content)
+         (cond
+           [(string=? "123" (word-text content)) `((word ((text ,str))))]
+           [else `(,content)])]
+        [else `(,(replace-hello content str))]))))
+
+(replace-hello ceshi "bye")
