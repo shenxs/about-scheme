@@ -8,4 +8,44 @@
 ;这种特殊的语言也被叫做 domain-specific language(DSL)
 ;使用dsl大大简化了系统管理员的工作
 ;系统管理员会写一些xml"程序"来配置他们要启动的系统
+;又提到了有限状态机 .我们要给他设计一个DSL
+
 #lang racket
+(require 2htdp/universe
+         2htdp/image)
+; A FSM is a [List-of 1Transition]
+; A 1Transition is a list of two items:
+;   (cons FSM-State (cons FSM-State '()))
+; A FSM-State is a String that specifies color
+
+; data examples
+;作为数据的例子
+(define fsm-traffic
+  '(("red" "green") ("green" "yellow") ("yellow" "red")))
+
+; FSM FSM-State -> FSM-State 有限状态机 从一个状态到另一个状态
+; match the keys pressed by a player with the given FSM  每按一次键,就切换当前的状态,看上去的就是按一下切换颜色
+(define (simulate state0 transitions)
+  ; State of the World: FSM-State
+  (big-bang state0
+    [to-draw
+      (lambda (current)
+        (overlay
+          (text current 24 "indigo")
+         (square 100 "solid" current)))]
+    [on-key
+      (lambda (current key-event)
+        (find transitions current))]))
+
+; [List-of [List X Y]] X -> Y
+; finds the matching Y for the given X in the association list
+; 从alist中找到x对应的下一个状态应该是什么
+(define (find alist x)
+  (local ((define fm (assoc x alist)))
+    (if (cons? fm) (second fm) (error "next state not found"))))
+;去掉下面的注释可以测试程序运行
+(simulate "red" fsm-traffic)
+
+
+;Exercise 365
+;修改render函数,将当前状态显示在square上面
