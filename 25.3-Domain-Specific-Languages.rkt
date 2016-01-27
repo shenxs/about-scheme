@@ -49,3 +49,7 @@
 
 ;Exercise 365
 ;修改render函数,将当前状态显示在square上面
+
+;Exercise 366
+;重新设计find函数
+;没看到为什么,暂时留着
