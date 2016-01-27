@@ -44,8 +44,7 @@
   (local ((define fm (assoc x alist)))
     (if (cons? fm) (second fm) (error "next state not found"))))
 ;去掉下面的注释可以测试程序运行
-(simulate "red" fsm-traffic)
-
+;; (simulate "red" fsm-traffic)
 
 ;Exercise 365
 ;修改render函数,将当前状态显示在square上面
@@ -53,3 +52,27 @@
 ;Exercise 366
 ;重新设计find函数
 ;没看到为什么,暂时留着
+
+;Exercise 367
+;改变数据的定义方式,以此让某些按键并不触发颜色变换
+;并且不改变find函数自身
+(define fsm-key-traffic
+  '(("red"  "green" " " ) ("green" "yellow" " ") ("yellow"  "red" " ")))
+(define (simulate2 state0 transitions)
+  ; State of the World: FSM-State
+  (big-bang state0
+    [to-draw
+      (lambda (current)
+        (overlay
+          (text current 24 "indigo")
+         (square 100 "solid" current)))]
+    [on-key
+      (lambda (current key-event)
+        (local ((define right-key (third (assoc current transitions))))
+          (cond
+            [(key=? key-event right-key) (find transitions current)]
+            [else current])))]))
+
+(simulate2 "red" fsm-key-traffic)
+
+
