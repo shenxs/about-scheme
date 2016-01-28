@@ -12,7 +12,9 @@
 
 #lang racket
 (require 2htdp/universe
-         2htdp/image)
+         2htdp/image
+         "25-XML.rkt")
+
 ; A FSM is a [List-of 1Transition]
 ; A 1Transition is a list of two items:
 ;   (cons FSM-State (cons FSM-State '()))
@@ -73,7 +75,7 @@
             [(key=? key-event right-key) (find transitions current)]
             [else current])))]))
 
-(simulate2 "red" fsm-key-traffic)
+;; (simulate2 "red" fsm-key-traffic)
 
 
 ;Exercise 368
@@ -86,11 +88,36 @@
 
 ;;Xmachine 版本
 
-;; '(machine ((initial "black"))
-          ;; (action ((state "black") (next "white")))
-          ;; (action ((state "white") (next "black"))))
+(define Xmachine
+  '(machine ((initial "black"))
+          (action ((state "black") (next "white")))
+          (action ((state "white") (next "black")))))
 
 
 ;Sample Problem
 ;设计一个程序,使用xmachine来使simulate工作
+(xexpr-attributes Xmachine)
 
+(define (simulate-xmachine machine)
+  (local(
+         ;初始状态
+         (define state0 (second (first (xexpr-attributes machine))))
+         ;从machine中提取出所需数据
+         (define (tiqu-machine m)
+           (local(
+                  (define content (xexpr-content m))
+                  (define (action-state a)
+                    (second (first (xexpr-attributes a))))
+                  (define (action-next a)
+                    (second (second (xexpr-attributes a))))
+                  (define (make-action action so-far)
+                    (cons (list (action-state action) (action-next action)) so-far))
+                  )
+                (foldr make-action '() content )
+             ))
+         ;类似fsm-traffic的数据定义
+         (define data (tiqu-machine machine))
+         )
+    (simulate state0 data)))
+
+(simulate-xmachine Xmachine)

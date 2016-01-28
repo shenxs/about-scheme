@@ -96,7 +96,7 @@
             may_attributes
             '()))])))
 
-(xexpr-attributes e4)
+;; (xexpr-attributes e4)
 
 (define (xexpr-name xe)
   (first xe))
@@ -123,7 +123,7 @@
       pair-or-false
       (rest pair-or-false))))
 
-(lookup-attributes '((ha "123") (jk "123")) 'qw)
+;; (lookup-attributes '((ha "123") (jk "123")) 'qw)
 
 ;Exercise 358
 
@@ -190,7 +190,7 @@
             (above/align 'left so_far (render-item1 fst_itm)))
           )
     (foldr deal_with_one_item empty-image content)))
-(render-enum1 ex)
+;; (render-enum1 ex)
 
 ;实际上我们会遇到在li元素里面出现ul元素的情况,这是一个嵌套的定义
 ; An XItem.v2 is one of:
@@ -254,8 +254,8 @@
          [(string=? str (word-text content)) 1]
          [else 0])]
       [else (count-hello content str)])))
-ceshi
-(count-hello ceshi "hello")
+;; ceshi
+;; (count-hello ceshi "hello")
 
 
 ;Exercise 364
@@ -276,4 +276,9 @@ ceshi
            [else `(,content)])]
         [else `(,(replace-hello content str))]))))
 
-(replace-hello ceshi "bye")
+;; (replace-hello ceshi "bye")
+
+(provide
+  xexpr-name
+  xexpr-attributes
+  xexpr-content)
