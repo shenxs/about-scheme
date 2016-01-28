@@ -4,7 +4,9 @@
 #lang racket
 (require
   2htdp/batch-io
-  2htdp/universe)
+  2htdp/universe
+  2htdp/image
+  "25-XML.rkt")
 
 ;以下是teachpack的关于xexpr的内容
 
@@ -71,3 +73,102 @@
 ;; (define (xexpr-as-string x) ...)
 
 ;; (xexpr? '(mak ((df " ")) (fjk k)))
+
+;; (read-plain-xexpr/web
+    ;; "http://www.ccs.neu.edu/home/matthias/HtDP2e/Files/machine-configuration.xml")
+
+;; (read-xexpr/web "https://www.google.com/finance")
+
+(define PREFIX "https://www.google.com/finance?q=")
+(define SUFFIX "&btnG=Search")
+(define SIZE 22)
+(define SPACER (text "  " SIZE 'white))
+
+
+;x xexpr
+;s "string" 要寻找的字符串
+;从xml中找到s
+(define (get-almost x s)
+  (local(
+         ;先把内容拿出来
+         (define content (xexpr-content x))
+         (define (zuhe-meta c)
+           (local(
+                  (define (heihei a b)
+                    (cond
+                      [(empty? a) b]
+                      [else (cons a b)]))
+                  (define (judge i)
+                    (local (
+                            (define att (xexpr-attributes i))
+                            )
+                      (cond
+                        [(string=? s (second (second att))) (second (first att))]
+                        [else '()])))
+                  (define (chuli item)
+                    (cond
+                      [(not (cons? item)) '()]
+                      [(xexpr? item)
+                       (cond
+                         [(symbol=? 'meta (xexpr-name item) ) (judge item)]
+                         [else (get-almost item s)])]
+                      [else '()]))
+                  (define (quchu f s)
+                    (heihei (chuli f) s))
+                  )
+           (foldr quchu '() c))
+         ))
+    (zuhe-meta content)))
+
+(define (get-xexpr x s)
+  (local(
+         (define almost-value (get-almost x s))
+         (define (take-out av)
+           (cond
+             [(cons? av) (take-out (first av))]
+             [(string? av) av]
+             [else "出错了"]))
+         )
+    (take-out almost-value)))
+
+
+
+(define (get x s)
+  (local ((define result (get-xexpr x s)))
+    (if (string? result)
+        result
+        (error (string-append "attribute not found: " s)))))
+
+(define-struct data [price delta])
+; StockWorld is
+;    (make-data String String)
+; price and delta specify the current price and how
+; much it changed since the last update
+
+; String -> StockWorld
+; retrieves stock price and its change of the specified company
+; every 15 seconds and displays together with available time stamp
+(define (stock-alert company)
+  (local ((define url (string-append PREFIX company SUFFIX))
+
+          ; [StockWorld -> StockWorld]
+          ; retrieves price and change from url
+          (define (retrieve-stock-data __w)
+            (local ((define x (read-xexpr/web url)))
+              (make-data (get x "price") (get x "priceChange"))))
+
+          ; StockWorld -> Image
+          ; renders the stock market data as a single long line
+          (define (render-stock-data w)
+            (local ((define pt (text (data-price w) SIZE 'black))
+                    (define dt (text (data-delta w) SIZE 'red)))
+              (overlay (beside pt SPACER dt)
+                       (rectangle 300 35 'solid 'white)))))
+    ; – IN –
+    (big-bang (retrieve-stock-data 'no-use)
+      [on-tick retrieve-stock-data 5]
+      [to-draw render-stock-data]
+      [name company])))
+
+
+(stock-alert "ford")
