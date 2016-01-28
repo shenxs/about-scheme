@@ -76,3 +76,21 @@
 (simulate2 "red" fsm-key-traffic)
 
 
+;Exercise 368
+;设计xml语句来配置机器,从白色到黑色,不考虑按键
+
+;; <machine initial="balck">
+;; <action state="black" next="white" />
+;; <action state="white" next="black" />
+;; </machine>
+
+;;Xmachine 版本
+
+;; '(machine ((initial "black"))
+          ;; (action ((state "black") (next "white")))
+          ;; (action ((state "white") (next "black"))))
+
+
+;Sample Problem
+;设计一个程序,使用xmachine来使simulate工作
+
