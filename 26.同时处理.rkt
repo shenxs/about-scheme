@@ -51,9 +51,9 @@
       (cons (* (first hours) (first hourly-wages))
             (wages*.v2 (rest hours) (rest hourly-wages)))]))
 
-(wages*.v2 '(5.65) '(40))
+;; (wages*.v2 '(5.65) '(40))
 
-(wages*.v2 '(1 2 3) '(4 5 6))
+;; (wages*.v2 '(1 2 3) '(4 5 6))
 
 ;Exercise 373
 ;[a list of employee] [list of work records] ===>[list of structure]
@@ -81,10 +81,10 @@
               (weekly-wages (first loe) lor)
               (wages*.v3 (rest loe) lor))])))
 
-(wages*.v3
-  (list (make-employee "a" 123 12)
-        (make-employee "b" 124 13))
-  (list (make-work_record "a" 3)))
+;; (wages*.v3
+;; (list (make-employee "a" 123 12)
+;; (make-employee "b" 124 13))
+;; (list (make-work_record "a" 3)))
 
 ;Exercise 374
 ;[a list of String] [a list of String] ===> [list of phone-record]
@@ -97,3 +97,36 @@
     [else (cons (make-phone-record (first lon) (first lop))
                 (zip (rest lon) (rest lop)))]))
 
+;case3
+
+;[list of Symbol] number ===> Symbol
+;n 自然数 l list
+;取出 list中的第n个符号,如果list太短就报错
+(define (list-pick l n)
+  (cond
+    [(< n 0) (error "not a nature number")]
+    [(and (= 0 n) (cons? l) (first l))]
+    [(and (> n 0) (cons? l)) (list-pick (rest l) (sub1 n))]
+    [(and (> n 0) (empty? l)) (error "list too short")]))
+;; (list-pick '(a b c d e f g) 1)
+
+;Exercise 375
+;a tree  [a list of directions] ===>a tree or error
+(define-struct branch [left right])
+
+(define (tree-pick t lod)
+  (cond
+    [(and (empty? lod) (branch? t)) t]
+    [(and (symbol=? 'left (first lod)) (branch? t)) (tree-pick (branch-left t) (rest lod))]
+    [(and (symbol=? 'right (first lod)) (branch? t)) (tree-pick (branch-right t) (rest lod))]
+    [else (error "something wrong")]))
+(define a-tree
+  (make-branch
+    (make-branch
+      (make-branch 1 2)
+      (make-branch "as" "bx"))
+    (make-branch
+      (make-branch 3 4)
+      (make-branch "3" "4"))))
+
+(tree-pick a-tree '(left left ))
