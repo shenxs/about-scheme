@@ -10,7 +10,7 @@
             (first front)
             (replace-eol-with (rest front) end))]))
 
-(replace-eol-with '(1 2 3) '(4 5 6))
+;; (replace-eol-with '(1 2 3) '(4 5 6))
 
 
 ;Exercise 372
@@ -34,4 +34,23 @@
       [(empty? los) '()]
       [else (replace-eol-with (one-to-all (first los) lon) (cross (rest los) lon) )])))
 
-(cross '(a b c) '(1 2))
+;; (cross '(a b c) '(1 2))
+
+;case 2
+;支付薪水
+; [List-of Number] [List-of Number] -> [List-of Number]
+; computes weekly wages by multiplying the corresponding
+; items on hours and hourly-wages
+; assume the two lists are of equal length
+
+(define (wages*.v2 hours hourly-wages)
+  (cond
+    [(empty? hours) '()]
+    [(empty? hourly-wages) '()]
+    [else
+      (cons (* (first hours) (first hourly-wages))
+            (wages*.v2 (rest hours) (rest hourly-wages)))]))
+
+(wages*.v2 '(5.65) '(40))
+
+(wages*.v2 '(1 2 3) '(4 5 6))
