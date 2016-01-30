@@ -54,3 +54,46 @@
 (wages*.v2 '(5.65) '(40))
 
 (wages*.v2 '(1 2 3) '(4 5 6))
+
+;Exercise 373
+;[a list of employee] [list of work records] ===>[list of structure]
+(define-struct employee [name social_security_name pay_rate])
+(define-struct work_record [name hours])
+(define-struct pay_record [name money])
+
+(define (wages*.v3 loe lor)
+  (local (
+          (define (find-hours name lor)
+            (cond
+              [(empty? lor) 0]
+              [(string=? name (work_record-name (first lor))) (work_record-hours (first lor)) ]
+              [else (find-hours name (rest lor))]))
+          (define (weekly-wages emplye lor)
+            (make-pay_record
+              (employee-name emplye)
+              (* (employee-pay_rate emplye)
+                 (find-hours (employee-name emplye) lor))))
+          )
+    ;-----IN------;
+    (cond
+      [(empty? loe) '()]
+      [else (cons
+              (weekly-wages (first loe) lor)
+              (wages*.v3 (rest loe) lor))])))
+
+(wages*.v3
+  (list (make-employee "a" 123 12)
+        (make-employee "b" 124 13))
+  (list (make-work_record "a" 3)))
+
+;Exercise 374
+;[a list of String] [a list of String] ===> [list of phone-record]
+(define-struct phone-record [name number])
+;A PhoneRecord is (make-phone-record String String)
+
+(define (zip lon lop)
+  (cond
+    [(empty? lon) '()]
+    [else (cons (make-phone-record (first lon) (first lop))
+                (zip (rest lon) (rest lop)))]))
+
