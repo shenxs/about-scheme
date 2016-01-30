@@ -130,3 +130,10 @@
       (make-branch "3" "4"))))
 
 (tree-pick a-tree '(left left ))
+
+;; In summary, the design of multi-parameter functions is just a variation on the old design-recipe theme. The key idea is to translate the data definitions into a table that shows all feasible and interesting combinations. The development of function examples and the template exploit the table as much as possible.
+
+;总结此章
+;当一个函数有两个列表参数时
+;我们要做的是画一张二维的图表,表示出所有的可能性,然后进行化简处理
+;要包括到所有可能的情况
