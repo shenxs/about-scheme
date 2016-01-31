@@ -1,5 +1,7 @@
 #lang racket
+(require 2htdp/batch-io)
 ;[a sorted list of number] [as before] ====>[a sorted list of number]
+
 
 ;Exercise 378
 (define (merge l1 l2)
@@ -31,5 +33,12 @@
     [(= n 0) '()]
     [else (error 'n "小于0")]))
 
-(take '(a b c d e f) 2)
+;; (take '(a b c d e f) 2)
+
+
+;;这会是一个叫做吊死鬼的游戏
+(define DICTIONARY-LOCATION "/usr/share/dict/words")
+
+(define DICTIONARY-AS-LIST (read-lines DICTIONARY-LOCATION))
+
 
