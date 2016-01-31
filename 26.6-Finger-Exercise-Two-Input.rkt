@@ -1,5 +1,7 @@
 #lang racket
-(require 2htdp/batch-io)
+(require 2htdp/batch-io
+         2htdp/image
+         2htdp/universe)
 ;[a sorted list of number] [as before] ====>[a sorted list of number]
 
 
@@ -38,7 +40,65 @@
 
 ;;这会是一个叫做吊死鬼的游戏
 (define DICTIONARY-LOCATION "/usr/share/dict/words")
-
 (define DICTIONARY-AS-LIST (read-lines DICTIONARY-LOCATION))
+(define DICTIONARY-SIZE (length DICTIONARY-AS-LIST))
+DICTIONARY-SIZE
+
+(define (explode str)
+  (local ((define l (string-length str)))
+    (cond
+      [(= l 0) '()]
+      [else (cons (substring str 0 1)
+                  (explode (substring str 1 l)))])))
+
+(define (member? ke l)
+  (cond
+    [(empty? l) #f]
+    [(equal? ke (first l)) #t]
+    [else (member? ke (rest l))]))
 
 
+(define (implode l)
+  (cond
+    [(empty? l) ""]
+    [else (string-append (first l) (implode (rest l)))]))
+
+(define LETTERS (explode "abcdefghijklmnopqrstuvwxyz"))
+
+; A HM-Word is [List-of [Maybe Letter]]
+; interpretation #false represents a letter to be guessed
+; A Letter is member? of LETTERS.
+
+; HM-Word N -> String
+; run a simplistic Hangman game, produce the current state of the game
+; assume the-pick does not contain #false
+(define (play the-pick time-limit)
+  (local ((define the-word  (explode the-pick))
+          (define the-guess (make-list (length the-word) #false))
+
+          ; HM-Word -> HM-Word
+          (define (do-nothing s) s)
+
+          ; HM-Word KeyEvent -> HM-Word
+          (define (checked-compare current-status ke)
+            (if (member? ke LETTERS)
+                (compare-word the-word current-status ke)
+                current-status)))
+
+    ; the state of the game is a HM-Word
+
+    (implode
+     (big-bang the-guess
+       [to-draw render-word]
+       [on-tick do-nothing 1 time-limit]
+       [on-key  checked-compare]))))
+
+; HM-Word -> Image
+; render the word, using "_" for places that are #false
+(define (render-word w)
+  (local ((define l (map (lambda (lt) (if (boolean? lt) "_" lt)) w))
+          (define s (implode l)))
+    (text s 22 "black")))
+
+(define (compare-word target-word discovered-word current-guess)
+  ...)
