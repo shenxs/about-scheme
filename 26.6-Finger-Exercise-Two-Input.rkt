@@ -118,5 +118,32 @@
     ))
 
 
-(play (list-ref DICTIONARY-AS-LIST (random DICTIONARY-SIZE)) 100)
+;; (play (list-ref DICTIONARY-AS-LIST (random DICTIONARY-SIZE)) 100)
 
+;Exercise 381
+;略
+;Exercise 382
+
+(define (value l1 l2)
+  (cond
+    [(empty? l1) 0]
+    [else (+ (* (first l1) (first l2))
+             (value (rest l1) (rest l2)))]))
+
+;Exerciser 383
+;从列表中随机取出一个item
+(define (random-pick l)
+  (local ((define chang (length l)))
+    (list-ref l (random chang))))
+
+;; (random-pick '(a s d f g h j k l))
+
+
+(define (non-same names ll)
+  (cond
+    [(empty? ll) '()]
+    [else (cons
+            (if (equal? names (first ll))
+              '()
+              (first ll))
+            (non-same names (rest ll)))]))
