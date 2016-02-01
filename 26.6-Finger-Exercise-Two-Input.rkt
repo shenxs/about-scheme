@@ -42,7 +42,7 @@
 (define DICTIONARY-LOCATION "/usr/share/dict/words")
 (define DICTIONARY-AS-LIST (read-lines DICTIONARY-LOCATION))
 (define DICTIONARY-SIZE (length DICTIONARY-AS-LIST))
-DICTIONARY-SIZE
+;; DICTIONARY-SIZE
 
 (define (explode str)
   (local ((define l (string-length str)))
@@ -63,7 +63,7 @@ DICTIONARY-SIZE
     [(empty? l) ""]
     [else (string-append (first l) (implode (rest l)))]))
 
-(define LETTERS (explode "abcdefghijklmnopqrstuvwxyz"))
+(define LETTERS (explode "abcdefghijklmnopqrstuvwxyz'"))
 
 ; A HM-Word is [List-of [Maybe Letter]]
 ; interpretation #false represents a letter to be guessed
@@ -100,5 +100,23 @@ DICTIONARY-SIZE
           (define s (implode l)))
     (text s 22 "black")))
 
-(define (compare-word target-word discovered-word current-guess)
-  ...)
+;;[list of String] [list of String/#false] String ====>[list of String/#f]
+;;第一个list中是所有的字母
+;第二个是#f 和已经猜到的字母
+;key 对应的按键
+(define (compare-word word guess key)
+  (local((define (right-key? right current k)
+           (if (and (string=? right k)
+                    (false? current))
+             #t
+             #f)))
+    ;-----IN---
+    (cond
+      [(empty? word) '()]
+      [(right-key? (first word) (first guess) key) (cons key (rest guess))]
+      [else (cons (first guess) (compare-word (rest word) (rest guess) key))])
+    ))
+
+
+(play (list-ref DICTIONARY-AS-LIST (random DICTIONARY-SIZE)) 100)
+
