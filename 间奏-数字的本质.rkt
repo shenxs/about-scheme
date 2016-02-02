@@ -33,11 +33,17 @@
 
 ;Exercise 387
 ;将两个inex相加,两个数字拥有相同的指数可以自动调整系数,并且不依赖creat-inex来报错
+;系数可以相差1,指数相同见git历史版本
 ;inex inex ==> inex
 (define (inex+ i1 i2)
   (local (
-          (define m (+ (inex-mantissa i1) (inex-mantissa i2)))
-          (define e (* (inex-sign i1) (inex-exponent i1)))
+          (define e1 (* (inex-sign  i1) (inex-exponent i1)))
+          (define e2 (* (inex-sign  i2) (inex-exponent i2)))
+          (define e (max e1 e2))
+          (define m (cond
+                      [(= e1 e2) (+ (inex-mantissa i1) (inex-mantissa i2))]
+                      [(> e1 e2) (+ (inex-mantissa i1) (floor (/ (inex-mantissa i2) 10)))]
+                      [(< e1 e2) (+ (floor (/ (inex-mantissa i1) 10)) (inex-mantissa i2))]))
           (define real_m (if (> m 99)
                            (floor (/ m 10))
                            m))
@@ -45,11 +51,11 @@
                            (+ e 1)
                            e))
           (define sign (if (< real_e 0) -1 1)))
-
+    ;;-----IN------
     (cond
       [(and (<= 0 real_m 99) (<= 0 real_e 99) (or (= sign 1) (= sign -1)))
        (make-inex real_m sign real_e)]
       [else (error 'inex "m∈ [0,99] ,s∈ {-1,1} ,e∈ [0,99]")])))
 
-(inex->number (inex+ (create-inex 56 1 0) (create-inex 56 1 0)) )
+;; (inex->number (inex+ (create-inex 56 1 1) (create-inex 56 1 0)) )
 
