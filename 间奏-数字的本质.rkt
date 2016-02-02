@@ -59,3 +59,24 @@
 
 ;; (inex->number (inex+ (create-inex 56 1 1) (create-inex 56 1 0)) )
 
+;Exercise 388
+;将两个数相乘
+
+(define (inex* i1 i2)
+  (local (
+          (define m (* (inex-mantissa i1) (inex-mantissa i2)))
+          (define e1 (* (inex-sign i1) (inex-exponent i1)))
+          (define e2 (* (inex-sign i2) (inex-exponent i2)))
+          (define e (+ e1 e2))
+          (define (tiao m e)
+            (cond
+              [(> m 99) (tiao (floor (/ m 10)) (+ 1 e) )]
+              [(not (<= -99 e 99)) (error "指数错误")]
+              [else (if (< e 0)
+                      (create-inex m -1 (* -1 e))
+                      (create-inex m 1 e))]))
+          )
+    ;----IN----
+    (tiao m e)))
+
+;; (inex->number (inex* (create-inex 5 1 90) (create-inex 4 1 1)) )
