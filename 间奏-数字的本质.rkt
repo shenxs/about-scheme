@@ -98,3 +98,42 @@
 ;; (sub 1.0)
 ;判断条件不可以用(= n 0) 因为永远不会相等
 
+
+;;;-----溢出------
+
+(define (big-n n)
+  (local ((define (calcu n)
+            (expt #i10.0 n)))
+    (cond
+      [(equal? +inf.0 (calcu n)) n]
+      [else (big-n (+ 1 n))])))
+
+;; (big-n 0)
+
+
+;;;-----下溢----
+(define (small-n n)
+  (local ((define (calcu n)
+            (expt #i10.0 n)))
+    (cond
+      [(equal? #i0.0 (calcu n)) n]
+      [else (small-n (- n 1))])))
+
+(small-n 0)
+
+
+;;;;SL-Number-------
+(expt 1.001 1e-12)
+
+;Exercise 393
+(define (my-expt n p)
+  (cond
+    [(= 0 p) 1 ]
+    [else (* n (my-expt n (sub1 p)))]))
+(define INEX (+ 1 #i1e-12))
+(define EXAC (+ 1 1e-12))
+
+(my-expt INEX 30)
+
+(my-expt EXAC 30)
+
