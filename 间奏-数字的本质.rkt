@@ -80,3 +80,21 @@
     (tiao m e)))
 
 ;; (inex->number (inex* (create-inex 5 1 90) (create-inex 4 1 1)) )
+
+
+(define (add n)
+  (cond
+    [(= n 1) #i1/185]
+    [else (+ #i1/185 (add (sub1 n)))]))
+;;#i/185与1/185不相等所以
+;; (add 185)
+
+(define (sub n)
+  (local ((define (count n i)
+            (cond
+              [(< (- n 0) 0.0001) i]
+              [else (count (- n 1/185) (+ 1 i))])))
+    (count n 0)))
+;; (sub 1.0)
+;判断条件不可以用(= n 0) 因为永远不会相等
+
