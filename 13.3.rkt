@@ -63,7 +63,7 @@
 ;产生一个不在蛇内的新的点
 ;list of posn ->Posn
 (define (RandomTar a) (make-posn (* (* 2 MinMove) (+ 1 (random 19)))
-                             (* (* 2 MinMove) (+ 1 (random 19)))))
+                                 (* (* 2 MinMove) (+ 1 (random 19)))))
 ;产生合理的目标,不能是在snake上
 (define (acceptTar body)
   (...))
@@ -154,9 +154,9 @@
 ;;主函数
 (define (main G)
   (big-bang G
-    [to-draw drawer]
-    [on-key key-hander]
-    [on-tick time-hander 0.2 ]
-    [stop-when judger game-over-hander]
-    ))
+            [to-draw drawer]
+            [on-key key-hander]
+            [on-tick time-hander 0.1 ]
+            [stop-when judger game-over-hander]
+            ))
 (main (make-game (make-snake "no" (list StartPosnOfSnake )) false))
