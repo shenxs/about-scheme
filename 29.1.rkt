@@ -1,10 +1,12 @@
 #lang racket
 
-(require 
+(require
          lang/htdp-advanced)
 
 (define (bundle s n)
   (cond
+    [(not (and (cons? s) (number? n))) (error "参数不符合要求")]
+    [(= 0 n) (error "n不可以为0")]
     [(empty? s) '()]
     [else (cons (implode (take s n)) (bundle (drop s n) n))]))
 
