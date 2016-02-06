@@ -24,3 +24,24 @@
              [else (clever-gdc small (remainder large small))])))
     (clever-gdc (max m n) (min m n))))
 ;; (gdc 101135853 45014640)
+
+(define (gdc.v3 m n)
+  (local (
+          (define (member? n l)
+            (cond
+              [(empty? l) #f]
+              [(= n (first l)) #t]
+              [else (member? n (rest l))]))
+          (define (divisors n biggest)
+            (cond
+              [(= 1 biggest) (cons 1 '())]
+              [(= 0 (remainder n biggest)) (cons biggest (divisors n (sub1 biggest)))]
+              [else (divisors n (sub1 biggest))]))
+          (define (largest-commom l1 l2)
+            (cond
+              [(member? (first l1) l2) (first l1)]
+              [else (largest-commom (rest l1) l2)]))
+          (define (gdc small large)
+            (largest-commom (divisors small small) (divisors large small))))
+    (gdc (min m n) (max m n ))))
+(gdc.v3 101135853  45014640)
