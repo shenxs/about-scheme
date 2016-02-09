@@ -26,4 +26,36 @@
 (define (ploy x)
   (* (- x 5) ( - x -1)))
 
-(find-root ploy -1 14)
+;; (find-root ploy -1 14)
+
+;Exercise 428
+
+;The function consumes a number n and a list of n2 numbers.
+;It produces a list of n lists of n numbers
+
+(define (creat-matrix n l)
+  (local(
+         ;;从list l里面拿出n个元素
+         (define (take-from l n)
+           (cond
+             [(= 0 n) '()]
+             [else (cons (first l) (take-from (rest l) (sub1 n)))]))
+         (define (drop-from l n)
+           (cond
+             [(= 0 n) l]
+             [else (drop-from (rest l) (sub1 n))])))
+    (cond
+      [(>= (length l) n) (cons (take-from l n) (creat-matrix n (drop-from l n)))]
+      [else '()])))
+
+(creat-matrix 3 '(1 2 3 4 5 6 7 8 9))
+
+
+
+
+
+
+
+
+
+
