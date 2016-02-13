@@ -78,3 +78,35 @@
               [(cons? maybe) maybe]
               [else (find-my-path/list (rest lon) e g)]))]))
 (find-my-path 'A 'G graph)
+
+;Exercise 446
+;对于给定的图,找到任意两点之间的路径,如果成功返回#true else #false
+(define (test-on-all-nodes graph)
+  (local(
+         ;;[a list of list] ===> [a list of item(the first item of the list in the list )]
+         ;'((1212 12 12 1) (12 22) (1) (a s)) ====>'(1212 12 1 a)
+         (define (get-every-first graph)
+           (cond
+             [(empty? graph) '()]
+             [else (cons (first (first graph)) (get-every-first (rest graph)))]))
+         ;;图中所有的节点
+         (define lon (get-every-first graph))
+         ;;[a node] [a list of node] [graph] ==>#t or #f
+         ;测试item 是否和l中的所有的node都相通
+         (define (test-one item l g)
+           (cond
+             [(empty? l) #t]
+             [else (local
+                     ((define result (cons? (find-path item (first l) g))))
+                     (and result (test-one item (rest l) g)))]))
+         ;;[list of node] [graph]===>#t or #f
+         (define (test-all l g)
+           (cond
+             [(empty? l) #t]
+             [else
+               (and (test-one (first l) (rest l) g)
+                    (test-all (rest l) g))]))
+         )
+    (test-all lon graph)))
+
+(test-on-all-nodes graph)
