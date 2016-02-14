@@ -193,4 +193,29 @@
          )
     (fsm-match fsm a-list-of-1Strs (fsm-initial fsm) )))
 
-(fsm-match? fsm-a-bc*-d "d")
+;; (fsm-match? fsm-a-bc*-d "d")
+
+
+; [List-of X] -> [List-of [List-of X]]
+; creates a list of all rearrangements of the items in w
+(define (arrangements w)
+  (cond
+    [(empty? w) '(())]
+    [else
+      (foldr (lambda (item others)
+               (local ((define without-item
+                         (arrangements (remove item w)))
+                       (define add-item-to-front
+                         (map (lambda (a) (cons item a)) without-item)))
+                 (append add-item-to-front others)))
+        '()
+        w)]))
+
+; test
+(define (all-words-from-rat? w)
+  (and (member (explode "rat") w)
+       (member (explode "art") w)
+       (member (explode "tar") w)))
+
+(arrangements '("a" "b" "c" "d"))
+(foldr string-append "" '("a" "b" "c"))
