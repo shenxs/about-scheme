@@ -3,6 +3,21 @@
 ;smaple problem
 ;给定一张图,两个节点,给出链接两个点的路径
 
+;[string]==>[list of 1Strings]
+;将字符串转换为一个字符表
+;什么时候写在一个文件里省的老是自己写
+(define (explode str)
+  (local((define l (string-length str))
+         (define (take-first-letter str)
+           (substring str 0 1 ))
+         (define (drop-first-letter str)
+           (substring str 1 l ))
+         )
+    (cond
+      [(zero? l) '()]
+      [else (cons (take-first-letter str)
+                  (explode (drop-first-letter str)))])))
+
 (define sample-graph
   '((A B E)
     (B E F)
@@ -79,7 +94,7 @@
                     (if (cons? item) item #f)))
             (ormap d? maybe-list))]))
 
-(find-my-path 'A 'G graph)
+;; (find-my-path 'A 'G graph)
 
 ;Exercise 446
 ;对于给定的图,找到任意两点之间的路径,如果成功返回#true else #false
@@ -119,3 +134,63 @@
     (B (C))
     (C (A))))
 
+
+
+(define-struct transition [current key next])
+(define-struct fsm [initial transitions final])
+
+; A FSM is (make-fsm FSM-State [List-of 1Transition] FSM-State)
+; A 1Transition is
+;   (make-transition FSM-State 1String FSM-State)
+; A FSM-State is String
+
+; data example: see exercise 111
+(define fsm-a-bc*-d
+  (make-fsm
+   "AA"
+   (list (make-transition "AA" "a" "BC")
+         (make-transition "BC" "b" "BC")
+         (make-transition "BC" "c" "BC")
+         (make-transition "BC" "d" "DD"))
+   "DD"))
+
+;Exercise 450
+; [有限状态机][某个序列]====>#t/f
+; 如果可以从某一状态到达最终状态则#t,反之#f
+(define (fsm-match? fsm str)
+  (local(
+         ;;将str转换为a list of 1Strings
+         (define a-list-of-1Strs
+           (explode str))
+         ;;[fsm][string]==>#t/f
+         ;string于fsm的最终状态是否一致
+         (define (meet-end? fsm str)
+           (string=? (fsm-final fsm) str))
+
+         ;;[fsm][String][String]==>#t/f
+         (define (find-next fsm current key)
+           (local((define transitions (fsm-transitions fsm))
+                  ;;[transition][String][String]===>#t/f
+                  (define (right-key? t current key)
+                    (and (string=? current (transition-current t))
+                         (string=? key     (transition-key     t))))
+                  ;;[list of transition] [String][String]===>[String]
+                  ;给出下一个状态
+                  (define (find-next ts current key)
+                    (cond
+                      [(empty? ts) current]
+                      [(right-key? (first ts) current key) (transition-next (first ts))]
+                      [else (find-next (rest ts) current key)])))
+             (find-next transitions current key)))
+         ;;[fsm][list of 1strings][string]==>#t/f
+         (define (fsm-match fsm lo1s current)
+           (cond
+             [(meet-end? fsm current) #t]
+             [(empty? lo1s) #f]
+             [else (fsm-match fsm
+                              (rest lo1s)
+                              (find-next fsm current (first lo1s)) )]))
+         )
+    (fsm-match fsm a-list-of-1Strs (fsm-initial fsm) )))
+
+(fsm-match? fsm-a-bc*-d "d")
