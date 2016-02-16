@@ -1,4 +1,7 @@
-#lang racket
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname |33|) (read-case-sensitive #t) (teachpacks ((lib "image.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "image.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp")) #f)))
+
 ;回溯算法
 ;smaple problem
 ;给定一张图,两个节点,给出链接两个点的路径
@@ -6,17 +9,7 @@
 ;[string]==>[list of 1Strings]
 ;将字符串转换为一个字符表
 ;什么时候写在一个文件里省的老是自己写
-(define (explode str)
-  (local((define l (string-length str))
-         (define (take-first-letter str)
-           (substring str 0 1 ))
-         (define (drop-first-letter str)
-           (substring str 1 l ))
-         )
-    (cond
-      [(zero? l) '()]
-      [else (cons (take-first-letter str)
-                  (explode (drop-first-letter str)))])))
+
 
 (define sample-graph
   '((A B E)
@@ -221,7 +214,7 @@
 ;; (foldr string-append "" '("a" "b" "c"))
 
 
-(define-struct posn [x y])
+
 
 ;Exercise 453
 ;判断两个皇后是否可以相互攻击
@@ -281,8 +274,8 @@
       #f)))
 ; N -> Board
 ; creates the initial n by n board
-(define (board0 n)
-  ..)
+;; (define (board0 n)
+  ;; ..)
 
 ; Board QP -> Board
 ; places a queen at qp on a-board
@@ -293,3 +286,37 @@
 ; finds spots where it is still safe to place a queen
 (define (find-open-spots a-board)
   '())
+
+;;[Number]==>#f 或[list of [list of posns]]
+(define (queen-question n)
+  (local (
+          (define (in-board? p)
+            (and (<= 0 (posn-x p) (- n 1))
+                 (<= 0 (posn-y p) (- n 1))))
+          ;;p是否和已有的list中的点冲突?
+          (define (ok? l p)
+            (cond
+              [(empty? l) #t]
+              [(threatening? p (first l)) #false]
+              [else (ok? (rest l) p)]))
+          ;;给出正下方的坐标
+          (define (under p)
+            (make-posn (posn-x p) (+ 1 (posn-y p))))
+          ;将p移动到下一列的第一个位置
+          (define (next p)
+            (make-posn (+ 1 (posn-x p)) 0))
+          ;try 代表当前已有的位置,p[posn],
+          (define (try already p)
+            (cond
+              ;是否还在棋盘内
+              [(not (in-board? p)) #f]
+              [(and (ok? already p) (= (sub1 n) (length already))) (cons p already)]
+              [(ok? already p) (let ([maybe (try (cons p already) (next p))])
+                                 (if (cons? maybe)
+                                   maybe
+                                   (try already (under p))))]
+              [else (try already (under p))]
+              )))
+    (try '() (make-posn 0 0) )))
+
+(queen-question 4)
