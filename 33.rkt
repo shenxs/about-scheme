@@ -219,3 +219,44 @@
 
 (arrangements '("a" "b" "c" "d"))
 (foldr string-append "" '("a" "b" "c"))
+
+
+(define-struct posn [x y])
+
+;Exercise 453
+;判断两个皇后是否可以相互攻击
+;[Posn][Posn]==>#t/f
+(define (threatening? QP1 QP2)
+  (local ((define x1 (posn-x QP1))
+          (define x2 (posn-x QP2))
+          (define y1 (posn-y QP1))
+          (define y2 (posn-y QP2)))
+    (cond
+      [(or (= x1 x2) (= y1 y2)) #t];在同一行/列
+      [(= 1 (/ (abs (- x1 x2)) (abs (- y1 y2)))) #t];在同一斜向上
+      [else #f]);其他
+    ))
+
+;Exercise 454
+;[Number of board][a list of QPs][a image of a queen]==>[a image]
+;由给定的参数将queen绘制到棋盘上
+(define (render-queens n l i)
+  "还未完成")
+
+;Exercise 455
+;对于n和一个疑似解判断是否符合要求
+(define (n-queens-solution? n loQP)
+  (local((define l (length loQP))
+         (define (good-posn? p l)
+           (cond
+             [(empty? l) #t]
+             [(threatening? p (first l)) #f]
+             [else (good-posn? p (rest l))]))
+         (define (good-list? l)
+           (cond
+             [(empty? l) #t]
+             [else (and (good-posn? (first l) (rest l))
+                        (good-list? (rest l)))])))
+    (if (= l n)
+      (good-list? loQP)
+      #f)))
