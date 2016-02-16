@@ -217,8 +217,8 @@
        (member (explode "art") w)
        (member (explode "tar") w)))
 
-(arrangements '("a" "b" "c" "d"))
-(foldr string-append "" '("a" "b" "c"))
+;; (arrangements '("a" "b" "c" "d"))
+;; (foldr string-append "" '("a" "b" "c"))
 
 
 (define-struct posn [x y])
@@ -260,3 +260,36 @@
     (if (= l n)
       (good-list? loQP)
       #f)))
+
+;判断两个集合是否相等
+;racket似乎提供了这个函数
+;; (set=? '(1 2 3 4) '(4 3 2 1))
+(define (my-set=? l1 l2)
+  (local (
+          (define (member? item l)
+            (cond
+              [(empty? l) #f]
+              [(eq? item (first l)) #t]
+              [else (member? item (rest l))]))
+          (define (find-all-in l1 l2)
+            (cond
+              [(empty? l1) #t]
+              [(member? (first l1) l2) (find-all-in (rest l1) l2)]
+              [else #f])))
+    (if (= (length l1) (length l2))
+      (find-all-in l1 l2)
+      #f)))
+; N -> Board
+; creates the initial n by n board
+(define (board0 n)
+  ..)
+
+; Board QP -> Board
+; places a queen at qp on a-board
+(define (add-queen a-board qp)
+  a-board)
+
+; Board -> [List-of QP]
+; finds spots where it is still safe to place a queen
+(define (find-open-spots a-board)
+  '())
