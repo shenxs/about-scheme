@@ -57,13 +57,99 @@
     [(empty? l) already]
     [else (my-reverse (rest l) (cons (first l) already))]))
 
-(time (my-reverse (range 100000) '()) #t )
-(time (reverse    (range 100000)) #t )
+;; (time (my-reverse (range 100000) '()) #t )
+;; (time (reverse    (range 100000)) #t )
 
 (define (relative->absolute.v2 l)
  (reverse
    (foldr (lambda (f l) (cons (+ f (first l)) l))
           (list (first l))
           (reverse (rest l)))))
-(time (relative->absolute.v2 (build-list 20000 add1)) #t)
+;; (time (relative->absolute.v2 (build-list 20000 add1)) #t)
+
+;;[list of numbers]===>number\
+;不加入辅助参数(accumulater直接翻译过来是迭代器,有点难翻译,就叫辅助参数巴)
+(define (sum l)
+  (cond
+    [(empty? l) 0]
+    [else (+ (first l) (sum (rest l)))]))
+;加入辅助参数
+(define (sum.v2 l)
+  (local (
+          (define (sum already l)
+            (cond
+              [(empty? l) already]
+              [else (sum (+ already (first l)) (rest l))])))
+    (sum 0 l)))
+;; (time (sum (range 10000)))
+;; (time (sum.v2 (range 10000)))
+;; 几乎没有什么差别
+;; 注意虽然在效率上这两者没有什么区别,但是计算的顺序是不一样的
+;; 对于之前讨论过的inexct number计算的顺序和结果是有关系的
+;; 对于exact number 当然没什么区别
+
+
+;;下面是计算阶乘的函数
+(define (! n)
+  (cond
+    [(zero? n) 1]
+    [else (* n (! (sub1 n)))]))
+
+;;迭代版
+
+(define (!.v2 n)
+  (local(
+         (define (! already n)
+           (cond
+             [(zero? n) already]
+             [else (! (* already n) (sub1 n))])))
+    (! 1 n)))
+
+
+(time (! 20) #t)
+(time (!.v2 20) #t)
+
+;; 时间上似乎有差别,但是在常数级,迭代的版本并不比普通的递归要优化多少,反而会慢
+;; 我以为普通的递归会占用比较多的内存,事实上并没有,racket对于递归并不是一直展开下去的吗?
+
+
+;;计算树的高度
+;;a-tree is one of
+;-- '()
+;-- (make-node tree tree)
+
+(define-struct node [left right])
+
+(define (height abt)
+  (cond
+    [(empty? abt) 0]
+    [else (+ 1 (max (height (node-left abt)) (height (node-right abt))))]))
+
+(define (height.v2 abt0)
+  (local (; Tree N -> N
+          ; measure the height of abt
+          ; accumulator a is the number of steps
+          ; it takes to reach abt from abt0
+          (define (height/a abt a)
+            (cond
+              [(empty? abt) a]
+              [else
+                (max (height/a (node-left abt)  (+ a 1))
+                     (height/a (node-right abt) (+ a 1)))])))
+    (height/a abt0 0)))
+
+(define (height.v3 abt0)
+  (local (; Tree N N -> N
+          ; measure the height of abt
+          ; accumulator s is the number of steps
+          ; it takes to reach abt from abt0
+          ; accumulator m is the maximal height of
+          ; the part of abt0 that is to the left of abt
+          (define (h/a abt s m)
+            (cond
+              [(empty? abt) ...]
+              [else
+                (... (h/a (node-left abt) ... s ... ... m ...) ...
+                 ... (h/a (node-right abt) ... s ... ... m ...) ...)])))
+    (h/a abt0 ...)))
 
