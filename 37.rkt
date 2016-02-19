@@ -28,7 +28,6 @@
 ;; (time (product.v2 big-list) #t)
 ;;迭代的比较慢,当数据量比较大的时候,比较小的时候没有什么区别
 
-
 ;Exercise 476
 (define (how-many.v1 l)
   (cond
@@ -63,8 +62,8 @@
 
 
 
-(make-palindrome '("a" "b" "c"))
-(time (append big-list big-list) #t)
+;; (make-palindrome '("a" "b" "c"))
+;; (time (append big-list big-list) #t)
 
 (define (make-palindrome.v2 l)
   (local (
@@ -90,5 +89,122 @@
 
 
 ;; (time (make-palindrome big-list) #t)
-(time (make-palindrome.v2 big-list) #t)
-(time (make-palindrome.v3 big-list) #t)
+;; (time (make-palindrome.v2 big-list) #t)
+;; (time (make-palindrome.v3 big-list) #t)
+
+;Exercise 479
+
+; Matrix -> Matrix
+; find the first row that doesn't start with 0 and use it as the first one
+; generative move the first row to last place
+; termination this function does not terminate if all rows in M start with 0
+
+(define (rotate M)
+  (cond
+    [(foldr (λ (a b) (and a b)) #t (map (λ (item) (if (= 0 (first item)) #t #f)) M)) (error "所有的list都以0开头")];;好乱估计自己都会看不懂
+    [(not (= (first (first M)) 0)) M]
+    [else (rotate (append (rest M) (list (first M))))]))
+
+;; (rotate (list
+          ;; (list 0 2 3 4 )
+          ;; (list 0 2 3 4 )
+          ;; (list 0 3 4 5)))
+
+(define (rotate.v2 M0)
+  (local (
+          (define (rotate/a M seen)
+            (cond
+              [(empty? M) seen]
+              [(not (= (first (first M))0)) (append M seen)]
+              [else (rotate/a (rest M) (cons (first M) seen))])))
+    (cond
+      [(foldr (λ (a b) (and a b)) #t (map (λ (item) (if (= 0 (first item)) #t #f)) M0)) (error "所有的list都以0开头")]
+      [else (rotate/a M0 '())])))
+
+
+;; (rotate.v2 (list
+          ;; (list 0 2 3 4 )
+          ;; (list 1 2 3 4 )
+          ;; (list 0 3 4 5)))
+
+
+
+;Exercise 480
+;[list of numbers]==>number
+;ex. '(1 0 2)==>102
+(define (to10 l)
+  (local ((define l2h (reverse l))
+          (define (to10 l i)
+            (cond
+              [(empty? l) 0]
+              [else (+ (* i (first l)) (to10 (rest l) (* 10 i)))])))
+    (to10 l2h 1)))
+
+;; (time (to10 '(1 0  0 0 0 0 2 0 0 0)) )
+
+;Exercise 480
+;判断一个数字是否为质数
+(define (is-prime n)
+  (local (
+          (define (is-prime/a n a)
+            (cond
+              [(< (sqrt n) a) #t]
+              [(= 0 (remainder n  a)) #f]
+              [else (is-prime/a n (add1 a))])
+          ))
+    (cond
+      [(= 1 n) #f]
+      [else (is-prime/a n 2)])))
+
+;Exercise 482
+;
+(define (my-map f l)
+  (local(
+         (define (my-map/a a f l)
+           (cond
+             [(empty? l) a]
+             [else (my-map/a (append a (list (f (first l)))) f (rest l))])))
+    (my-map/a '() f l)))
+;; (my-map add1 '(1 2 3 4 ))
+
+
+(define (my-foldl f e l0)
+  (local (
+          ;Exercise 483 task 1
+          ;a表示已经完成的部分的结果
+          ;l是尚未完成的list
+          (define (fold/a a l)
+            (cond
+              [(empty? l) a]
+              [else (fold/a (f (first l) a) (rest l))])))
+    (fold/a e l0)))
+
+(define (my-foldr f e l0)
+  (cond
+    [(empty? l0) e]
+    [else (f (first l0) (my-foldr f e (rest l0)))]))
+
+;;分别用递归和迭代实现的foldr与foldl,有点意思
+;;递归和迭代也许可以相互转化? 可以吗?
+;foldr 递归
+;foldl 迭代
+;(foldr f e l) == (foldl f e (reserve l)
+
+
+;Task2
+
+
+(build-list 10 (λ (x) x))
+
+;;[Number] [Number=>Number]===>[list of numbers]
+
+(define (my-build-list n f)
+  (local (
+          ;a已经完成的list,x 当前是数字
+          (define (build/a x f a)
+            (cond
+              [(= x -1) a]
+              [else (build/a (sub1 x) f (cons (f x) a))])))
+    (build/a (sub1 n) f '())))
+
+(my-build-list 10 (λ (x) x))
