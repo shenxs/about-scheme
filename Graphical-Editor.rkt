@@ -44,6 +44,11 @@
 (define (create-editor pre post)
   (make-editor (rev (Str->Los1S pre)) (Str->Los1S post)))
 
+
+;;l list of 1strings 代表editor中的字符
+;x [number]代表第几个字母
+(define (split-structural l x))
+
 ;Editor -> image
 ;把 editor 变成中间有光标的图像
 (define (editor-render e)
