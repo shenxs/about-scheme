@@ -1,0 +1,29 @@
+
+Exercise 485. Design the function split.
+ Use the accumulator design recipe to im
+prove on the result of exercise 484. Aft
+er all, the hints already point out that
+ when the function discovers the correct
+ split point, it needs both parts of the
+ list and one part is obviously lost due
+ to recursion. image
+
+Once you have solv
+ed this exercise, equip the main functio
+n of A Graphical Editor, Revisited with 
+a clause for mouse clicks. As you experi
+ment with moving the cursor via mouse cl
+icks, you will notice that it does not e
+xactly behave like applications that you
+ use on your other devices—even though s
+plit passes all its tests.
+
+Graphical pr
+ograms, like editors, call for experimen
+tation to come up with best “look and fe
+el” experiences. In this case, your edit
+or is too simplistic with its placement 
+of the cursor. After the applications on
+ your computer determine the split point
+, they also determine which letter divis
+ion is closer to the x-coordinate and place the cursor there.

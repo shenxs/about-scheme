@@ -1,5 +1,11 @@
 #lang racket
+(require 2htdp/batch-io
+          lang/htdp-advanced )
 
+(define (imploade l)
+  (cond
+    [(empty? l) ""]
+    [else (string-append (first l) (imploade (rest l)))]))
 
 ;Exercise 478
 
@@ -208,3 +214,21 @@
     (build/a (sub1 n) f '())))
 
 (my-build-list 10 (λ (x) x))
+
+
+;Exercise 486
+;文件名,最大字符数
+;输出out.txt
+(define (fmt file w)
+  (local(
+         (define (fmt l n a)
+           (local((define len (length l)))
+             (cond
+               [(< len n) (string-append a (imploade l))]
+               [else (fmt (drop l n) n (string-append a "\n" (imploade (take l n))))])))
+         (define in-f (read-file "in.txt"))
+         (define out-f
+           (fmt (explode in-f) w ""))
+         )
+    (write-file "out.txt" out-f)))
+(fmt "in.txt" 40)
