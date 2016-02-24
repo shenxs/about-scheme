@@ -1,6 +1,6 @@
 ;; The first three lines of this file were inserted by DrRacket. They record metadata
 ;; about the language level of this file in a form that our tools can easily process.
-#reader(lib "htdp-beginner-reader.ss" "lang")((modname Graphical-Editor) (read-case-sensitive #t) (teachpacks ((lib "image.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "image.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp")) #f)))
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname Graphical-Editor) (read-case-sensitive #t) (teachpacks ((lib "image.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "image.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp")) #f)))
 (define-struct editor [pre post])
 ;An editor is (make-editor Los1S Los1S)
 ;An Los1S is one of ;
@@ -25,7 +25,7 @@
 ;(rev string1)
 
 ;constans
-(define HEIGHT 20)
+(define HEIGHT 40)
 (define WIDTH 200)
 (define FONT-SIZE 16)
 (define FONT-COLOR "black")
@@ -45,20 +45,45 @@
   (make-editor (rev (Str->Los1S pre)) (Str->Los1S post)))
 
 
+(define (take l n)
+  (cond
+    [(= 0 n) '()]
+    [else (cons (first l) (take (rest l) (sub1 n)))]))
+
+(define (drop l n)
+  (cond
+    [(= 0 n) l]
+    [else (drop (rest l) (sub1 n))]))
 ;;l list of 1strings 代表editor中的字符
 ;x [number]代表第几个字母
-(define (split-structural l x))
-
+(define (split-structural l x)
+  (local(
+         (define n
+           (cond
+             [(<= 0 x (* 10 (length l))) (floor (/ x FONT-SIZE)) ]
+             [(< x  0) 0]
+             [else (length l)]))
+         (define pre (take l n))
+         (define post (drop l n))
+         )
+    (make-editor (rev pre) post)))
+(define (mouse-render world x y event)
+  (cond
+    [(string=? event "button-down")
+     (split-structural (append (rev (editor-pre world)) (editor-post world))  x)]
+    [else world]))
 ;Editor -> image
 ;把 editor 变成中间有光标的图像
 (define (editor-render e)
-  (overlay/align
-    "left" "middle"
-    ( beside
+  ( beside
         (text (implode (rev (editor-pre e))) FONT-SIZE FONT-COLOR)
         CURSOR
         (text (implode (editor-post e)) FONT-SIZE FONT-COLOR))
-    MT))
+  )
+;(overlay/align
+;    "left" "middle"
+;    
+;    MT)
 ;
 ;string-> T/F
 ;判断一个字符串是否长度为1
@@ -92,5 +117,8 @@
 (define (main s)
   (big-bang (create-editor s "")
             [to-draw editor-render]
-            [on-key key-render]))
+            [on-key key-render]
+            ;; [display-mode 'fullscreen]
+            [on-mouse mouse-render]
+            ))
 (main "all good")
