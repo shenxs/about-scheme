@@ -44,4 +44,4 @@
           (define (gdc small large)
             (largest-commom (divisors small small) (divisors large small))))
     (gdc (min m n) (max m n ))))
-(gdc.v3 101135853  45014640)
+(gdc 101135853  45014640)
