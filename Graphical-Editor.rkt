@@ -8,7 +8,7 @@
 ;- (cons 1string Los1S)
 
 ;测试数据
-(define string1 (cons "c" (cons "b" (cons "a" '()))) )
+( define string1 (cons "c" (cons "b" (cons "a" '()))) ) 
 ;add a at the end of list l
 ;'("b" '()) "a"  -> '("b" "a" '())
 (define (add-at-end l a)

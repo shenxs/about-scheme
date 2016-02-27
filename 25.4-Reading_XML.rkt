@@ -52,7 +52,7 @@
 ; effect signals an error in case of network problems
 ;; (define (read-xexpr/web u) ...)
 
-;; (read-xexpr/web "http://www.v2ex.com")
+(read-xexpr/web "http://www.v2ex.com")
 ;; (read-xexpr/web "http://www.baidu.com")
 ;; (read-xexpr/web "http://www.sina.com")
 ;; (read-xexpr/web "http://www.baidu.com/s?tn=baiduhome_pg&rsv_idx=2&wd=%E5%BC%A0%E6%AA%AC&cq=5f3e28ff2ec563ffc5de5e21ba735780&rsv_dl=0_right_recom_21106&srcid=20986&rt=%E7%9B%B8%E5%85%B3%E4%BA%BA%E7%89%A9&euri=a9fc06f336b34389915b9cad452764e9")
@@ -171,4 +171,4 @@
       [name company])))
 
 
-(stock-alert "ford")
+;; (stock-alert "ford")
