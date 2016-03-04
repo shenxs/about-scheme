@@ -99,6 +99,7 @@
   (+ n 2))
 
 ;;[list of status]===>[list of status]
+;在处理时要考虑l,r不同的情况,加入是否要被食人族吃掉的判断,也不可以出现负数,加入迭代器之后不能和以前的游戏状态重复`
 (define (create-next-states* los)
   (local ((define (creat-next-state s)
             (list (c-s s sub1 sub1 add1 add1)
