@@ -61,13 +61,52 @@
 
 ;[state]===>#t/f
 ;;对于一个status给出是否是我们要的最终结果
+;;
+;用如下数据代表游戏状态
+;3黑3白 船在左边 0黑0白
+;黑色代表食人族 白色代表传教士
+;任何一方食人族不能大于传教士的人数
+;可以只有一只食人族
+;初始状态
+;; '((3 3) l (0 0))
+;最终状态
+;; '((0 0) r (3 3))
 (define (final? state)
-  #f)
+  (if (and
+        ((first (first state)) . = . 0)
+        ((second (first state)) . = . 0)
+        (symbol=? 'r (second state))
+        ((first (third state)) . = . 3)
+        ((second (third state)) . = . 3))
+    #t #f))
 
+;;用于改变s state
+;f1 f2 f3 f4 都是对于数字的处理
+;基本就是add1 sub1 f(定义在下面)之类 通过组合不同dev处理方法得到新的游戏状态
+(define (c-s s f1 f2 f3 f4)
+  (list (list (f1 (first (first s)))
+              (f2 (second (first s))))
+        (if (symbol=? 'l (second s))
+          'r 'l)
+        (list (f3 (first (third s)))
+              (f4 (second (third s))))))
+(define f
+  (lambda (x) x))
+
+(define (sub2 n)
+  (- n 2))
+(define (add2 n)
+  (+ n 2))
 
 ;;[list of status]===>[list of status]
-(define (create-next-states los)
-  los)
+(define (create-next-states* los)
+  (local ((define (creat-next-state s)
+            (list (c-s s sub1 sub1 add1 add1)
+                  (c-s s sub1 f add1 f)
+                  (c-s s f sub1 f add1)
+                  (c-s s sub2 f add2 f)
+                  (c-s s f sub2 f add2))))
+    (foldr append '() (map creat-next-state los))) )
 
 (define (solve state0)
   (local (; [List-of PuzzleState] -> PuzzleState
@@ -75,8 +114,8 @@
           (define (solve* los)
             (cond
               [(ormap final? los) (first (filter final? los))]
-              [else (solve* (create-next-states los))])))
+              [else (solve* (create-next-states* los))])))
     (solve* (list state0))))
 
-
+(solve '((3 3) l (0 0)))
 
