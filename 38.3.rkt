@@ -54,7 +54,7 @@
              (define scene3 (add-sierpinski scene2 b mid-b-c mid-a-b))
              )
        (add-sierpinski scene3 c mid-c-a mid-b-c))]))
-      
+
 
 (define run
   (local ((define s0 (empty-scene 1000 (* 500 (sqrt 3))))
@@ -63,5 +63,56 @@
           (define c (posn 1000 (* 500 (sqrt 3)))))
     (add-sierpinski s0 a  b c)))
 
+;接下来是画出一棵草原树
 
+(define smallest-l 15)
+(define left-degree-speed 0.15)
+(define right-degree-speed 0.2)
 
+(define (add+line image x y l degree)
+  (local (
+          (define aim (make-polar l degree))
+          (define x2 (+ x (real-part aim)))
+          (define y2 (- y (imag-part aim)))
+          )
+    (scene+line image x y x2 y2 "red")))
+
+(define (add-cha image x y l degree)
+  (local (
+          (define s0 (add+line image x y l degree))
+          (define aim (make-polar l degree))
+          (define x1 (+ x (* 1/3 (real-part aim))))
+          (define y1 (- y (* 1/3 (imag-part aim))))
+          (define x2 (+ x (* 2/3 (real-part aim))))
+          (define y2 (- y (* 2/3 (imag-part aim))))
+          (define s1 (add+line s0 x1 y1 l (+ degree left-degree-speed)))
+          )
+    (add+line s1 x2 y2 l (- degree right-degree-speed))))
+
+(define (next-point x y l degree)
+  (local (
+          (define aim (make-polar l degree))
+          (define new-x (+ x (real-part aim)))
+          (define new-y (- y (imag-part aim)))
+          )
+    (posn new-x new-y)))
+
+(define (next-l l)
+  (- l 5))
+
+;;image ,x ,y ,l(线段长度) ,角度
+(define (add-savannah image x y l degree)
+  (cond
+    [(< l  smallest-l) (add+line image x y smallest-l degree)]
+    [else (local
+            (
+             (define s0 (add+line image x y l degree))
+             (define 1/3p (next-point x y (* l 1/3) degree))
+             (define 2/3p (next-point x y (* l 2/3) degree))
+             ;(define l-p (next-point (posn-x 1/3p) (posn-y 1/3p) l (+ left-degree-speed  degree)))
+             ;(define r-p (next-point (posn-x 2/3p) (posn-y 2/3p) l (- degree right-degree-speed)))
+             (define s1 (add-savannah s0 (posn-x 1/3p) (posn-y 1/3p) (next-l l) (+ left-degree-speed degree)))
+             )
+             (add-savannah s1 (posn-x 2/3p) (posn-y 2/3p) (next-l l) (- degree right-degree-speed)))]
+    ))
+(add-savannah (empty-scene 400 400) 200 400 50 (/ 3.1415926 2))
