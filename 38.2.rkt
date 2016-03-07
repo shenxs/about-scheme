@@ -158,8 +158,8 @@
             (cond
               [(empty? los) (error "出错")]
               [(ormap final? los) (first (filter final? los))]
-              
-              [else 
+
+              [else
                      (solve* (create-next-states* los))])))
     (solve* (list state0))))
 
@@ -192,4 +192,4 @@
 
 (define pictures (map render-mc ahh))
 
-(run-movie 7 pictures)
+(run-movie 2 pictures)
