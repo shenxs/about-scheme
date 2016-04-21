@@ -319,4 +319,4 @@
               )))
     (try '() (make-posn 0 0) )))
 
-(queen-question 4)
+(queen-question 8)

@@ -2,6 +2,8 @@
 (require 2htdp/batch-io
           lang/htdp-advanced )
 
+;; queen
+
 (define (imploade l)
   (cond
     [(empty? l) ""]

@@ -115,4 +115,4 @@
              )
              (add-savannah s1 (posn-x 2/3p) (posn-y 2/3p) (next-l l) (- degree right-degree-speed)))]
     ))
-(add-savannah (empty-scene 400 400) 200 400 50 (/ 3.1415926 2))
+(add-savannah (empty-scene 200 200) 100 200 50 (/ 3.1415926 2))
