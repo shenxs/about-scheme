@@ -56,9 +56,6 @@
 
 
 
-
-
-
 ;;其实syntax 在racket里面也是一种数据结构
 ;就好像你可以定义一个posn数据类型(struct posn [x y])
 ;syntax 也是这样
