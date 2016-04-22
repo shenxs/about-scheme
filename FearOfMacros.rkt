@@ -67,8 +67,32 @@
   (print stx)
   #'(void))
 
-(show-me 'pac )
+;; (show-me 'pac )
 
 ;解释一下这个函数,他会输出stx的内容,因为define-syntax 必须返回一个syntax对象 所以在这里我就用了#'(void) ,理解返回为空
 
+(define stx #'(if x (list  (list "helllo") "true") #f))
 
+;; stx
+
+;;语句的文件路径
+;; (syntax-source stx)
+
+;;语句的行数
+;; (syntax-line stx)
+
+;;语句的列数
+;; (syntax-column stx)
+
+;;取出与语句的主体,这基本就是语法的重点,大多是对齐进行处理
+;; (syntax->datum stx)
+
+;;将语句的每一个初级元素取出,对于嵌套的语句并不展开 就像 (list "hello")这样的语句并没有展开
+;; (syntax-e stx)
+
+;;syntax-list 和 syntax-e 有所不同
+;对于的单个的不是list形式的语句
+;; 比如
+;;(define stx #'a)
+;;(syntax-e stx)将会返回 'a
+;;而 (syntax-list stx)会返回false ,因为这不是一个list
