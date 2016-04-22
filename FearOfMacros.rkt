@@ -96,3 +96,17 @@
 ;;(define stx #'a)
 ;;(syntax-e stx)将会返回 'a
 ;;而 (syntax-list stx)会返回false ,因为这不是一个list
+
+
+;ok铺垫的差不多了,开始让自己做些真正的输入输出吧
+
+(define-syntax (reverse-my stx)
+  (datum->syntax stx (reverse (cdr (syntax->datum stx)))))
+(reverse-my "倒过来de" "是" "我" values)
+
+;;传说中yoda说话的方式
+;; (datum->syntax ctxt v )
+;;以下是我对于官方文档的理解
+;ctxt是代表了最终要加入的stx
+;原文说是提供了上下文信息
+;我觉得就相当于将ctxt中的datum部分去掉,换上v
