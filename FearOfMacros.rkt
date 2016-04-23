@@ -196,4 +196,36 @@
 
 ;; (our-if-match-v2 #t "true" "fasle")
 
-Joy.
+;; Joy.
+
+
+
+
+
+
+
+;;可以用(require (for-syntax 包名))来引入我们需要的包
+;让其在编译时期可以被使用,那么我们自己定义的函数怎么办呢?
+;
+;
+;
+
+;;可以使用
+;begin-for-syntax来实现
+#|
+
+(begin-for-syntax
+  (define (自己定义的函数 ...)
+    ...)
+
+  (define-syntax (宏-用到自定义函数 stx)
+    (自己定义的函数 ...)
+    ...))
+
+|#
+
+;;除此之外当然也会有其他的方式
+;可以使用
+;(define-for-syntax (自定义函数 ...) .....)
+;在处理syntax的时候就可以使用了,并不在需要写在
+;(degin-for-syntax ....)中了
