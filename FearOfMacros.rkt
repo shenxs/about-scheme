@@ -5,7 +5,6 @@
 ;每次push都会有成就感
 #lang racket
 
-
 (define-syntax foo
   (lambda (stx)
     (syntax "我是大笨蛋")))
@@ -71,7 +70,7 @@
 
 ;解释一下这个函数,他会输出stx的内容,因为define-syntax 必须返回一个syntax对象 所以在这里我就用了#'(void) ,理解返回为空
 
-(define stx #'(if x (list  (list "helllo") "true") #f))
+;; (define stx #'(if x (list  (list "helllo") "true") #f))
 
 ;; stx
 
@@ -161,9 +160,9 @@
                         [,(cadr mimo) ,(caddr mimo)]
                         [else ,(cadddr mimo)])))
 
-(our-if-v2 (display-and-return #t)
-           (display-and-return "true")
-           (display-and-return "false"))
+;; (our-if-v2 (display-and-return #t)
+           ;; (display-and-return "true")
+           ;; (display-and-return "false"))
 
 
 ;; (if (display-and-return #t)
@@ -172,5 +171,29 @@
 
 ;;以上语句的返回值和racket的if是一致的
 ;在lazy racket 模式中一开始我们定义的our-if 和第二个版本的作用是一致的
+;其实他只是吧锅给了cond 因为lisp的实现里面只要实现
+;语句在被编译的时候并没有被求值,他们只是被(移动-组合)
 
+(require (for-syntax racket/match))
 
+;; (define stx #'(our-if-v2 #t "true" "false"))
+;; (displayln stx)
+
+;; (syntax->list stx)
+
+;; (syntax->datum stx)
+
+;但是一直用car cadr caddr 什么的是一件非常麻烦的事情,所以我们可以用match来
+;完成这个事情
+;由于在complie时期你只有racket/base是可以使用的
+;要使用match ,一如12行之前那样引入就好了
+(define-syntax (our-if-match-v2 stx)
+  (match (syntax->datum stx)
+    [(list _ condition true-expr false-expr)
+     (datum->syntax stx `(cond
+                           [,condition ,true-expr]
+                           [else ,false-expr]))]))
+
+;; (our-if-match-v2 #t "true" "fasle")
+
+Joy.
