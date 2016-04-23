@@ -102,7 +102,8 @@
 
 (define-syntax (reverse-my stx)
   (datum->syntax stx (reverse (cdr (syntax->datum stx)))))
-(reverse-my "倒过来de" "是" "我" values)
+
+;; (reverse-my "倒过来de" "是" "我" values)
 
 ;;传说中yoda说话的方式
 ;; (datum->syntax ctxt v )
@@ -110,3 +111,58 @@
 ;ctxt是代表了最终要加入的stx
 ;原文说是提供了上下文信息
 ;我觉得就相当于将ctxt中的datum部分去掉,换上v
+
+;values 会返回给定的参数
+
+;;通常的代码运行在运行的时候
+;简单的说代码有编译期,执行期
+;大部分的代码运行在执行期,但是racket的宏是在编译的时期起作用的
+;语法的转换是在解析代码的时候发挥作用的
+;也就是在编译的时候发挥作用
+
+
+;宏可以让你做到在普通代码中不可能做到的事情
+;比如,可以解决副作用的问题
+
+;加入我们定义了自己的if
+
+(define (our-if condition true-expr false-expr)
+  (cond
+    [condition true-expr]
+    [else false-expr]))
+
+
+;似乎没有什么问题
+
+;; (our-if #t true false)
+
+;;因为这些东西都是纯的,没有副作用(尽量避免副作用)
+;; 当语句出现副作用呢?
+;
+
+(define (display-and-return x)
+  (displayln x)
+  x)
+
+;; (our-if (display-and-return #t)
+        ;; (display-and-return "true")
+        ;; (display-and-return "false"))
+
+
+
+;;以上语句racket在解析的时候会先将其每个语句都执行,相当于执行并且得到表达式的返回值
+;但这并不是我们想要的
+;我们所希望的是条件语句只是得到返回值,只有一个分支语句被执行
+
+
+(define-syntax (our-if-v2 stx)
+  (define mimo (syntax->datum stx))
+  (datum->syntax stx `(cond
+                        [,(cadr mimo) ,(caddr mimo)]
+                        [else ,(cadddr mimo)])))
+
+(our-if-v2 (display-and-return #t)
+           (display-and-return "true")
+           (display-and-return "false"))
+
+
