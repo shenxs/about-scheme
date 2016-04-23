@@ -166,3 +166,11 @@
            (display-and-return "false"))
 
 
+;; (if (display-and-return #t)
+  ;; (display-and-return "true")
+  ;; (display-and-return "false"))
+
+;;以上语句的返回值和racket的if是一致的
+;在lazy racket 模式中一开始我们定义的our-if 和第二个版本的作用是一致的
+
+
