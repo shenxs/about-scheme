@@ -287,9 +287,13 @@
                                                              (syntax->datum #'a)
                                                              (syntax->datum #'b)))) ()
                   [name #'(define (name args ...)
-                            body0 body ...)])]))
+                            body0 body ...)])
+     ]))
 
 
 (hyphen-define foo bar (x) (* x x))
 (foo-bar 7)
 
+
+(define-syntax (my-hyphen-define stx)
+  (match ))
