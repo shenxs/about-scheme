@@ -229,3 +229,67 @@
 ;(define-for-syntax (自定义函数 ...) .....)
 ;在处理syntax的时候就可以使用了,并不在需要写在
 ;(degin-for-syntax ....)中了
+
+;;除了可以用match来进行语法处理,还可以用syntax-case
+;(syntax-case stx (literal-id)
+;   [(case) (result-expr)]
+;   ...
+;   )
+
+(define (our-if-using-syntax-case stx)
+  (syntax-case stx ()
+    [(_ condition true-expr false-expr)
+     #'(cond [condition true-expr]
+             [else false-expr])]))
+
+;这里stx的括号内的内容为空
+;下面的例子是有用到literal-id的
+
+ ;; (syntax-case #'(ops 1 2 3 => +) (=>)
+    ;; [(_ x ... => op) #'(op x ...)])
+;; ;; #<syntax:572:0 (+ 1 2 3)>
+;; > (syntax-case #'(let ([x 5] [y 9] [z 12])
+                   ;; (+ x y z))
+               ;; (let)
+    ;; [(let ([var expr] ...) body ...)
+     ;; (list #'(var ...)
+           ;; #'(expr ...))])
+;; '(#<syntax:573:0 (x y z)> #<syntax:573:0 (5 9 12)>)
+
+
+;;可以看到literal-id是精确匹配的,但是其他的匹配符号都是pattern
+;模式匹配
+
+
+;;事实上还有更加简单的方式来定义语法
+
+(define-syntax-rule (our-if-using-syntax-rule condition true-expr false-expr)
+  (cond
+    [condition true-expr]
+    [else false-expr]))
+
+;; (our-if-using-syntax-rule #t "true" "false")
+
+;;你会看到这简单了很多,但是,它也太简单了,所以如果你一开始就从define-syntax-rule开始学习
+;你就会搞不明白这和define有什么区别
+
+
+
+
+
+;;模式vs模板(不明白是什么意思)
+
+
+(define-syntax (hyphen-define stx)
+  (syntax-case stx ()
+    [(_ a b (args ...) body0 body ...)
+     (syntax-case (datum->syntax stx (string->symbol (format "~a-~a"
+                                                             (syntax->datum #'a)
+                                                             (syntax->datum #'b)))) ()
+                  [name #'(define (name args ...)
+                            body0 body ...)])]))
+
+
+(hyphen-define foo bar (x) (* x x))
+(foo-bar 7)
+
