@@ -296,4 +296,9 @@
 
 
 (define-syntax (my-hyphen-define stx)
-  (match ))
+  (match (syntax->list stx)
+    ['( _ a b (args ...) body0 body ...)
+     (let ([name (string->symbol (format "~a-~a"
+                                        (symbol->string a)
+                                        (symbol->string b)))])
+       #'(define (a args...) body0 body ...))]))
