@@ -327,7 +327,7 @@
        #'(define (name args ...) body0 body ...))]))
 
 (hyphen-define/ok foo baa (x) (* x x))
-(foo-baa 3)
+;; (foo-baa 3)
 
 ;;format-id可以简单得处理标识符,
 ;(format-id lctx      fmt v ...
@@ -337,3 +337,17 @@
 
 ;lctx 语法上下文 fmt 模板 v-->value 要加入模板中的值 其他的可选
 
+
+(require (for-syntax racket/string))
+(define-syntax (hyphen-define* stx)
+  (syntax-case stx ()
+    [(_ (names ...) (args ...) body0 body ...)
+     (let* ([names/sym (map syntax-e (syntax->list #'(names ...))) ]
+            [names/str (map symbol->string names/sym)]
+            [name/str (string-join  names/str "-")]
+            [names/sym (string->symbol name/str)])
+       (with-syntax ([name (datum->syntax stx names/sym)])
+         #'(define (name args ...) body0 body ...)))]))
+
+(hyphen-define* (a b c) (x) (* x 2))
+;; (a-b-c 7)
