@@ -291,14 +291,49 @@
      ]))
 
 
-(hyphen-define foo bar (x) (* x x))
-(foo-bar 7)
+;; (hyphen-define foo bar (x) (* x x))
+;; (foo-bar 7)
 
 
-(define-syntax (my-hyphen-define stx)
-  (match (syntax->list stx)
-    ['( _ a b (args ...) body0 body ...)
-     (let ([name (string->symbol (format "~a-~a"
-                                        (symbol->string a)
-                                        (symbol->string b)))])
-       #'(define (a args...) body0 body ...))]))
+;; (define-syntax (my-hyphen-define stx)
+  ;; (match (syntax->list stx)
+    ;; ['( _ a b (args ...) body0 body ...)
+     ;; (let ([name (string->symbol (format "~a-~a"
+                                        ;; (symbol->string a)
+                                        ;; (symbol->string b)))])
+       ;; #'(define (a args...) body0 body ...))]))
+
+;;似乎不可以,找不到pattern
+
+;; (define-syntax (my-fun stx)
+  ;; (syntax-case stx ()
+    ;; [(_ a b (args ...) body0 body ...)
+     ;; (let ([name (string->symbol (format "~a-~a"
+                                         ;; (syntax->datum #'a)
+                                         ;; (syntax->datum #'b) ))])
+       ;; #'(define (name args ...) body0 body ...))]))
+
+;;依旧不可以 name没有被真确滴绑定
+
+
+;;可以使用类似let的with-syntax来办到
+
+
+(require (for-syntax racket/syntax))
+(define-syntax (hyphen-define/ok stx)
+  (syntax-case stx ()
+    [(_ a b (args ...) body0 body ...)
+     (with-syntax ([name (format-id stx "~a-~a" #'a #'b)])
+       #'(define (name args ...) body0 body ...))]))
+
+(hyphen-define/ok foo baa (x) (* x x))
+(foo-baa 3)
+
+;;format-id可以简单得处理标识符,
+;(format-id lctx      fmt v ...
+;                    [  #:source src
+;                           #:props props
+;                                   #:cert ignored])
+
+;lctx 语法上下文 fmt 模板 v-->value 要加入模板中的值 其他的可选
+
