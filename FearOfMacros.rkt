@@ -351,3 +351,72 @@
 
 (hyphen-define* (a b c) (x) (* x 2))
 ;; (a-b-c 7)
+
+
+
+;其实如果racket本身不提供struct 方法,通过宏我们也可以自定义struct
+;现在假定racket没有struct,我们来自己创造一个
+;(our-struct name (a b c d ...))
+;通过这条语句我们需要定义出一个谓词
+;name?
+;不太喜欢用-来表示某个从属关系,那就让我们用.来表示好了
+
+;比如(our-struct posn (x y))
+;(posn 1 2)
+;(define foo (posn 1 2))
+;foo.x ==> 1
+;foo.y ==> 2
+
+
+(require (for-syntax racket/syntax))
+
+;; (define-syntax (our-struct stx)
+  ;; (syntax-case stx ()
+    ;; [(_ id (fields ...))
+     ;; (with-syntax ([pred-id (format-id stx "~a?" #'id)])
+       ;; #`(begin
+           ;; ;;创建一个构造器
+           ;; (define (id fields ...)
+             ;; (apply vector (cons 'id (list fields ...))))
+           ;; ;;创建谓词
+           ;; (define (pred-id v)
+             ;; (and (vector? v)
+                  ;; (eq? (vector-ref v 0) 'id)))
+           ;; ;;创建选择器
+           ;; #,@(for/list ([x (syntax->list #'(fields ...))]
+                         ;; [n (in-naturals 1)])
+                ;; (with-syntax ([acc-id (format-id stx "~a-~a" #'id x)]
+                              ;; [ix n])
+                  ;; #`(define (acc-id v)
+                      ;; (unless (pred-id v)
+                        ;; (error 'acc-id "~a id not a  ~a struct" v 'id)
+                        ;; (vector-ref v ix)))))
+           ;; ))]))
+
+
+(define-syntax (our-struct stx)
+    (syntax-case stx ()
+      [(_ id (fields ...))
+       (with-syntax ([pred-id (format-id stx "~a?" #'id)])
+         #`(begin
+             ; Define a constructor.
+             (define (id fields ...)
+               (apply vector (cons 'id  (list fields ...))))
+             ; Define a predicate.
+             (define (pred-id v)
+               (and (vector? v)
+                    (eq? (vector-ref v 0) 'id)))
+             ; Define an accessor for each field.
+             #,@(for/list ([x (syntax->list #'(fields ...))]
+                           [n (in-naturals 1)])
+                  (with-syntax ([acc-id (format-id stx "~a.~a" #'id x)]
+                                [ix n])
+                    #`(define (acc-id v)
+                        (unless (pred-id v)
+                          (error 'acc-id "~a is not a ~a struct" v 'id))
+                        (vector-ref v ix))))))]))
+
+(our-struct fooo (a b))
+(define s (fooo 1 2))
+(fooo.a s)
+
