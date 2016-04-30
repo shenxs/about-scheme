@@ -416,7 +416,44 @@
                         (error 'acc-id "~a is not a ~a struct" v 'id))
                       (vector-ref v ix))))))]))
 
-(our-struct2 fooo (a b))
+(our-struct fooo (a b))
 (define s (fooo 1 2))
-(fooo-a s)
+;; (fooo-a s)
 
+
+;测试环节
+
+;;测试包头文件
+(require rackunit)
+
+(check-equal? (fooo.a s) 1)
+(check-equal? (fooo.b s) 2)
+(check-equal? (fooo? s) true)
+(check-equal? (fooo? 1) false)
+
+
+(check-exn exn:fail?
+           (lambda () (fooo.a "furbl")))
+
+;;失败报错测试
+(our-struct "hahah" ("sfs" "sfa"))
+
+
+;报错信息并不怎么友好
+;由于我们给出的样例中,是字符串并不是操作符
+;syntax-case 的一个case的格式
+;可以是
+;[pattern templete]
+;还可以是
+;[pattern guard templete]
+;这样的三个部分组成
+
+(define-syntax (our-struct-guard stx)
+  (syntax-case stx ()
+    [(_ id (filds ...))
+     (for-each
+       (lambda (x)
+         (unless (indentifier? x)
+           (raise-syntax-error false "不是标识符" stx x)))
+       (cons #'id (syntax->list #'(filds ...))))
+     (with-syntax ([pre-id  ]))]))
