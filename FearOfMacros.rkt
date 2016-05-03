@@ -23,7 +23,7 @@
   (syntax "我也是大笨蛋"))
 ;; (also-foo)
 
-;;就像list可以用' 代替
+;; 就像list可以用' 代替
 ;syntax 可以用 #' 代替
 ;这是一种语法糖
 
@@ -435,8 +435,8 @@
 (check-exn exn:fail?
            (lambda () (fooo.a "furbl")))
 
-;;失败报错测试
-(our-struct "hahah" ("sfs" "sfa"))
+;; 失败报错测试
+;; (our-struct "hahah" ("sfs" "sfa"))
 
 
 ;报错信息并不怎么友好
@@ -453,7 +453,26 @@
     [(_ id (filds ...))
      (for-each
        (lambda (x)
-         (unless (indentifier? x)
-           (raise-syntax-error false "不是标识符" stx x)))
+         (unless (identifier? x)
+           (raise-syntax-error #f "不是标识符" stx x)))
        (cons #'id (syntax->list #'(filds ...))))
-     (with-syntax ([pre-id  ]))]))
+     (with-syntax ([pre-id (format-id stx "~a?" #'id) ])
+       #`(begin
+           ;;定义构造器
+           (define (id filds ...)
+             (apply vector (cons 'id (list filds ...))))
+            ;;定义谓词
+           (define (pred-id v)
+             (and (vector? v)
+                  (eq? (vector-ref v 0) 'id)))
+            #,@(for/list ([x (syntax->list #'(filds ...))]
+                          [n (in-naturals 1)])
+                 (with-syntax ([acc-id (format-id stx "~a-~a" #'id x)]
+                               [ix n])
+                   #'(define (acc-id v)
+                       (unless (pred-id v)
+                         (error "非此类型数据"))
+                       (vector-ref v ix))))
+           ))]))
+;;可以自定义报错信息
+;; (our-struct-guard "hahha" [as bv])
