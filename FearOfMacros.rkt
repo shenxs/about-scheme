@@ -39,8 +39,8 @@
 (define-syntax (say-hi stx)
   #'(displayln "hi!   :)"))
 
-;; say-hi
-
+; say-hi
+; (say-hi)
 ;;定义一个syntax的时候必须要有参数
 
 ;;可以像这样定义一个语句
@@ -50,7 +50,7 @@
 ;;只有函数名,没有参数
 ;但是你无法使用这条语法,因为一个macro至少会传进来一个参数,就是函数名
 ;以下语句会报错
-;; (say-hi-wrong)
+; (say-hi-wrong)
 ;因为给一个无参函数传递了参数
 
 
@@ -66,7 +66,7 @@
   (print stx)
   #'(void))
 
-;; (show-me 'pac )
+; (show-me 'pac )
 
 ;解释一下这个函数,他会输出stx的内容,因为define-syntax 必须返回一个syntax对象 所以在这里我就用了#'(void) ,理解返回为空
 
@@ -198,9 +198,14 @@
 
 ;; Joy.
 
+(begin-for-syntax
+  (define (my_function )
+    "这是自己定义的编译时函数")
+  my_function
+  )
 
-
-
+; (my_function)
+; 编译时定义的函数无法在运行时调用
 
 
 
@@ -277,8 +282,9 @@
 
 
 
-;;模式vs模板(不明白是什么意思)
-
+;;模式vs模板
+;pattern 和templete ,pattern用于描述用于匹配的规则,template则是一个有待实例化的框架
+;如果pattern匹配则实例化template
 
 (define-syntax (hyphen-define stx)
   (syntax-case stx ()
@@ -291,8 +297,8 @@
      ]))
 
 
-;; (hyphen-define foo bar (x) (* x x))
-;; (foo-bar 7)
+; (hyphen-define foo bar (x) (* x x))
+; (foo-bar 7)
 
 
 ;; (define-syntax (my-hyphen-define stx)
