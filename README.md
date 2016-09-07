@@ -6,10 +6,12 @@
  - 添加了王垠.《怎么写一个解释器》的代码，精彩的文章
  - 试着自己推导Y组合子，依然似懂非懂
  - 完全使用匿名函数，使用匿名函数实现递归
+ - 添加了[FearOfMacros](http://www.greghendershott.com/fear-of-macros/)的内容
 
 
-## 正在做
-- 添加了[FearOfMacros](http://www.greghendershott.com/fear-of-macros/)的内容
+## ing
+
+ - The scheme Programming Language
 
 ## 计划之中
 - 《The Little Schemer》
