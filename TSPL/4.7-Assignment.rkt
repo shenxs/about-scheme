@@ -179,18 +179,54 @@
 (s1 'pop)
 (s1 'empty?)
 
-;;加上一个counter我们还可以得到栈的深度,将list换成vector可以得到更加好的性能表现
+;;TODO 怎么难以理解
+;; ;;加上一个counter我们还可以得到栈的深度,将list换成vector可以得到更加好的性能表现
 
-(define set-car!
-  (lambda (l v)
-    (set! l (cons v (rest l)))))
+;; (define set-car!
+;;   (lambda (l v)
+;;     (set! l (cons v (rest l)))))
 
-(define set-cdr!
-  (lambda (l v)
-    (set! l (cons (first l) v))))
-;;这不是正确的实现,正确的实现应该使用到宏,因为l是对应的局部变量,并非top leave的binding,所以并不会有什么卵用,他只是改变了局部变量l的值
-(define a-list '( 1 2 3))
-(set-car! a-list 'two)
-a-list
-(set-cdr! a-list '())
-a-list
+;; (define set-cdr!
+;;   (lambda (l v)
+;;     (set! l (cons (first l) v))))
+;; ;;这不是正确的实现,正确的实现应该使用到宏,因为l是对应的局部变量,并非top leave的binding,所以并不会有什么卵用,他只是改变了局部变量l的值
+;; (define a-list '( 1 2 3))
+;; (set-car! a-list 'two)
+;; a-list
+;; (set-cdr! a-list '())
+;; a-list
+
+
+;;Exercise 2.9.1
+(define (make-counter start)
+  (let ([v start])
+    (lambda ()
+      (let ([temp v])
+        (set! v (+ v 1))
+        temp))))
+
+(define c1 (make-counter 2))
+
+
+
+;;使用case重新定义make-stack
+
+(define my-make-stack
+  (lambda ()
+    (let ([ls '()])
+      (lambda (op . args)
+          (case op
+            [(empty? mt?) (empty? ls)]
+            ['push (set! ls (cons (first  args) ls))]
+            ['pop (set! ls (rest ls))]
+            ['top (first ls)]
+            ['display (display ls)]
+            [else 'oops])))))
+
+(define a-s (my-make-stack))
+(a-s 'empty?)
+(a-s 'mt?)
+(a-s 'push 1)
+(a-s 'empty?)
+(a-s 'display)
+(a-s 'top)
