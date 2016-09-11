@@ -208,6 +208,7 @@
 (define c1 (make-counter 2))
 
 
+;;Exercise 2.9.2
 
 ;;使用case重新定义make-stack
 
@@ -224,9 +225,73 @@
             [else 'oops])))))
 
 (define a-s (my-make-stack))
-(a-s 'empty?)
-(a-s 'mt?)
-(a-s 'push 1)
-(a-s 'empty?)
-(a-s 'display)
-(a-s 'top)
+;;Exercise 2.9.3
+
+(define new-make-stack
+  (lambda ()
+    (let ([ls '()])
+      (lambda (op . args)
+        (case op
+          [(empty? mt?) (empty? ls)]
+          ['push (set! ls (cons (first args) ls ))]
+          ['pop (set! ls (rest ls))]
+          ['top (first ls)]
+          ['ref (list-ref ls (first args) )]
+          ['set! (set! ls (list-set ls (first args) (second args)))]
+          [else 'oops])))))
+
+
+(define stack (new-make-stack))
+(stack 'push 'a)
+(stack 'push 'b)
+(stack 'push 'c)
+
+(stack 'ref 0)
+(stack 'ref 2)
+(stack 'set! 1 'd)
+(stack 'ref 1)
+(stack 'top)
+(stack 'pop)
+(stack 'top)
+
+
+
+;;Exercise 2.9.4
+
+(define make-stack-vector
+  (lambda (n)
+    (let ([ls (make-vector n)]
+          [top 0])
+      (lambda (op . args)
+        (case op
+          [(empty? mt?) (zero? top)]
+          ['push (begin (vector-set! ls top (first args))
+                        (set! top (+ top 1)))]
+          ['top (vector-ref ls (- top 1) )]
+          ['pop (set! top (-  top 1))]
+          ['ref (vector-ref ls (- top (first args) 1))]
+          ['set (vector-set! ls (- top (first args) 1) (second args)) ]
+          [else 'oops])))))
+
+(define stack-v (make-stack-vector 10))
+
+(stack-v 'push 'a)
+(stack-v 'push 'b)
+
+(stack-v 'push 'c)
+
+(stack-v 'ref 0)
+
+
+(stack-v 'ref 2)
+
+(stack-v 'set 1 'd)
+(stack-v 'ref 1)
+
+(stack-v 'top)
+
+(stack-v 'pop)
+(stack-v 'top)
+
+
+
