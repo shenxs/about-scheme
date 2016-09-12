@@ -16,7 +16,3 @@
 ## 计划之中
 - 《The Little Schemer》
     粗略地看过一遍,但是并没有敲过，总感觉缺了点什么
-
-## MIT
-
-Hello
