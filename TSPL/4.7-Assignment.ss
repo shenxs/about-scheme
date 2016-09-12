@@ -58,3 +58,55 @@
 (emptyq? myq2)
 
 (getq! myq2)
+
+
+;;2.9.6
+
+
+
+(define make-queue
+  (lambda ()
+    (cons '() '())))
+
+
+(define (putq! q v)
+  (let ([p (cons v '())])
+    (if (null? (car q))
+        (begin
+          (set-car! q p)
+          (set-cdr! q p))
+        (begin
+          (set-cdr! (cdr q) p)
+          (set-cdr! q p)))))
+
+
+(define (getq! q)
+  (car (car q)))
+
+(define (delq! q)
+  (if (eq? (car q) (cdr q))
+      (begin
+        (set-car! q '())
+        (set-cdr! q '()))
+      (set-car! q (cdr (car q)))))
+
+(define myq (make-queue))
+
+(putq! myq 'a)
+(putq! myq 'b)
+(putq! myq 'c)
+
+(delq! myq)
+
+;;队列的实现来看
+;;有占位符实现
+;;罗辑一致添加和删除的时候没有特殊情况
+;;浪费占位符的空间
+;;插入的步骤需要3,删除1步
+
+
+;;无占位符
+;;处理的时候需要判断是否是空队列,是否队列里面只有一个元素
+;;节省占位符空间
+;;代码实现需要分类所以显得啰嗦
+;;罗辑步骤更加简单
