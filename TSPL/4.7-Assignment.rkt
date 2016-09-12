@@ -288,9 +288,9 @@
 (stack-v 'set 1 'd)
 (stack-v 'ref 1)
 
-(stack-v 'top)
+(stack-v 'stack)
 
-(stack-v 'pop)
+(top-v 'pop)
 (stack-v 'top)
 
 
