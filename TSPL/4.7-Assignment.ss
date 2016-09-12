@@ -17,12 +17,16 @@
 
 (define getq!
   (lambda (q)
-    (car (car q))))
+    (if (emptyq? q)
+        (assertion-violation 'getq! "队列为空" q)
+        (car (car q)))))
 
 
 (define delq!
   (lambda (q)
-    (set-car! q (cdr (car q)))))
+    (if (emptyq? q)
+        (assertion-violation 'delq! "队列为空" q)
+        (set-car! q (cdr (car q))))))
 
 
 (define myq (make-queue))
@@ -52,3 +56,5 @@
 (delq! myq2)
 
 (emptyq? myq2)
+
+(getq! myq2)
