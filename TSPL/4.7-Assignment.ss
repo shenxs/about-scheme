@@ -110,3 +110,35 @@
 ;;节省占位符空间
 ;;代码实现需要分类所以显得啰嗦
 ;;罗辑步骤更加简单
+
+
+
+(define (list? l)
+  (cond
+   [(null? l) #t]
+   [(symbol? l) #f]
+   [else (list? (cdr l))]))
+(list?  '())
+
+(list? '(1 2 3))
+
+(list? '(a . b))
+
+;;2.9.8
+
+(define (race hare tortoise)
+  (if (pair? hare)
+      (let ([hare (cdr hare)])
+        (if (pair? hare)
+            (and (not (eq? hare tortoise))
+                 (race (cdr hare) (cdr tortoise)))
+            (null? hare)))
+      (null? hare)))
+
+
+(define list?
+  (lambda (x)
+    (race x x)))
+
+
+
