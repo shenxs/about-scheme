@@ -7,7 +7,6 @@
 
 ;核心语法包括 define 常量 变量 过程 quote表达式 λ表达式 if表达式 set!表达式
 
-
 (begin 'a 'b 'c)
 ;可以转化为
 ((lambda () 'a 'b 'c))
