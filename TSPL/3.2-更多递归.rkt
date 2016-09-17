@@ -136,5 +136,32 @@
       [else (+ (fibonacci-r (- n 1))
                (fibonacci-r (- n 2)))])))
 
-(fibonacci-r 30)
+;(fibonacci-r 40)
+
+(define (fibonacci-i n)
+  (letrec ([f (lambda (i a b)
+             (cond
+               [(= i 1) b]
+               [else (f (sub1 i) b (+ a b))]))])
+    (f n 0 1)))
+
+;(fibonacci-i 100)
+
+;;因式分解
+
+
+(define (factor n)
+  (let f ([n n] [i 2])
+    (cond
+      [(<= n i) (list n)]
+      [(integer? (/ n i))
+       (cons i (f (/ n i) i))]
+      [else (f n (add1 i))])))
+
+
+;; (factor 362880014137)
+(modulo (expt 65 17) 3233)
+
+
+(expt 2790 2753)
 
