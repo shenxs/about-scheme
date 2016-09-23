@@ -1,5 +1,5 @@
 #lang racket
-
+(require math/number-theory)
 ;;这是一种机智的做法
 ;;
 (let ([sum (lambda (sum ls)
@@ -163,5 +163,68 @@
 (modulo (expt 65 17) 3233)
 
 
-(expt 2790 2753)
 
+(define (factor2 n)
+  (let f ([n n] [i 2])
+    (cond
+      [(prime? n) (list n)]
+      [(integer? (/ n i))
+       (cons i (f (/ n i) i))]
+      [else (f n (add1 i))])))
+
+(factor2 121212121212)
+
+
+;;3.2.3
+;;可以但是需要两个let来办到
+
+(let even? ([x 20])
+  (cond
+    [(= x 0) #t]
+    [else (let odd? ([x (- x 1)])
+            (cond
+              [(= x 0) #f]
+              [else (even? (- x 1))]))]))
+
+;;3.2.4
+
+
+(define make-counter
+  (lambda ()
+    (let ([x 0])
+      (lambda ()
+        (let ([t x])
+          (begin
+            (set! x (+ x 1))
+            t))))))
+
+
+(define c1 (make-counter))
+
+(define (fibnacci n)
+  (letrec ([f (lambda (a b n)
+                (begin (c1)
+                       (cond
+                         [(= n 0) b]
+                         [else (f b (+ a b) (- n 1))])))])
+    (f 0 1 n)))
+
+(fibnacci 20)
+
+(c1)
+
+
+(define c2 (make-counter))
+
+(define (fibnacci2 n)
+  (letrec ([f (lambda (n)
+                (begin (c2)
+                       (cond
+                         [(= n 0) 0]
+                         [(= n 1) 1]
+                         [else (+ (f (- n 1)) (f (- n 2)))])))])
+    (f n)))
+
+(fibnacci2 20)
+
+(c2)
