@@ -31,4 +31,25 @@
 
 (c1)
 
+;;3.2.6
+;;并不是尾递归,有可能消耗大量的空间
+(define-syntax or
+  (syntax-rules ()
+    [(_) #f]
+    [(_ e1 e2 ...)
+     (let ([t e1])
+       (if t t (or e2 ...)))]))
+
+
+(or 1 )
+
+(letrec ([even?
+          (lambda (x)
+            (or (= x 0)
+                (odd? (- x 1))))]
+         [odd?
+          (lambda (x)
+            (and (not (= x 0))
+                 (even? (- x 1))))])
+  (list (even? 100000000000) (odd? 1000)))
 
