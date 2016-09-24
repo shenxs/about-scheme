@@ -81,3 +81,67 @@
 
 ;;call/cc的返回值是它自身的延续,和之前的代码一样
 
+;;将此延续应用于(lambda (x) x) 将会返回 (lambda (x) x)
+
+
+;;==>
+((lambda (x) x) "Hey!")
+
+
+
+;;这种使用延续的做法也不总是让人疑惑
+
+
+;;一个求阶乘的小例子
+
+(define retry #f)
+
+
+(define (factorial x)
+  (if (= 0 x)
+      (call/cc (lambda (k) (set! retry k) 1))
+      (* x (factorial (- x 1)))))
+
+(factorial 4)
+
+;;可以像正常的阶乘函数那样工作但是这个函数会对retry产生副作用
+;;将call/cc 理解为断点 ,将某一时刻的状态保存下来,此刻的状态传递给被call/cc应用的函数
+;;可以利用call/cc来实现断点
+;;
+(retry 7)
+
+
+
+;;延续还可以被用于多任务
+
+
+
+(define lwp-list '())
+
+(define lwp
+  (lambda (thunk)
+    (set! lwp-list (append lwp-list (list thunk)))))
+
+(define start
+  (lambda ()
+    (let ([p (car lwp-list)])
+      (set! lwp-list (cdr lwp-list))
+      (p))))
+
+
+(define pause
+  (lambda ()
+    (call/cc
+     (lambda (k)
+       (lwp (lambda () (k #f)))
+       (start)))))
+
+(lwp (lambda () (let f () (pause) (display "h") (f))))
+(lwp (lambda () (let f () (pause) (display "e") (f))))
+(lwp (lambda () (let f () (pause) (display "y") (f))))
+(lwp (lambda () (let f () (pause) (display "!") (f))))
+(lwp (lambda () (let f () (pause) (newline) (f))))
+
+(start)
+;;死循环打印hey!
+
