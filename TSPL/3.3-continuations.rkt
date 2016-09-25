@@ -125,7 +125,7 @@
 (define start
   (lambda ()
     (let ([p (car lwp-list)])
-      (set! lwp-list (cdr lwp-list))
+       (set! lwp-list (cdr lwp-list))
       (p))))
 
 
@@ -142,6 +142,32 @@
 (lwp (lambda () (let f () (pause) (display "!") (f))))
 (lwp (lambda () (let f () (pause) (newline) (f))))
 
-(start)
+;;(start)
+
 ;;死循环打印hey!
+;;TODO 并不明白为什么会循环,pause将程序的状态存入lwp然后继续所以lwp中的任务不停的有补充
+
+;;3.3.1
+
+;; (let ([k.n (call/cc (lambda (k) (cons k 0)))])
+;;   (let ([k (car k.n)]
+;;         [n (cdr k.n)])
+;;     (write n)
+;;     (newline)
+;;     (k (cons k (+ n 1)))))
+
+;;3.3.2
+
+
+(define (product2 ls)
+  (call/cc
+   (lambda (k)
+     (cond
+       [(empty? ls) 1]
+       [(zero? (first ls)) (k 0)]
+       [else (* (first ls) (product (rest ls)) )]))))
+
+(product2 '(1 2 3  4 5 6))
+
+(product2 '(1 2 3 4 0 5 6))
 
