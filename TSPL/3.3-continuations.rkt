@@ -108,7 +108,7 @@
 ;;将call/cc 理解为断点 ,将某一时刻的状态保存下来,此刻的状态传递给被call/cc应用的函数
 ;;可以利用call/cc来实现断点
 ;;
-(retry 7)
+(retry 1)
 
 
 
@@ -133,7 +133,7 @@
   (lambda ()
     (call/cc
      (lambda (k)
-       (lwp (lambda () (k #f)))
+       (lwp (lambda () (k #f)));;k应用与什么值并不重要,但是k会保存当前的状态k是一个延续,将它放到任务的最后
        (start)))))
 
 (lwp (lambda () (let f () (pause) (display "h") (f))))
@@ -149,12 +149,13 @@
 
 ;;3.3.1
 
-;; (let ([k.n (call/cc (lambda (k) (cons k 0)))])
-;;   (let ([k (car k.n)]
-;;         [n (cdr k.n)])
-;;     (write n)
-;;     (newline)
-;;     (k (cons k (+ n 1)))))
+(let ([k.n (call/cc (lambda (k) (cons k 0)))])
+  (let ([k (car k.n)]
+        [n (cdr k.n)])
+    (write n)
+    (newline)
+    (k (cons k (+ n 1)))))
+
 
 ;;3.3.2
 
@@ -165,7 +166,7 @@
      (cond
        [(empty? ls) 1]
        [(zero? (first ls)) (k 0)]
-       [else (* (first ls) (product (rest ls)) )]))))
+       [else (* (first ls) (product2 (rest ls)) )]))))
 
 (product2 '(1 2 3  4 5 6))
 
