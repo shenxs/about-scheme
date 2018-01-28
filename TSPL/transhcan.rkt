@@ -18,8 +18,10 @@
 
 
 (let ([x (call/cc (lambda (k) k))])
-  (x (lambda (nothing) (begin (displayln nothing)
-                              "hi"))))
+  (x (lambda (nothing)
+       (begin (displayln nothing)
+              "hi"))))
+
 ;;好像明白一点什么叫延续了
 
 (define lwp-list '())
@@ -40,10 +42,16 @@
              (lwp (lambda () (k #f)))
              (start))))
 
-(lwp (lambda () (let f () (pause) (display "h") (f))))
+(lwp (lambda ()
+       (let f ()
+         (pause)
+         (display "h")
+         (f))))
 (lwp (lambda () (let f () (pause) (display "e") (f))))
 (lwp (lambda () (let f () (pause) (display "y") (f))))
 (lwp (lambda () (let f () (pause) (display "!") (f))))
 (lwp (lambda () (let f () (pause) (newline) (f))))
 
 ;;(start)
+
+((first)) (list (lambda () (let f () (pause) (display "f") (f) )))

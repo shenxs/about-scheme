@@ -32,7 +32,7 @@
          (cond
           [(false? v)
            (error "undefined variable" x)]
-          [else v]))]      
+          [else v]))]
       [(? number? x) x]                                 ; 数字
       [`(lambda (,x) ,e)                                ; 函数
        (Closure exp env)]

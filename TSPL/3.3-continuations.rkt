@@ -168,7 +168,7 @@
        [(zero? (first ls)) (k 0)]
        [else (* (first ls) (product2 (rest ls)) )]))))
 
-(product2 '(1 2 3  4 5 6))
+;; (product2 '(1 2 3  4 5 6))
 
-(product2 '(1 2 3 4 0 5 6))
+;; (product2 '(1 2 3 4 0 5 6))
 

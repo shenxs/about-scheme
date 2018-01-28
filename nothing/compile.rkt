@@ -53,6 +53,8 @@
                  ((λ (f) (f f)) (λ (f) (f f)))))
 
 ; Booleans.
+; 布尔值的作用就是作为一个选择器
+; 布尔值一般出现在if 的条件中,真就执行t假就执行f
 (define TRUE  `(λ (t) (λ (f) (t ,VOID))))
 (define FALSE `(λ (t) (λ (f) (f ,VOID))))
 
