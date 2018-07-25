@@ -34,8 +34,8 @@ int main(int argc,char** argv){
 
   mpca_lang(MPCA_LANG_DEFAULT,
             "                                                     \
-    number   : /-?[0-9]+/ ;                             \
-    operator : '+' | '-' | '*' | '/' ;                  \
+    number   : /-?[0-9]+/ ;                                       \
+    operator : '+' | '-' | '*' | '/' | '%' | \"add\" | \"sub\" | \"mul\" | \"div\";                  \
     expr     : <number> | '(' <operator> <expr>+ ')' ;  \
     lispy    : /^/ <operator> <expr>+ /$/ ;             \
   ",
