@@ -1,10 +1,12 @@
 
 CC=gcc
 
-CFLAGS= -ledit
+CFLAGS= -ledit -lm
 
-main:
-	$(CC) main.c $(CFLAGS) -o main.out
+CSTD= -std=c99
+
+main: *.c
+	$(CC) $(CSTD) main.c mpc.c $(CFLAGS) -o main.out
 
 clean:
 	rm *.out
