@@ -26,8 +26,50 @@ void add_history(char* unused) {}
 long eval(mpc_ast_t* t);
 long eval_op(long x,char* op ,long y);
 
-int main(int argc,char** argv){
+/* lisp value */
+typedef struct{
+  int type;
+  long num;
+  int err;
+} lval;
 
+enum {LVAL_NUM,LVAL_ERR};
+enum {LERR_DIV_ZERO,LERR_BAD_OP,LERR_BAD_NUM};
+
+lval lval_num(long x){
+  lval v;
+  v.type=LVAL_NUM;
+  v.num=x;
+  return v;
+}
+
+lval lval_err(int x){
+  lval v;
+  v.type=LVAL_ERR;
+  v.err=x;
+  return v;
+}
+
+void lval_print(lval v){
+  switch(v.type){
+  case LVAL_NUM:
+    printf("%li",v.num);break;
+  case LVAL_ERR:
+    if(v.err==LERR_DIV_ZERO){
+      printf("错误：除数为0");
+    }else if(v.err==LERR_BAD_OP){
+      printf("错误：未知操作");
+    }else if(v.err==LERR_BAD_NUM){
+      printf("错误：非法数字");
+    }
+    break;
+  }
+}
+
+void lval_println(lval v){
+  lval_print(v);printf("\n");
+}
+int main(int argc,char** argv){
 
   /* 创建parsers */
   mpc_parser_t* Number = mpc_new("number");
@@ -65,8 +107,10 @@ int main(int argc,char** argv){
   }
 
   mpc_cleanup(4, Number,Operator,Expr,Lispy);
+
   return 0;
 }
+
 long eval(mpc_ast_t* t){
   /* 数字直接返回值 */
   if(strstr(t->tag, "number")){
@@ -86,6 +130,7 @@ long eval(mpc_ast_t* t){
   return x;
 
 }
+
 long eval_op(long x, char* op, long y) {
   if (strcmp(op, "+") == 0 || strcmp(op, "add") == 0) { return x + y; }
   if (strcmp(op, "-") == 0 || strcmp(op, "sub") == 0) { return x - y; }
@@ -94,3 +139,4 @@ long eval_op(long x, char* op, long y) {
   if (strcmp(op, "%") == 0) { return x % y; }
   return 0;
 }
+
