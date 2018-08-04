@@ -10,3 +10,6 @@ main: *.c
 
 clean:
 	rm *.out
+
+debug:
+	gdb -tui ./main.out

@@ -6,9 +6,9 @@
 #include <string.h>
 /* static char buffer[2048] */
 
-    /* 自定义readline函数 */
-    char *
-    readline(char *prompt) {
+/* 自定义readline函数 */
+char *
+readline(char *prompt) {
   fputs(prompt, stdout);
   fgets(buffer, 2048, stdin);
   char *cpy = malloc(strlen(buffer) + 1);
@@ -164,7 +164,7 @@ lval *lval_add(lval *v, lval *x) {
   return v;
 }
 lval *lval_read(mpc_ast_t *t) {
- if (strstr(t->tag, "number")) {
+  if (strstr(t->tag, "number")) {
     return lval_read_num(t);
   }
   if (strstr(t->tag, "symbol")) {
@@ -172,10 +172,11 @@ lval *lval_read(mpc_ast_t *t) {
   }
 
   lval *x = NULL;
-  if (strcmp(t->tag, ">") == 0) {
-    x = lval_sexpr();
-  }
-  if (strcmp(t->tag, "sexpr")) {
+  /* tag > 根元素 */
+  /* if (strcmp(t->tag, ">") == 0) { */
+  /*   x = lval_sexpr(); */
+  /* } */
+  if (strstr(t->tag, "sexpr")) {
     x = lval_sexpr();
   }
   if (strstr(t->tag, "qexpr")) {
@@ -329,11 +330,30 @@ lval *buildin_op(lenv* e, lval *a, char *op) {
     }
   }
 
-  lval *x = lval_pop(a, 0);
-  if ((strcmp(op, "-") == 0) && a->count == 0) {
-    x->num = -x->num;
+  lval *x = NULL;
+  if(strcmp(op, "+")==0){
+    x=lval_num(0);
+  }else if(strcmp(op, "*")==0){
+    x=lval_num(1);
+  }else if(strcmp(op, "-")==0){
+    if(a->count==0){
+      lval_del(a);
+      return lval_err("sub need at least one param");
+    }else if (a->count==1){
+      lval* result=lval_num(-1*a->cell[0]->num);
+      lval_del(a);
+      return result;
+    }else{
+      x=lval_pop(a, 0);
+    }
+  }else if(strcmp(op, "/")==0){
+    if(a->count==0){
+      lval_del(a);
+      return lval_err("div need at least one param");
+    }else{
+      x=lval_pop(a, 0);
+    }
   }
-
   while (a->count > 0) {
     lval *y = lval_pop(a, 0);
     if (strcmp(op, "+") == 0) {
@@ -391,6 +411,56 @@ lval* builtin_list(lenv* e,lval* a){
   return v;
 }
 
+lval* builtin_car(lenv* e,lval* a){
+  /* env,sxpr ==> lval  */
+  if(a->count!=1){
+    return lval_err("car only take one param");
+  }else{
+    lval* expr=lval_copy(a->cell[0]);
+    if(expr->type!=LVAL_QEXPR){
+      lval_del(a);
+      lval_del(expr);
+      return lval_err("car need qexpr as it's param");
+    }
+    if(expr->count==0){
+      lval_del(a);
+      lval_del(expr);
+      return lval_err("length of qexpr equals 0");
+    }
+
+    lval* result=lval_copy(expr->cell[0]);
+
+    lval_del(expr);
+    lval_del(a);
+    return result;
+  }
+}
+
+lval* builtin_cdr(lenv* e,lval* a){
+  if(a->count!=1){
+    return lval_err("cdr only take one param");
+  }else{
+    if(a->cell[0]->type!=LVAL_QEXPR){
+      return lval_err("cdr need a qexpr as a param");
+    }else if(a->cell[0]->count==0){
+      return lval_err("qexpr length equals 0");
+    }else{
+      lval* head= lval_pop(a->cell[0], 0);
+      lval_del(head);
+      return a->cell[0];
+    }
+  }
+}
+
+
+lval* builtin_eval(lenv* e,lval* a){
+  return lval_eval(e, a);
+}
+
+lval* builtin_exit(lenv* e,lval* a){
+  exit(0);
+}
+
 void lenv_add_builtin(lenv* e,char* name,lbuildin func){
   lval* k = lval_sym(name);
   lval* v=lval_fun(func);
@@ -401,9 +471,9 @@ void lenv_add_builtin(lenv* e,char* name,lbuildin func){
 void lenv_add_buildins(lenv* e){
   /* List Functions */
   lenv_add_builtin(e, "list", builtin_list);
-  /* lenv_add_builtin(e, "head", builtin_head); */
-  /* lenv_add_builtin(e, "tail", builtin_tail); */
-  /* lenv_add_builtin(e, "eval", builtin_eval); */
+  lenv_add_builtin(e, "car", builtin_car);
+  lenv_add_builtin(e, "cdr", builtin_cdr);
+  lenv_add_builtin(e, "eval", builtin_eval);
   /* lenv_add_builtin(e, "join", builtin_join); */
 
   /* Mathematical Functions */
@@ -411,6 +481,9 @@ void lenv_add_buildins(lenv* e){
   lenv_add_builtin(e, "-", builtin_sub);
   lenv_add_builtin(e, "*", builtin_mul);
   lenv_add_builtin(e, "/", builtin_div);
+
+  /* exit */
+  lenv_add_builtin(e, "exit", builtin_exit);
 }
 
 
@@ -428,9 +501,10 @@ lval *lval_eval_sexpr(lenv* e, lval *v) {
   if (v->count == 0) {
     return v;
   }
-  if (v->count == 1) {
-    return lval_take(v, 0);
-  }
+  /* lval_println(v); */
+  /* if(v->count == 1 &&v->cell[0]->type!=LVAL_FUN){ */
+  /*   return lval_take(v, 0); */
+  /* } */
 
   lval *f = lval_pop(v, 0);
   if (f->type != LVAL_FUN) {
@@ -479,10 +553,17 @@ int main(int argc, char **argv) {
 
     mpc_result_t r;
     if (mpc_parse("<stdin>", input, Lispy, &r)) {
-      lval *x = lval_read(r.output);
-      x = lval_eval(e,x);
-      lval_println(x);
-      lval_del(x);
+      /* mpc_ast_print(r.output); */
+      mpc_ast_t* t=r.output;
+      for(int i=0;i<t->children_num;i++){
+        if (strcmp(t->children[i]->tag, "regex") == 0) {
+          continue;
+        }
+        lval* x=lval_read(t->children[i]);
+        x=lval_eval(e, x);
+        lval_println(x);
+        lval_del(x);
+      }
       mpc_ast_delete(r.output);
     } else {
       mpc_err_print(r.error);
