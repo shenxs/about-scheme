@@ -63,7 +63,14 @@ lval eval(mpc_ast_t *t);
 lval eval_op(lval x, char *op, lval y);
 lval *lval_sym(char *s) ;
 lval *lval_fun(lbuildin func);
+lval *lval_err(char *m) ;
 
+#define LASSERT(args, cond, fmt, ...)           \
+  if (!(cond)) {                                \
+    lval* err = lval_err(fmt, ##__VA_ARGS__);   \
+    lval_del(args);                             \
+    return err;                                 \
+  }
 lenv* lenv_new(void){
   lenv* e=malloc(sizeof(lenv));
   e->count=0;
@@ -452,9 +459,30 @@ lval* builtin_cdr(lenv* e,lval* a){
   }
 }
 
+lval* builtin_def(lenv* e,lval* a){
+  if(a->count<2){
+    return lval_err("need at least 2 parma");
+  }else if(a->cell[0]->type !=LVAL_QEXPR){
+    return lval_err("def passed a incorrect type");
+  }
+
+  lval* sym=a->cell[0];
+
+  for(int i=0;i<sym->count;i++){
+    lenv_put(e, sym->cell[i], a->cell[i+1]);
+  }
+  lval_del(a);
+  return lval_sym(";)");
+}
 
 lval* builtin_eval(lenv* e,lval* a){
-  return lval_eval(e, a);
+  if(a->count==0){
+    return lval_err("eval need 1 arg");
+  }
+  if(a->cell[0]->type!=LVAL_QEXPR){
+    return lval_err("eval need a qexpr as arg");
+  }
+  return lval_eval(e, a->cell[0]->cell[0]);
 }
 
 lval* builtin_exit(lenv* e,lval* a){
@@ -474,6 +502,7 @@ void lenv_add_buildins(lenv* e){
   lenv_add_builtin(e, "car", builtin_car);
   lenv_add_builtin(e, "cdr", builtin_cdr);
   lenv_add_builtin(e, "eval", builtin_eval);
+  lenv_add_builtin(e, "def", builtin_def);
   /* lenv_add_builtin(e, "join", builtin_join); */
 
   /* Mathematical Functions */
