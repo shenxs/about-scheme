@@ -1,15 +1,21 @@
+CC= gcc
 
-CC=gcc
-
-CFLAGS= -ledit -lm
+CFLAGS= -ledit -lm -g -Wall
 
 CSTD= -std=c99
 
-main: *.c
-	$(CC) $(CSTD) -g main.c mpc.c $(CFLAGS) -o main.out
+OBJ= main.o type.o builtin_func.o mpc.o
+
+EXE=main
+
+%.o: %.c
+	$(CC) -o $@ -c $< $(CFLAGS)
+
+main: $(OBJ)
+	$(CC) $(CSTD) $(OBJ)  $(CFLAGS) -o $(EXE)
 
 clean:
-	rm *.out
+	rm  $(EXE) $(OBJ)
 
 debug:
 	gdb -tui ./main.out
