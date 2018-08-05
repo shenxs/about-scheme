@@ -108,8 +108,10 @@ lval *buildin_op(lenv* e, lval *a, char *op) {
   /* 确保所有的参数都是数字 */
   for (int i = 0; i < a->count; i++) {
     if (a->cell[i]->type != LVAL_NUM) {
+      int type=a->cell[i]->type;
       lval_del(a);
-      return lval_err("can not deal with non-number");
+      return lval_err("function %s get incorrect argument .Got %s ,Expect %s.",
+                      op,ltype_name(type) ,ltype_name(LVAL_NUM));
     }
   }
 
