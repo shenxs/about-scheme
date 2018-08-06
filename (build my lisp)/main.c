@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
 #ifdef _WIN32
 #include <string.h>
 /* static char buffer[2048] */

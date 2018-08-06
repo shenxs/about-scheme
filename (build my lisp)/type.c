@@ -381,9 +381,7 @@ lval *lval_call(lenv *e,lval *f,lval* a){
     return f->builtin(e,a);
   }
 
-
   /* 用户自定义函数 */
-
   int given=a->count;
   int total=f->formals->count;
 
@@ -392,11 +390,47 @@ lval *lval_call(lenv *e,lval *f,lval* a){
       return lval_err("Function passed too many arguments. Expect %i,Got %i. ", total,given);
     }
     lval* k=lval_pop(f->formals, 0);
+
+    /* 如果包含&,则将剩下的参数作为一个单一的list传递给&后的形参 */
+    if(strcmp(k->sym, "&") ==0 ){
+      if(f->formals->count!=1){
+        return lval_err("Function formal invalid"
+                        "Symbol & is not followed by one single symbol");
+      }
+      lval* next_formal=lval_pop(f->formals, 0);
+      lenv_put(e, next_formal, builtin_list(e, a));
+      lval_del(k);lval_del(next_formal);
+      break;
+    }
     lval* v=lval_pop(a, 0);
     lenv_put(f->env, k, v );
 
     lval_del(k);
     lval_del(v);
+  }
+
+  /* 参数已经被绑定到形参上或者形参为空所以可以释放掉 */
+  lval_del(a);
+  /* If '&' remains in formal list bind to empty list */
+  if (f->formals->count > 0 &&
+      strcmp(f->formals->cell[0]->sym, "&") == 0) {
+
+    /* Check to ensure that & is not passed invalidly. */
+    if (f->formals->count != 2) {
+      return lval_err("Function format invalid. "
+                      "Symbol '&' not followed by single symbol.");
+    }
+
+    /* Pop and delete '&' symbol */
+    lval_del(lval_pop(f->formals, 0));
+
+    /* Pop next symbol and create empty list */
+    lval* sym = lval_pop(f->formals, 0);
+    lval* val = lval_qexpr();
+
+    /* Bind to environment and delete */
+    lenv_put(f->env, sym, val);
+    lval_del(sym); lval_del(val);
   }
   if(f->formals->count==0){
     /* 设置上级环境 */
