@@ -1,3 +1,5 @@
+#include "builtin_func.h"
+
 #ifndef type_h
 #define type_h
 
@@ -17,24 +19,34 @@ typedef lval *(*lbuildin)(lenv *, lval *); //内建函数
 typedef struct lval {
   int type;
 
+  // basic
   long num;
   char *err;
   char *sym;
-  lbuildin fun;
 
+  //function
+  lbuildin builtin;
+  lenv* env;
+  lval* formals;
+  lval* body;
+
+  //expression s-expr or q-expr
   int count;
   struct lval **cell;
 } lval;
 
 struct lenv {
+  lenv *par; //parent enviroment
   int count;
   char **syms;
   lval **vals;
 };
 
 lenv *lenv_new(void);
+lenv *lenv_copy(lenv* e);
 lval *lenv_get(lenv *e, lval *k);
 void lenv_put(lenv *e, lval *k, lval *v);
+void lenv_def(lenv* e,lval *k,lval *v);
 
 void lval_del(lval *v);
 lval *lval_copy(lval *v);
@@ -45,10 +57,12 @@ lval *lval_fun(lbuildin func);
 lval *lval_err(char *fmt, ...);
 lval *lval_sexpr(void);
 lval *lval_qexpr(void);
+lval *lval_lambda(lval *formals, lval *body);
 
 lval *lval_add(lval *v, lval *x);
 lval *lval_copy(lval *v);
 lval *lval_pop(lval *v, int i);
+lval *lval_call(lenv *e,lval *f,lval* a);
 
 lval *lval_take(lval *v, int i);
 void lval_del(lval *v);

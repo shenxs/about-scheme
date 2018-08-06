@@ -1,6 +1,6 @@
 CC= gcc
 
-CFLAGS= -ledit -lm -g -Wall
+CFLAGS= -ledit -lm -g
 
 CSTD= -std=c99
 

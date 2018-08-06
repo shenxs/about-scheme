@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
 #ifdef _WIN32
 #include <string.h>
 /* static char buffer[2048] */
@@ -25,13 +26,6 @@ void add_history(char *unused) {}
 #include <editline/readline.h>
 #endif
 
-#define LASSERT(args, cond, fmt, ...)                                          \
-  if (!(cond)) {                                                               \
-    lval *err = lval_err(fmt, ##__VA_ARGS__);                                  \
-    lval_del(args);                                                            \
-    return err;                                                                \
-  }
-
 void lenv_add_builtin(lenv *e, char *name, lbuildin func) {
   lval *k = lval_sym(name);
   lval *v = lval_fun(func);
@@ -47,7 +41,7 @@ void lenv_add_buildins(lenv *e) {
   lenv_add_builtin(e, "cdr", builtin_cdr);
   lenv_add_builtin(e, "eval", builtin_eval);
   lenv_add_builtin(e, "def", builtin_def);
-  /* lenv_add_builtin(e, "join", builtin_join); */
+  lenv_add_builtin(e, "lambda", builtin_lambda);
 
   /* Mathematical Functions */
   lenv_add_builtin(e, "+", builtin_add);
@@ -57,6 +51,7 @@ void lenv_add_buildins(lenv *e) {
 
   /* exit */
   lenv_add_builtin(e, "exit", builtin_exit);
+  lenv_add_builtin(e, "=", builtin_put);
 }
 
 int main(int argc, char **argv) {
