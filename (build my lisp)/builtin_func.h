@@ -9,13 +9,17 @@ lval *builtin_sub(lenv *e, lval *a);
 lval *builtin_mul(lenv *e, lval *a);
 lval *builtin_div(lenv *e, lval *a);
 lval *builtin_is_zero(lenv *e,lval *a);
+lval *builtin_cmp(lenv *e,lval *a,char* op);
+lval *builtin_gt(lenv*e,lval*a);
+lval *builtin_ge(lenv*e,lval*a);
+lval *builtin_lt(lenv*e,lval*a);
+lval *builtin_le(lenv*e,lval*a);
 
 // bool
 lval *builtin_and(lenv *e, lval *a);
 lval *builtin_or(lenv *e, lval *a);
 lval *builtin_not(lenv *e, lval *a);
 lval *builtin_is_true(lenv *e, lval *a);
-lval *builtin_is_false(lenv *e,lval *a);
 
 // list oprator
 lval *builtin_list(lenv *e, lval *a);

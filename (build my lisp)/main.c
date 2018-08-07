@@ -51,10 +51,18 @@ void lenv_add_buildins(lenv *e) {
   lenv_add_builtin(e, "*", builtin_mul);
   lenv_add_builtin(e, "/", builtin_div);
   lenv_add_builtin(e,"zero?",builtin_is_zero);
+  lenv_add_builtin(e, ">", builtin_gt);
+  lenv_add_builtin(e, ">=", builtin_ge);
+  lenv_add_builtin(e, "<", builtin_lt);
+  lenv_add_builtin(e, "<=", builtin_le);
+
+
+  /* logical */
+  lenv_add_builtin(e,"if",builtin_if);
   lenv_add_builtin(e,"and",builtin_and);
   lenv_add_builtin(e,"or",builtin_or);
-
-  lenv_add_builtin(e,"if",builtin_if);
+  lenv_add_builtin(e,"not",builtin_not);
+  lenv_add_builtin(e,"true?",builtin_is_true);
 
   /* exit */
   lenv_add_builtin(e, "exit", builtin_exit);

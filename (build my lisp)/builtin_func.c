@@ -278,6 +278,30 @@ lval *builtin_or(lenv *e, lval *a){
   }
 }
 
+lval *builtin_not(lenv *e, lval *a){
+  LASSERT_NUM("not" ,a ,1);
+  LASSERT_TYPE("not" ,a ,0,LVAL_BOOL);
+  lval* x=lval_take(a,0);
+  if(strcmp(x->sym,"true")==0){
+    lval_del(x);
+    return lval_bool("false");
+  }else if(strcmp(x->sym,"false")==0){
+    lval_del(x);
+    return lval_bool("true");
+  }else{
+    return lval_err("error in buidin not");
+  }
+}
+
+lval *builtin_is_true(lenv *e, lval *a){
+  LASSERT_NUM("true?",a,1);
+  if(a->cell[0]->type!=LVAL_BOOL){
+    return lval_bool("false");
+  }else{
+    return lval_take(a,0);
+  }
+}
+
 lval *builtin_if(lenv *e,lval *a){
   LASSERT_NUM("if",a,3);
   LASSERT_TYPE("if",a,0,LVAL_BOOL);
@@ -299,4 +323,51 @@ lval *builtin_if(lenv *e,lval *a){
   }else{
     return lval_err("if got a invalid condition");
   }
+}
+
+/* 比较两个数字类型大小 */
+lval *builtin_cmp(lenv *e,lval *a,char* op){
+  LASSERT_NUM(op,a,2);
+  LASSERT_TYPE(op,a,0,LVAL_NUM);
+  LASSERT_TYPE(op,a,1,LVAL_NUM);
+
+  lval* n1=a->cell[0];
+  lval* n2 = a->cell[1];
+
+  int flag=-1;
+
+  if(strcmp(op,"=?")==0){
+    flag=n1->num==n2->num ? 1:0 ;
+  }else if(strcmp(op,">")==0){
+    flag=n1->num>n2->num ? 1:0 ;
+  }else if(strcmp(op,">=")==0){
+    flag=n1->num>=n2->num ? 1:0 ;
+  }else if(strcmp(op,"<")==0){
+    flag=n1->num<n2->num ? 1:0 ;
+  }else if(strcmp(op,"<=")){
+    flag=n1->num<=n2->num ? 1:0 ;
+  }else{
+    return lval_err("%s is not defined",op);
+  }
+
+  if(flag==1){
+    return lval_bool("true");
+  }else if(flag==0){
+    return lval_bool("false");
+  }else{
+    return lval_err("buildin_cmp error");
+  }
+}
+
+lval *builtin_gt(lenv*e,lval*a){
+  return builtin_cmp(e,a,">");
+}
+lval *builtin_ge(lenv*e,lval*a){
+  return builtin_cmp(e,a,">=");
+}
+lval *builtin_lt(lenv*e,lval*a){
+  return builtin_cmp(e,a,"<");
+}
+lval *builtin_le(lenv*e,lval*a){
+  return builtin_cmp(e,a,"<=");
 }
