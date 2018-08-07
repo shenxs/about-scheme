@@ -39,5 +39,6 @@ lval *builtin_op(lenv *e, lval *a, char *op);
 
 // condition
 lval *builtin_if(lenv *e,lval *a);
+lval *builtin_equal(lenv *e,lval *a);
 
 #endif

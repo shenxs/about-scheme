@@ -371,3 +371,14 @@ lval *builtin_lt(lenv*e,lval*a){
 lval *builtin_le(lenv*e,lval*a){
   return builtin_cmp(e,a,"<=");
 }
+
+lval *builtin_equal(lenv *e,lval *a){
+  LASSERT_NUM("=?",a,2);
+  int flag=lval_eq(a->cell[0],a->cell[1]);
+  lval_del(a);
+  if(flag){
+    return lval_bool("true");
+  }else{
+    return lval_bool("false");
+  }
+}

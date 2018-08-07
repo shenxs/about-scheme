@@ -457,3 +457,37 @@ lval *lval_call(lenv *e,lval *f,lval* a){
     return lval_copy(f);
   }
 }
+
+int lval_eq(lval*x ,lval* y){
+  /* 比较两个类型是否等价 */
+  if(x->type!=y->type){
+    return 0;
+  }else{
+    switch(x->type){
+    case LVAL_NUM:return (x->num==y->num);
+    case LVAL_ERR:return strcmp(x->err,y->err);
+    case LVAL_BOOL:
+    case LVAL_SYM:
+      return strcmp(x->sym,y->sym);
+    case LVAL_FUN:
+      if(x->builtin||y->builtin){
+        return x->builtin==y->builtin;
+      }else{
+        return lval_eq(x->formals,y->formals)
+          &&lval_eq(x->body,y->body);
+      }
+    case LVAL_SEXPR:
+    case LVAL_QEXPR:
+      if(x->count!=y->count){
+        return 0;
+      }else{
+        for(int i=0;i<x->count;i++){
+          if(!lval_eq(x->cell[i],y->cell[i]))
+            return 0;
+        }
+        return 1;
+      }
+    }
+    return 0;
+  }
+}

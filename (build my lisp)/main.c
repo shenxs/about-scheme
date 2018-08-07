@@ -41,9 +41,6 @@ void lenv_add_buildins(lenv *e) {
   lenv_add_builtin(e, "car", builtin_car);
   lenv_add_builtin(e, "cdr", builtin_cdr);
 
-  lenv_add_builtin(e, "eval", builtin_eval);
-  lenv_add_builtin(e, "def", builtin_def);
-  lenv_add_builtin(e, "lambda", builtin_lambda);
 
   /* Mathematical Functions */
   lenv_add_builtin(e, "+", builtin_add);
@@ -56,15 +53,18 @@ void lenv_add_buildins(lenv *e) {
   lenv_add_builtin(e, "<", builtin_lt);
   lenv_add_builtin(e, "<=", builtin_le);
 
-
   /* logical */
-  lenv_add_builtin(e,"if",builtin_if);
   lenv_add_builtin(e,"and",builtin_and);
   lenv_add_builtin(e,"or",builtin_or);
   lenv_add_builtin(e,"not",builtin_not);
   lenv_add_builtin(e,"true?",builtin_is_true);
 
-  /* exit */
+  /* other */
+  lenv_add_builtin(e, "eval", builtin_eval);
+  lenv_add_builtin(e, "def", builtin_def);
+  lenv_add_builtin(e, "lambda", builtin_lambda);
+  lenv_add_builtin(e,"if",builtin_if);
+  lenv_add_builtin(e,"=?",builtin_equal);
   lenv_add_builtin(e, "exit", builtin_exit);
   lenv_add_builtin(e, "=", builtin_put);
 }
