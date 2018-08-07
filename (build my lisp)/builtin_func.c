@@ -56,6 +56,19 @@ lval* builtin_car(lenv* e,lval* a){
   }
 }
 
+// get a Q-Expession and return a Q-expression with only the first element
+lval *builtin_head(lenv *e,lval *a){
+  LASSERT_NUM("head",a,1);
+  LASSERT_TYPE("head",a,0,LVAL_QEXPR);
+
+  lval* result=lval_pop(a->cell[0], 0);
+  lval_del(a);
+
+  return lval_add(lval_qexpr(), result);
+
+
+}
+
 lval* builtin_cdr(lenv* e,lval* a){
   if(a->count!=1){
     return lval_err("cdr only take one param");

@@ -36,6 +36,7 @@ void lenv_add_builtin(lenv *e, char *name, lbuildin func) {
 void lenv_add_buildins(lenv *e) {
   /* List Functions */
   lenv_add_builtin(e, "list", builtin_list);
+  lenv_add_builtin(e, "head", builtin_head);
   lenv_add_builtin(e, "car", builtin_car);
   lenv_add_builtin(e, "cdr", builtin_cdr);
   lenv_add_builtin(e, "eval", builtin_eval);
