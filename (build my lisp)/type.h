@@ -6,7 +6,7 @@
 #include "mpc.h"
 /* 前置申明 */
 
-enum { LVAL_NUM, LVAL_ERR, LVAL_SYM, LVAL_SEXPR, LVAL_QEXPR, LVAL_FUN };
+enum { LVAL_BOOL, LVAL_NUM, LVAL_ERR, LVAL_SYM, LVAL_SEXPR, LVAL_QEXPR, LVAL_FUN };
 
 struct lval; // lisp 元素
 struct lenv; // lisp 环境
@@ -51,6 +51,7 @@ void lenv_def(lenv* e,lval *k,lval *v);
 void lval_del(lval *v);
 lval *lval_copy(lval *v);
 
+lval *lval_bool(char *s);
 lval *lval_num(long x);
 lval *lval_sym(char *s);
 lval *lval_fun(lbuildin func);

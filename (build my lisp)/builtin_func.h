@@ -3,21 +3,37 @@
 #define builtin_func_h
 #include "type.h"
 
+// math
 lval *builtin_add(lenv *e, lval *a);
 lval *builtin_sub(lenv *e, lval *a);
 lval *builtin_mul(lenv *e, lval *a);
 lval *builtin_div(lenv *e, lval *a);
+lval *builtin_is_zero(lenv *e,lval *a);
+
+// bool
+lval *builtin_and(lenv *e, lval *a);
+lval *builtin_or(lenv *e, lval *a);
+lval *builtin_not(lenv *e, lval *a);
+lval *builtin_is_true(lenv *e, lval *a);
+lval *builtin_is_false(lenv *e,lval *a);
+
+// list oprator
 lval *builtin_list(lenv *e, lval *a);
 lval *builtin_car(lenv *e, lval *a);
-lval *builtin_head(lenv *e,lval *a);
+lval *builtin_head(lenv *e, lval *a);
+lval *builtin_join(lenv *e, lval *a);
 lval *builtin_cdr(lenv *e, lval *a);
+
 lval *builtin_def(lenv *e, lval *a);
 lval *builtin_exit(lenv *e, lval *a);
 lval *builtin_eval(lenv *e, lval *a);
 lval *builtin_lambda(lenv *e, lval *a);
-lval *builtin_put(lenv *e ,lval *a);
-lval *builtin_var(lenv *e ,lval *a,char* func);
+lval *builtin_put(lenv *e, lval *a);
+lval *builtin_var(lenv *e, lval *a, char *func);
 
 lval *builtin_op(lenv *e, lval *a, char *op);
+
+// condition
+lval *builtin_if(lenv *e,lval *a);
 
 #endif

@@ -75,6 +75,18 @@ void lenv_def(lenv* e,lval *k,lval *v){
   lenv_put(e,k,v);
 }
 
+lval *lval_bool(char *s){
+  lval* v=malloc(sizeof(lval));
+  v->type=LVAL_BOOL;
+  if(strcmp(s,"true")==0||strcmp(s,"false")==0){
+    v->sym=malloc(sizeof(char)*3);
+    strcpy(v->sym,s);
+  }else{
+    return lval_err("Internal error");
+  }
+  return v;
+}
+
 lval *lval_num(long x) {
   lval *v = malloc(sizeof(lval));
   v->type = LVAL_NUM;
@@ -145,6 +157,10 @@ lval *lval_read(mpc_ast_t *t) {
     return lval_read_num(t);
   }
   if (strstr(t->tag, "symbol")) {
+    if(strcmp(t->contents,"true")==0||
+       strcmp(t->contents,"false")==0){
+      return lval_bool(t->contents);
+    }
     return lval_sym(t->contents);
   }
 
@@ -192,6 +208,7 @@ void lval_del(lval *v) {
   case LVAL_ERR:
     free(v->err);
     break;
+  case LVAL_BOOL:
   case LVAL_SYM:
     free(v->sym);
     break;
@@ -257,6 +274,9 @@ void lval_print(lval *v) {
   switch (v->type) {
   case LVAL_NUM:
     printf("%li", v->num);
+    break;
+  case LVAL_BOOL:
+    printf("%s",v->sym);
     break;
   case LVAL_ERR:
     printf("ERROR: %s", v->err);
@@ -325,6 +345,7 @@ char* ltype_name(int t){
   case LVAL_SYM:return "Symbol";
   case LVAL_QEXPR:return "Q-Expression";
   case LVAL_SEXPR:return "S-Expression";
+  case LVAL_BOOL:return "Boolean";
   default:return "UNKONW";
   }
 }
@@ -343,10 +364,6 @@ lval *lval_eval_sexpr(lenv* e, lval *v) {
   if (v->count == 0) {
     return v;
   }
-  /* lval_println(v); */
-  /* if(v->count == 1 &&v->cell[0]->type!=LVAL_FUN){ */
-  /*   return lval_take(v, 0); */
-  /* } */
 
   lval *f = lval_pop(v, 0);
   if (f->type != LVAL_FUN) {

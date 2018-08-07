@@ -37,8 +37,10 @@ void lenv_add_buildins(lenv *e) {
   /* List Functions */
   lenv_add_builtin(e, "list", builtin_list);
   lenv_add_builtin(e, "head", builtin_head);
+  lenv_add_builtin(e, "join", builtin_join);
   lenv_add_builtin(e, "car", builtin_car);
   lenv_add_builtin(e, "cdr", builtin_cdr);
+
   lenv_add_builtin(e, "eval", builtin_eval);
   lenv_add_builtin(e, "def", builtin_def);
   lenv_add_builtin(e, "lambda", builtin_lambda);
@@ -48,6 +50,11 @@ void lenv_add_buildins(lenv *e) {
   lenv_add_builtin(e, "-", builtin_sub);
   lenv_add_builtin(e, "*", builtin_mul);
   lenv_add_builtin(e, "/", builtin_div);
+  lenv_add_builtin(e,"zero?",builtin_is_zero);
+  lenv_add_builtin(e,"and",builtin_and);
+  lenv_add_builtin(e,"or",builtin_or);
+
+  lenv_add_builtin(e,"if",builtin_if);
 
   /* exit */
   lenv_add_builtin(e, "exit", builtin_exit);
@@ -67,7 +74,7 @@ int main(int argc, char **argv) {
   mpca_lang(MPCA_LANG_DEFAULT,
             "                                                     \
     number   : /-?[0-9]+/ ;                                       \
-    symbol   : /[a-zA-Z0-9_+\\-*\\/\\\\=<>!&]+/ ;                 \
+    symbol   : /[a-zA-Z0-9_+\\-*\\/\\\\=<>!&?]+/ ;                 \
     sexpr    : '(' <expr>* ')'   ;                                \
     qexpr    : '{' <expr>* '}'   ;                                \
     expr     : <number> | <symbol> | <sexpr> | <qexpr>;           \

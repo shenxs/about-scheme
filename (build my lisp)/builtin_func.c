@@ -69,6 +69,20 @@ lval *builtin_head(lenv *e,lval *a){
 
 }
 
+/* 将两个Q-expression 合并为一个 */
+lval *builtin_join(lenv *e,lval *a){
+  LASSERT_NUM("join",a,2);
+  for(int i=0;i<a->count;i++){
+    LASSERT_TYPE("join",a,i,LVAL_QEXPR);
+  }
+  lval* result=lval_copy(a->cell[0]);
+  for(int i=0;i<a->cell[1]->count;i++){
+    lval_add(result, a->cell[1]->cell[i]);
+  }
+  lval_del(a);
+  return result;
+}
+
 lval* builtin_cdr(lenv* e,lval* a){
   if(a->count!=1){
     return lval_err("cdr only take one param");
@@ -226,4 +240,63 @@ lval *builtin_lambda(lenv *e, lval *a){
 
   lval_del(a);
   return lval_lambda(formals,body);
+}
+
+lval *builtin_is_zero(lenv *e,lval *a){
+  LASSERT_NUM("zero?",a,1);
+  LASSERT_TYPE("zero?",a,0,LVAL_NUM);
+
+  if(a->cell[0]->num==0){
+    return lval_bool("true");
+  }else{
+    return lval_bool("false");
+  }
+}
+
+lval *builtin_and(lenv *e, lval *a){
+  LASSERT_NUM("and",a,2);
+  LASSERT_TYPE("and",a,0,LVAL_BOOL);
+  LASSERT_TYPE("and",a,1,LVAL_BOOL);
+  if(strcmp(a->cell[0]->sym,"true")==0&&
+     strcmp(a->cell[1]->sym,"true")==0){
+    return lval_bool("true");
+  }else{
+    return lval_bool("false");
+  }
+}
+
+
+lval *builtin_or(lenv *e, lval *a){
+  LASSERT_NUM("or",a,2);
+  LASSERT_TYPE("or",a,0,LVAL_BOOL);
+  LASSERT_TYPE("or",a,1,LVAL_BOOL);
+  if(strcmp(a->cell[0]->sym,"false")==0&&
+     strcmp(a->cell[1]->sym,"false")==0){
+    return lval_bool("false");
+  }else{
+    return lval_bool("true");
+  }
+}
+
+lval *builtin_if(lenv *e,lval *a){
+  LASSERT_NUM("if",a,3);
+  LASSERT_TYPE("if",a,0,LVAL_BOOL);
+  /* LASSERT_TYPE("if",a,1,LVAL_QEXPR); */
+  /* LASSERT_TYPE("if",a,2,LVAL_QEXPR); */
+
+  if(strcmp( a->cell[0]->sym , "true")==0){
+    if(a->cell[1]->type == LVAL_QEXPR){
+      return  builtin_eval(e,lval_add(lval_sexpr(), a->cell[1]));
+    }else{
+      return lval_take(a,1);
+    }
+  }else if(strcmp(a->cell[0]->sym ,"false") == 0){
+    if(a->cell[2]->type==LVAL_QEXPR){
+      return builtin_eval(e,lval_add(lval_sexpr(),a->cell[2]));
+    }else{
+      return lval_take(a,2);
+    }
+  }else{
+    return lval_err("if got a invalid condition");
+  }
 }
