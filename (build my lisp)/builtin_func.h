@@ -41,4 +41,7 @@ lval *builtin_op(lenv *e, lval *a, char *op);
 lval *builtin_if(lenv *e,lval *a);
 lval *builtin_equal(lenv *e,lval *a);
 
+//return what it get,get one return one
+lval *builtin_value(lenv *e,lval *a);
+
 #endif

@@ -141,15 +141,14 @@ lval *builtin_var(lenv *e ,lval *a,char* func){
 
 lval* builtin_eval(lenv* e,lval* a){
 
-  LASSERT(a,a->count == 1,
-          "Function eval arguments number not match.");
+  LASSERT_NUM("eval",a,1);
 
   lval* x=a->cell[0];
 
   switch(x->type){
   case LVAL_QEXPR:
     if(a->cell[0]->count==0){
-      return lval_err("too short");
+      return lval_take(a,0);
     }
     a->cell[0]->type=LVAL_SEXPR;
     return lval_eval(e, a->cell[0]);
@@ -381,4 +380,9 @@ lval *builtin_equal(lenv *e,lval *a){
   }else{
     return lval_bool("false");
   }
+}
+
+lval *builtin_value(lenv *e,lval *a){
+  LASSERT_NUM("value",a,1);
+  return lval_take(a,0);
 }
