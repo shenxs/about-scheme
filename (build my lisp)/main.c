@@ -80,7 +80,6 @@ void lenv_add_buildins(lenv *e) {
   lenv_add_builtin(e, "print", builtin_print);
   lenv_add_builtin(e, "error", builtin_error);
 
-
   lenv_add_builtin(e, "=", builtin_put);
 }
 
@@ -108,15 +107,17 @@ int main(int argc, char **argv) {
   ",
             Number, Symbol, String, Sexpr, Qexpr, Expr, Lispy, Comment);
 
-
   lenv *e = lenv_new();
   lenv_add_buildins(e);
+  builtin_load(e, lval_add(lval_sexpr(), lval_str("core.mlisp")));
 
-  if(argc >=2){
-    for(int i=1;i<argc;i++){
-      lval* arg = lval_add(lval_sexpr(), lval_str(argv[i]));
-      lval* x= builtin_load(e, arg);
-      if(x->type==LVAL_ERR){lval_print(x);}
+  if (argc >= 2) {
+    for (int i = 1; i < argc; i++) {
+      lval *arg = lval_add(lval_sexpr(), lval_str(argv[i]));
+      lval *x = builtin_load(e, arg);
+      if (x->type == LVAL_ERR) {
+        lval_print(x);
+      }
       lval_del(x);
     }
     return 0;

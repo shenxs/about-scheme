@@ -182,6 +182,8 @@ lval *lval_read(mpc_ast_t *t) {
     return lval_sym(t->contents);
   }else if(strstr(t->tag, "string")){
     return lval_read_str(t);
+  }else if(strstr(t->tag,"comment")){
+    return lval_void();
   }
 
   lval *x = NULL;
@@ -220,6 +222,7 @@ lval *lval_read(mpc_ast_t *t) {
 }
 void lval_del(lval *v) {
   switch (v->type) {
+  case LVAL_VOID:
   case LVAL_NUM:break;
   case LVAL_FUN:
     if(!v->builtin){
@@ -253,6 +256,7 @@ lval* lval_copy(lval *v) {
   x->type=v->type;
 
   switch (v->type) {
+  case LVAL_VOID:break;
   case LVAL_NUM:x->num=v->num;break;
   case LVAL_FUN:
     if(v->builtin){
@@ -317,6 +321,7 @@ void lval_print_str(lval* v){
 
 void lval_print(lval *v) {
   switch (v->type) {
+  case LVAL_VOID:break;
   case LVAL_NUM:
     printf("%li", v->num);
     break;
@@ -346,6 +351,8 @@ void lval_print(lval *v) {
       putchar(' ');lval_print(v->body);putchar(')');
     }
     break;
+  default:
+    printf("Error in lval_print");
   }
 }
 
@@ -395,6 +402,7 @@ char* ltype_name(int t){
   case LVAL_SEXPR:return "S-Expression";
   case LVAL_BOOL:return "Boolean";
   case LVAL_STR:return "String";
+  case LVAL_VOID:return "Void";
   default:return "UNKONW";
   }
 }
@@ -513,6 +521,7 @@ int lval_eq(lval*x ,lval* y){
     return 0;
   }else{
     switch(x->type){
+    case LVAL_VOID:return 1;
     case LVAL_NUM:return (x->num==y->num);
     case LVAL_ERR:return strcmp(x->err,y->err);
     case LVAL_BOOL:
@@ -541,4 +550,10 @@ int lval_eq(lval*x ,lval* y){
     }
     return 0;
   }
+}
+
+lval *lval_void(){
+  lval* v=malloc(sizeof(lval));
+  v->type=LVAL_VOID;
+  return v;
 }

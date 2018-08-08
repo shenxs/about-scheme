@@ -135,7 +135,7 @@ lval *builtin_var(lenv *e ,lval *a,char* func){
     }
   }
   lval_del(a);
-  return lval_sym(";)");
+  return lval_void();
 
 }
 
@@ -405,7 +405,7 @@ lval *builtin_load(lenv *e,lval *a){
     lval_del(a);
     lval_del(expr);
 
-    return lval_sym(";)");
+    return lval_void();
   }else{
     char * err_msg=mpc_err_string(r.error);
     mpc_err_delete(r.error);
@@ -424,7 +424,7 @@ lval *builtin_print(lenv *e,lval *a){
   }
   putchar('\n');
   lval_del(a);
-  return lval_sym(";)");
+  return lval_void();
 }
 
 lval *builtin_error(lenv *e,lval *a){
