@@ -1,0 +1,24 @@
+(def {fun}
+     (lambda {args body}
+             {def (head args)
+                  (lambda (cdr args) body)}))
+(fun {len l}
+     {if (=? l {})
+         0
+         {+ 1 (len (cdr l))}})
+
+(fun {apply f l}
+     {eval (join (list f) l)})
+
+(fun {map f l}
+     {if (=? l {})
+         {value {}}
+         {join (list (f (car l))) (map f (cdr l))}})
+
+;;comment
+
+(fun {reverse l}
+     {if (=? l {})
+         {value {}}
+         {join (reverse (cdr l)) (head l) }})
+
