@@ -1,5 +1,15 @@
-#include "builtin_func.h"
 #include "mpc.h"
+
+mpc_parser_t *Number;
+mpc_parser_t *Symbol;
+mpc_parser_t *String;
+mpc_parser_t *Comment;
+mpc_parser_t *Sexpr;
+mpc_parser_t *Qexpr;
+mpc_parser_t *Expr;
+mpc_parser_t *Lispy;
+
+#include "builtin_func.h"
 #include "type.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -66,20 +76,25 @@ void lenv_add_buildins(lenv *e) {
   lenv_add_builtin(e, "if", builtin_if);
   lenv_add_builtin(e, "=?", builtin_equal);
   lenv_add_builtin(e, "exit", builtin_exit);
+  lenv_add_builtin(e, "load", builtin_load);
+  lenv_add_builtin(e, "print", builtin_print);
+  lenv_add_builtin(e, "error", builtin_error);
+
+
   lenv_add_builtin(e, "=", builtin_put);
 }
 
 int main(int argc, char **argv) {
 
-  /* 创建parsers */
-  mpc_parser_t *Number = mpc_new("number");
-  mpc_parser_t *Symbol = mpc_new("symbol");
-  mpc_parser_t *Sexpr = mpc_new("sexpr");
-  mpc_parser_t *Qexpr = mpc_new("qexpr");
-  mpc_parser_t *Expr = mpc_new("expr");
-  mpc_parser_t *Lispy = mpc_new("lispy");
-  mpc_parser_t *String = mpc_new("string");
-  mpc_parser_t *Comment = mpc_new("comment");
+  /* 初始化parsers */
+  Number = mpc_new("number");
+  Symbol = mpc_new("symbol");
+  Sexpr = mpc_new("sexpr");
+  Qexpr = mpc_new("qexpr");
+  Expr = mpc_new("expr");
+  Lispy = mpc_new("lispy");
+  String = mpc_new("string");
+  Comment = mpc_new("comment");
 
   mpca_lang(MPCA_LANG_DEFAULT,
             "number   : /-?[0-9]+/ ;                                    \
@@ -93,12 +108,22 @@ int main(int argc, char **argv) {
   ",
             Number, Symbol, String, Sexpr, Qexpr, Expr, Lispy, Comment);
 
-  puts("MyLisp Version 0.0.0.0.1");
-  puts("Press Ctrl+c to exit");
 
   lenv *e = lenv_new();
   lenv_add_buildins(e);
 
+  if(argc >=2){
+    for(int i=1;i<argc;i++){
+      lval* arg = lval_add(lval_sexpr(), lval_str(argv[i]));
+      lval* x= builtin_load(e, arg);
+      if(x->type==LVAL_ERR){lval_print(x);}
+      lval_del(x);
+    }
+    return 0;
+  }
+
+  puts("MyLisp Version 0.0.0.0.1");
+  puts("Press Ctrl+c to exit\n");
   while (1) {
     char *input = readline(">");
 
@@ -112,7 +137,7 @@ int main(int argc, char **argv) {
         if (strcmp(t->children[i]->tag, "regex") == 0) {
           continue;
         }
-        if(strstr(t->children[i]->tag,"comment")){
+        if (strstr(t->children[i]->tag, "comment")) {
           continue;
         }
         lval *x = lval_read(t->children[i]);

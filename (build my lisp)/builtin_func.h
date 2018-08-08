@@ -3,6 +3,8 @@
 #define builtin_func_h
 #include "type.h"
 
+extern mpc_parser_t *Lispy;
+
 // math
 lval *builtin_add(lenv *e, lval *a);
 lval *builtin_sub(lenv *e, lval *a);
@@ -28,12 +30,16 @@ lval *builtin_head(lenv *e, lval *a);
 lval *builtin_join(lenv *e, lval *a);
 lval *builtin_cdr(lenv *e, lval *a);
 
+// system
 lval *builtin_def(lenv *e, lval *a);
 lval *builtin_exit(lenv *e, lval *a);
 lval *builtin_eval(lenv *e, lval *a);
 lval *builtin_lambda(lenv *e, lval *a);
 lval *builtin_put(lenv *e, lval *a);
 lval *builtin_var(lenv *e, lval *a, char *func);
+lval *builtin_load(lenv *e,lval *a);
+lval *builtin_print(lenv *e,lval *a);
+lval *builtin_error(lenv *e,lval *a);
 
 lval *builtin_op(lenv *e, lval *a, char *op);
 
