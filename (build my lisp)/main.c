@@ -41,31 +41,30 @@ void lenv_add_buildins(lenv *e) {
   lenv_add_builtin(e, "car", builtin_car);
   lenv_add_builtin(e, "cdr", builtin_cdr);
 
-
   /* Mathematical Functions */
   lenv_add_builtin(e, "+", builtin_add);
   lenv_add_builtin(e, "-", builtin_sub);
   lenv_add_builtin(e, "*", builtin_mul);
   lenv_add_builtin(e, "/", builtin_div);
-  lenv_add_builtin(e,"zero?",builtin_is_zero);
+  lenv_add_builtin(e, "zero?", builtin_is_zero);
   lenv_add_builtin(e, ">", builtin_gt);
   lenv_add_builtin(e, ">=", builtin_ge);
   lenv_add_builtin(e, "<", builtin_lt);
   lenv_add_builtin(e, "<=", builtin_le);
 
   /* logical */
-  lenv_add_builtin(e,"and",builtin_and);
-  lenv_add_builtin(e,"or",builtin_or);
-  lenv_add_builtin(e,"not",builtin_not);
-  lenv_add_builtin(e,"true?",builtin_is_true);
+  lenv_add_builtin(e, "and", builtin_and);
+  lenv_add_builtin(e, "or", builtin_or);
+  lenv_add_builtin(e, "not", builtin_not);
+  lenv_add_builtin(e, "true?", builtin_is_true);
 
   /* other */
   lenv_add_builtin(e, "eval", builtin_eval);
   lenv_add_builtin(e, "def", builtin_def);
   lenv_add_builtin(e, "lambda", builtin_lambda);
-  lenv_add_builtin(e,"value",builtin_value);
-  lenv_add_builtin(e,"if",builtin_if);
-  lenv_add_builtin(e,"=?",builtin_equal);
+  lenv_add_builtin(e, "value", builtin_value);
+  lenv_add_builtin(e, "if", builtin_if);
+  lenv_add_builtin(e, "=?", builtin_equal);
   lenv_add_builtin(e, "exit", builtin_exit);
   lenv_add_builtin(e, "=", builtin_put);
 }
@@ -79,18 +78,20 @@ int main(int argc, char **argv) {
   mpc_parser_t *Qexpr = mpc_new("qexpr");
   mpc_parser_t *Expr = mpc_new("expr");
   mpc_parser_t *Lispy = mpc_new("lispy");
-  mpc_parser_t *String =mpc_new("string");
+  mpc_parser_t *String = mpc_new("string");
+  mpc_parser_t *Comment = mpc_new("comment");
 
   mpca_lang(MPCA_LANG_DEFAULT,
-            "number   : /-?[0-9]+/ ;                                       \
+            "number   : /-?[0-9]+/ ;                                    \
              symbol   : /[a-zA-Z0-9_+\\-*\\/\\\\=<>!&?]+/ ;             \
              string   : /\"(\\\\.|[^\"])*\"/ ;                          \
+             comment  : /;[^\\r\\n]*/ ;                                 \
              sexpr    : '(' <expr>* ')'   ;                             \
              qexpr    : '{' <expr>* '}'   ;                             \
-             expr     : <number> | <symbol> |<string>|<sexpr> | <qexpr>; \
+             expr     : <comment>| <number> | <symbol> |<string>|<sexpr> | <qexpr>; \
              lispy    : /^/  <expr>* /$/ ;                              \
   ",
-            Number, Symbol,String, Sexpr, Qexpr, Expr, Lispy);
+            Number, Symbol, String, Sexpr, Qexpr, Expr, Lispy, Comment);
 
   puts("MyLisp Version 0.0.0.0.1");
   puts("Press Ctrl+c to exit");
@@ -111,6 +112,9 @@ int main(int argc, char **argv) {
         if (strcmp(t->children[i]->tag, "regex") == 0) {
           continue;
         }
+        if(strstr(t->children[i]->tag,"comment")){
+          continue;
+        }
         lval *x = lval_read(t->children[i]);
         x = lval_eval(e, x);
         lval_println(x);
@@ -124,7 +128,7 @@ int main(int argc, char **argv) {
     free(input);
   }
 
-  mpc_cleanup(7, Number, Symbol,String, Sexpr, Qexpr, Expr, Lispy);
+  mpc_cleanup(8, Number, Symbol, String, Sexpr, Qexpr, Expr, Lispy, Comment);
 
   return 0;
 }
