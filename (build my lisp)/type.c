@@ -448,10 +448,6 @@ lval *lval_eval_sexpr(lenv* e, lval *v) {
     }
   }
 
-  if (v->count == 0) {
-    return v;
-  }
-
   lval *result = lval_call(e, f, v);
 
   lval_del(f);
