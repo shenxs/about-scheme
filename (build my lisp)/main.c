@@ -50,6 +50,7 @@ void lenv_add_buildins(lenv *e) {
   lenv_add_builtin(e, "join", builtin_join);
   lenv_add_builtin(e, "car", builtin_car);
   lenv_add_builtin(e, "cdr", builtin_cdr);
+  lenv_add_builtin(e, "quote", builtin_quote);
 
   /* Mathematical Functions */
   lenv_add_builtin(e, "+", builtin_add);

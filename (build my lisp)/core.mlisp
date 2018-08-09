@@ -31,4 +31,16 @@
 
 (fun {even? x} {not (odd? x)})
 
+(fun {empty? l} {=? l {}})
+
+(fun {flodl f z l}
+     {if (empty? l)
+         z
+         {flodl f (f z (car l)) (cdr l)}})
+
+
+(fun {let bindings body}
+     {apply (lambda (map (lambda {x} {car x}) bindings)
+                    body)
+            (map (lambda {x} {car (cdr x)}) bindings)})
 

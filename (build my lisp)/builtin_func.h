@@ -30,6 +30,7 @@ lval *builtin_car(lenv *e, lval *a);
 lval *builtin_head(lenv *e, lval *a);
 lval *builtin_join(lenv *e, lval *a);
 lval *builtin_cdr(lenv *e, lval *a);
+lval *builtin_quote(lenv *e,lval *a);
 
 // system
 lval *builtin_def(lenv *e, lval *a);

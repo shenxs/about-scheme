@@ -19,14 +19,7 @@ lval* builtin_div(lenv* e,lval* a){
 lval* builtin_list(lenv* e,lval* a){
   lval* v =lval_qexpr();
   for(int i=0;i<a->count;i++){
-    lval_add(v, lval_eval(e, a->cell[i]));
-  }
-  for(int i=0;i<v->count;i++){
-    if(v->cell[i]->type==LVAL_ERR){
-      lval* err=lval_copy(v->cell[i]);
-      lval_del(v);
-      return err;
-    }
+    lval_add(v, a->cell[i]);
   }
   return v;
 }
@@ -65,8 +58,6 @@ lval *builtin_head(lenv *e,lval *a){
   lval_del(a);
 
   return lval_add(lval_qexpr(), result);
-
-
 }
 
 /* 将两个Q-expression 合并为一个 */
@@ -159,6 +150,7 @@ lval* builtin_eval(lenv* e,lval* a){
 
 lval* builtin_exit(lenv* e,lval* a){
   exit(0);
+  return lval_bool("true");
 }
 
 lval *builtin_op(lenv* e, lval *a, char *op) {
@@ -399,7 +391,7 @@ lval *builtin_load(lenv *e,lval *a){
     mpc_ast_delete(r.output);
     while(expr->count){
       lval *x=lval_eval(e, lval_pop(expr, 0));
-      if(x->type==LVAL_ERR) lval_print(x);
+      if(x->type==LVAL_ERR) lval_println(x);
       lval_del(x);
     }
     lval_del(a);
@@ -445,4 +437,9 @@ lval *builtin_mod(lenv *e, lval *a){
   long y=a->cell[1]->num;
   lval_del(a);
   return lval_num(x%y);
+}
+
+lval *builtin_quote(lenv *e,lval *a){
+  LASSERT_NUM("quote",a,1);
+  return lval_quote(a->cell[0]);
 }

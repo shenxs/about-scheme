@@ -410,7 +410,34 @@ char* ltype_name(int t){
   }
 }
 
+lval *lval_quote(lval *v){
+  return v;
+}
+
 lval *lval_eval_sexpr(lenv* e, lval *v) {
+  LASSERT(v,v->count!=0,"Syntax error,Got empty s-expression");
+
+  v->cell[0]=lval_eval(e,v->cell[0]);
+  lval *f = lval_pop(v, 0);
+  if(f->type==LVAL_ERR){
+    lval_del(v);
+    return f;
+  }
+
+  if (f->type != LVAL_FUN) {
+    lval* err=lval_err("first element is not a function,"
+                       "Expect %s , Got %s ",
+                       ltype_name(LVAL_FUN),ltype_name(f->type));
+    lval_del(f);
+    lval_del(v);
+    return err;
+  }
+
+  if(f->builtin==builtin_quote){
+    lval_del(f);
+    return builtin_quote(e,v);;
+  }
+
   for (int i = 0; i < v->count; i++) {
     v->cell[i] = lval_eval(e,v->cell[i]);
   }
@@ -423,17 +450,6 @@ lval *lval_eval_sexpr(lenv* e, lval *v) {
 
   if (v->count == 0) {
     return v;
-  }
-
-  lval *f = lval_pop(v, 0);
-  if (f->type != LVAL_FUN) {
-    lval* err=lval_err("first element is not a function,"
-                       "Expect %s , Got %s ",
-                       ltype_name(LVAL_FUN),ltype_name(f->type));
-
-    lval_del(f);
-    lval_del(v);
-    return err;
   }
 
   lval *result = lval_call(e, f, v);
