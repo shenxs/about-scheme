@@ -15,10 +15,20 @@
          {value {}}
          {join (list (f (car l))) (map f (cdr l))}})
 
-;;comment
-
 (fun {reverse l}
      {if (=? l {})
          {value {}}
          {join (reverse (cdr l)) (head l) }})
+
+(fun {filter f l}
+     {if (=? l {})
+         {value {}}
+         {if (f (car l))
+             {join (head l) (filter f (cdr l))}
+             {filter f (cdr l)}}})
+
+(fun {odd? x} {=? 1 (% x 2)})
+
+(fun {even? x} {not (odd? x)})
+
 

@@ -10,6 +10,7 @@ lval *builtin_add(lenv *e, lval *a);
 lval *builtin_sub(lenv *e, lval *a);
 lval *builtin_mul(lenv *e, lval *a);
 lval *builtin_div(lenv *e, lval *a);
+lval *builtin_mod(lenv *e, lval *a);
 lval *builtin_is_zero(lenv *e,lval *a);
 lval *builtin_cmp(lenv *e,lval *a,char* op);
 lval *builtin_gt(lenv*e,lval*a);

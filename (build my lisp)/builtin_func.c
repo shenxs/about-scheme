@@ -435,3 +435,14 @@ lval *builtin_error(lenv *e,lval *a){
   lval_del(a);
   return err;
 }
+
+lval *builtin_mod(lenv *e, lval *a){
+  //a := (<number> <number>)
+  LASSERT_NUM("mod",a,2);
+  LASSERT_TYPE("mod",a,0,LVAL_NUM);
+  LASSERT_TYPE("mod",a,1,LVAL_NUM);
+  long x=a->cell[0]->num;
+  long y=a->cell[1]->num;
+  lval_del(a);
+  return lval_num(x%y);
+}

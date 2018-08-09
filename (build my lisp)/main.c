@@ -61,6 +61,8 @@ void lenv_add_buildins(lenv *e) {
   lenv_add_builtin(e, ">=", builtin_ge);
   lenv_add_builtin(e, "<", builtin_lt);
   lenv_add_builtin(e, "<=", builtin_le);
+  lenv_add_builtin(e,"mod",builtin_mod);
+  lenv_add_builtin(e,"%",builtin_mod);
 
   /* logical */
   lenv_add_builtin(e, "and", builtin_and);
@@ -97,7 +99,7 @@ int main(int argc, char **argv) {
 
   mpca_lang(MPCA_LANG_DEFAULT,
             "number   : /-?[0-9]+/ ;                                    \
-             symbol   : /[a-zA-Z0-9_+\\-*\\/\\\\=<>!&?]+/ ;             \
+             symbol   : /[a-zA-Z0-9_+\\-*\\/\\\\=<>!&?\%]+/ ;             \
              string   : /\"(\\\\.|[^\"])*\"/ ;                          \
              comment  : /;[^\\r\\n]*/ ;                                 \
              sexpr    : '(' <expr>* ')'   ;                             \
@@ -109,7 +111,8 @@ int main(int argc, char **argv) {
 
   lenv *e = lenv_new();
   lenv_add_buildins(e);
-  builtin_load(e, lval_add(lval_sexpr(), lval_str("core.mlisp")));
+  lval* load_info=builtin_load(e, lval_add(lval_sexpr(), lval_str("core.mlisp")));
+  lval_println(load_info);
 
   if (argc >= 2) {
     for (int i = 1; i < argc; i++) {

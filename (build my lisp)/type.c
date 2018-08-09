@@ -315,13 +315,13 @@ void lval_print_str(lval* v){
   strcpy(escaped,v->str);
 
   escaped=mpcf_escape(escaped);
-  printf("\"%s\"", escaped);
+  printf("%s", escaped);
   free(escaped);
 }
 
 void lval_print(lval *v) {
   switch (v->type) {
-  case LVAL_VOID:break;
+  case LVAL_VOID: break;
   case LVAL_NUM:
     printf("%li", v->num);
     break;
@@ -347,8 +347,9 @@ void lval_print(lval *v) {
     if(v->builtin){
       printf("<builtin>");
     }else{
-      printf("(lambda ");lval_print(v->formals);
-      putchar(' ');lval_print(v->body);putchar(')');
+      printf("<function>");
+      /* printf("(lambda ");lval_print(v->formals); */
+      /* putchar(' ');lval_print(v->body);putchar(')'); */
     }
     break;
   default:
@@ -358,7 +359,9 @@ void lval_print(lval *v) {
 
 void lval_println(lval *v) {
   lval_print(v);
-  printf("\n");
+  if(v->type!=LVAL_VOID){
+    printf("\n");
+  }
 }
 
 
