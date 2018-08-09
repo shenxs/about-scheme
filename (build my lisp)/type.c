@@ -1,30 +1,30 @@
 #include "type.h"
 
-lenv* lenv_new(void){
-  lenv* e=malloc(sizeof(lenv));
-  e->par=NULL;
-  e->count=0;
-  e->syms=NULL;
-  e->vals=NULL;
+lenv *lenv_new(void) {
+  lenv *e = malloc(sizeof(lenv));
+  e->par = NULL;
+  e->count = 0;
+  e->syms = NULL;
+  e->vals = NULL;
   return e;
 }
 
-lenv *lenv_copy(lenv* e){
-  lenv* n = malloc(sizeof(lenv));
+lenv *lenv_copy(lenv *e) {
+  lenv *n = malloc(sizeof(lenv));
   n->par = e->par;
-  n->count= e->count;
-  n->syms =malloc((sizeof(char*) * n->count));
-  n->vals = malloc((sizeof(lval*))* n->count);
-  for(int i=0;i<n->count;i++){
-    n->syms[i]=malloc(strlen(e->syms[i])+1);
-    strcpy(n->syms[i],e->syms[i]);
-    n->vals[i]= lval_copy(e->vals[i]);
+  n->count = e->count;
+  n->syms = malloc((sizeof(char *) * n->count));
+  n->vals = malloc((sizeof(lval *)) * n->count);
+  for (int i = 0; i < n->count; i++) {
+    n->syms[i] = malloc(strlen(e->syms[i]) + 1);
+    strcpy(n->syms[i], e->syms[i]);
+    n->vals[i] = lval_copy(e->vals[i]);
   }
   return n;
-
 }
-void  lenv_del(lenv* e){
-  for(int i=0;i<e->count;i++){
+
+void lenv_del(lenv *e) {
+  for (int i = 0; i < e->count; i++) {
     free(e->syms[i]);
     lval_del(e->vals[i]);
   }
@@ -32,56 +32,55 @@ void  lenv_del(lenv* e){
   free(e->vals);
   free(e);
 }
-lval* lenv_get(lenv* e,lval*k){
-  for(int i=0;i<e->count;i++){
-    if(strcmp(e->syms[i],k->sym)==0){
+
+lval *lenv_get(lenv *e, lval *k) {
+  for (int i = 0; i < e->count; i++) {
+    if (strcmp(e->syms[i], k->sym) == 0) {
       return lval_copy(e->vals[i]);
     }
   }
-  if(e->par){
+  if (e->par) {
     return lenv_get(e->par, k);
-  }else{
+  } else {
     return lval_err("unboud symbol %s", k->sym);
   }
 }
 
-void lenv_put(lenv* e,lval* k,lval* v){
-  for(int i=0;i<e->count;i++){
-    if(strcmp(e->syms[i],k->sym)==0){
+void lenv_put(lenv *e, lval *k, lval *v) {
+  for (int i = 0; i < e->count; i++) {
+    if (strcmp(e->syms[i], k->sym) == 0) {
       lval_del(e->vals[i]);
-      e->vals[i]=lval_copy(v);
+      e->vals[i] = lval_copy(v);
       return;
     }
   }
   /* 如果不存在此变量则将其添加到环境中 */
   e->count++;
-  e->vals = realloc(e->vals,sizeof(lval*)*e->count);
-  e->syms = realloc(e->syms,sizeof(lval*)*e->count);
+  e->vals = realloc(e->vals, sizeof(lval *) * e->count);
+  e->syms = realloc(e->syms, sizeof(lval *) * e->count);
 
-  e->vals[e->count-1] = lval_copy(v);
-  e->syms[e->count-1] = malloc(strlen(k->sym)+1);
-  strcpy(e->syms[e->count-1], k->sym);
-
+  e->vals[e->count - 1] = lval_copy(v);
+  e->syms[e->count - 1] = malloc(strlen(k->sym) + 1);
+  strcpy(e->syms[e->count - 1], k->sym);
 }
 
-
-void lenv_def(lenv* e,lval *k,lval *v){
+void lenv_def(lenv *e, lval *k, lval *v) {
   /* 定义全局变量 */
   /* 输入 */
   /*   环境,符号,值 */
-  while(e->par){
-    e=e->par;
+  while (e->par) {
+    e = e->par;
   }
-  lenv_put(e,k,v);
+  lenv_put(e, k, v);
 }
 
-lval *lval_bool(char *s){
-  lval* v=malloc(sizeof(lval));
-  v->type=LVAL_BOOL;
-  if(strcmp(s,"true")==0||strcmp(s,"false")==0){
-    v->sym=malloc(sizeof(char)*3);
-    strcpy(v->sym,s);
-  }else{
+lval *lval_bool(char *s) {
+  lval *v = malloc(sizeof(lval));
+  v->type = LVAL_BOOL;
+  if (strcmp(s, "true") == 0 || strcmp(s, "false") == 0) {
+    v->sym = malloc(sizeof(char) * 3);
+    strcpy(v->sym, s);
+  } else {
     return lval_err("Internal error");
   }
   return v;
@@ -94,17 +93,17 @@ lval *lval_num(long x) {
   return v;
 }
 
-lval *lval_err(char *fmt, ... ) {
+lval *lval_err(char *fmt, ...) {
   lval *v = malloc(sizeof(lval));
   v->type = LVAL_ERR;
 
   va_list va;
-  va_start(va,fmt);
+  va_start(va, fmt);
 
-  v->err=malloc(512);
-  vsprintf(v->err,fmt,va);
+  v->err = malloc(512);
+  vsprintf(v->err, fmt, va);
 
-  v->err=realloc(v->err, strlen(v->err)+1);
+  v->err = realloc(v->err, strlen(v->err) + 1);
   va_end(va);
 
   return v;
@@ -134,18 +133,18 @@ lval *lval_qexpr(void) {
   return v;
 }
 
-lval *lval_str(char *s){
-  lval*v =malloc(sizeof(lval));
-  v->type=LVAL_STR;
-  v->str=malloc(strlen(s)+1);
-  strcpy(v->str,s);
+lval *lval_str(char *s) {
+  lval *v = malloc(sizeof(lval));
+  v->type = LVAL_STR;
+  v->str = malloc(strlen(s) + 1);
+  strcpy(v->str, s);
   return v;
 }
 
-lval *lval_fun(lbuildin func){
-  lval* v =malloc(sizeof(lval));
-  v->type=LVAL_FUN;
-  v->builtin =func;
+lval *lval_fun(lbuildin func) {
+  lval *v = malloc(sizeof(lval));
+  v->type = LVAL_FUN;
+  v->builtin = func;
   return v;
 }
 lval *lval_read_num(mpc_ast_t *t) {
@@ -154,13 +153,13 @@ lval *lval_read_num(mpc_ast_t *t) {
   return errno != ERANGE ? lval_num(x) : lval_err("invalid number");
 }
 
-lval *lval_read_str(mpc_ast_t *t){
+lval *lval_read_str(mpc_ast_t *t) {
   //去掉最后的引号
-  t->contents[strlen(t->contents)-1]='\0';
-  char* unescaped=malloc(strlen(t->contents+1) +1);
-  strcpy(unescaped, t->contents+1);
-  unescaped=mpcf_unescape(unescaped);
-  lval *str=lval_str(unescaped);
+  t->contents[strlen(t->contents) - 1] = '\0';
+  char *unescaped = malloc(strlen(t->contents + 1) + 1);
+  strcpy(unescaped, t->contents + 1);
+  unescaped = mpcf_unescape(unescaped);
+  lval *str = lval_str(unescaped);
   free(unescaped);
   return str;
 }
@@ -174,16 +173,13 @@ lval *lval_add(lval *v, lval *x) {
 lval *lval_read(mpc_ast_t *t) {
   if (strstr(t->tag, "number")) {
     return lval_read_num(t);
-  }else if (strstr(t->tag, "symbol")) {
-    if(strcmp(t->contents,"true")==0||
-       strcmp(t->contents,"false")==0){
+  } else if (strstr(t->tag, "symbol")) {
+    if (strcmp(t->contents, "true") == 0 || strcmp(t->contents, "false") == 0) {
       return lval_bool(t->contents);
     }
     return lval_sym(t->contents);
-  }else if(strstr(t->tag, "string")){
+  } else if (strstr(t->tag, "string")) {
     return lval_read_str(t);
-  }else if(strstr(t->tag,"comment")){
-    return lval_void();
   }
 
   lval *x = NULL;
@@ -213,7 +209,7 @@ lval *lval_read(mpc_ast_t *t) {
     if (strcmp(t->children[i]->tag, "regex") == 0) {
       continue;
     }
-    if (strstr(t->tag,"comment")){
+    if (strstr(t->children[i]->tag, "comment")) {
       continue;
     }
     x = lval_add(x, lval_read(t->children[i]));
@@ -223,9 +219,10 @@ lval *lval_read(mpc_ast_t *t) {
 void lval_del(lval *v) {
   switch (v->type) {
   case LVAL_VOID:
-  case LVAL_NUM:break;
+  case LVAL_NUM:
+    break;
   case LVAL_FUN:
-    if(!v->builtin){
+    if (!v->builtin) {
       lenv_del(v->env);
       lval_del(v->formals);
       lval_del(v->body);
@@ -251,46 +248,49 @@ void lval_del(lval *v) {
   }
   free(v);
 }
-lval* lval_copy(lval *v) {
-  lval* x=malloc(sizeof(lval));
-  x->type=v->type;
+lval *lval_copy(lval *v) {
+  lval *x = malloc(sizeof(lval));
+  x->type = v->type;
 
   switch (v->type) {
-  case LVAL_VOID:break;
-  case LVAL_NUM:x->num=v->num;break;
+  case LVAL_VOID:
+    break;
+  case LVAL_NUM:
+    x->num = v->num;
+    break;
   case LVAL_FUN:
-    if(v->builtin){
-      x->builtin=v->builtin;
-    }else{
-      x->builtin=NULL;
-      x->env=lenv_copy(v->env);
-      x->formals=lval_copy( v->formals);
-      x->body=lval_copy(v->body);
+    if (v->builtin) {
+      x->builtin = v->builtin;
+    } else {
+      x->builtin = NULL;
+      x->env = lenv_copy(v->env);
+      x->formals = lval_copy(v->formals);
+      x->body = lval_copy(v->body);
     }
     break;
   case LVAL_ERR:
-    x->err=malloc(strlen(v->err)+1);
-    strcpy(x->err,v->err);
+    x->err = malloc(strlen(v->err) + 1);
+    strcpy(x->err, v->err);
     break;
   case LVAL_SYM:
-    x->sym=malloc(strlen(v->sym)+1);
-    strcpy(x->sym,v->sym);
+    x->sym = malloc(strlen(v->sym) + 1);
+    strcpy(x->sym, v->sym);
     break;
   case LVAL_SEXPR:
   case LVAL_QEXPR:
-    x->count=v->count;
-    x->cell=malloc(sizeof(lval*)*x->count);
+    x->count = v->count;
+    x->cell = malloc(sizeof(lval *) * x->count);
     for (int i = 0; i < v->count; i++) {
-      x->cell[i]=lval_copy(v->cell[i]);
+      x->cell[i] = lval_copy(v->cell[i]);
     }
     break;
   case LVAL_BOOL:
-    x->sym=malloc(sizeof(v->sym)+1);
-    strcpy(x->sym,v->sym);
+    x->sym = malloc(sizeof(v->sym) + 1);
+    strcpy(x->sym, v->sym);
     break;
   case LVAL_STR:
-    x->str=malloc(sizeof(v->str)+1);
-    strcpy(x->str,v->str);
+    x->str = malloc(sizeof(v->str) + 1);
+    strcpy(x->str, v->str);
     break;
   default:
     return lval_err("no case matched in lval_copy");
@@ -310,23 +310,24 @@ void lval_expr_print(lval *v, char open, char closen) {
   putchar(closen);
 }
 
-void lval_print_str(lval* v){
-  char* escaped=malloc(sizeof(v->str)+1);
-  strcpy(escaped,v->str);
+void lval_print_str(lval *v) {
+  char *escaped = malloc(sizeof(v->str) + 1);
+  strcpy(escaped, v->str);
 
-  escaped=mpcf_escape(escaped);
-  printf("%s", escaped);
+  escaped = mpcf_escape(escaped);
+  printf("\"%s\"", escaped);
   free(escaped);
 }
 
 void lval_print(lval *v) {
   switch (v->type) {
-  case LVAL_VOID: break;
+  case LVAL_VOID:
+    break;
   case LVAL_NUM:
     printf("%li", v->num);
     break;
   case LVAL_BOOL:
-    printf("%s",v->sym);
+    printf("%s", v->sym);
     break;
   case LVAL_ERR:
     printf("ERROR: %s", v->err);
@@ -344,9 +345,9 @@ void lval_print(lval *v) {
     lval_expr_print(v, '{', '}');
     break;
   case LVAL_FUN:
-    if(v->builtin){
+    if (v->builtin) {
       printf("<builtin>");
-    }else{
+    } else {
       printf("<function>");
       /* printf("(lambda ");lval_print(v->formals); */
       /* putchar(' ');lval_print(v->body);putchar(')'); */
@@ -359,22 +360,21 @@ void lval_print(lval *v) {
 
 void lval_println(lval *v) {
   lval_print(v);
-  if(v->type!=LVAL_VOID){
+  if (v->type != LVAL_VOID) {
     printf("\n");
   }
 }
 
-
-lval *lval_eval(lenv* e, lval *v) {
-  if(v->type == LVAL_SYM){
-    lval* x=lenv_get(e,v);
+lval *lval_eval(lenv *e, lval *v) {
+  if (v->type == LVAL_SYM) {
+    lval *x = lenv_get(e, v);
     lval_del(v);
     return x;
   }
 
   if (v->type == LVAL_SEXPR) {
-    return lval_eval_sexpr(e,v);
-  }else{
+    return lval_eval_sexpr(e, v);
+  } else {
     return v;
   }
 }
@@ -394,52 +394,60 @@ lval *lval_take(lval *v, int i) {
   return x;
 }
 
-
-char* ltype_name(int t){
-  switch(t){
-  case LVAL_FUN:return "Function";
-  case LVAL_NUM:return "Number";
-  case LVAL_ERR:return "Error";
-  case LVAL_SYM:return "Symbol";
-  case LVAL_QEXPR:return "Q-Expression";
-  case LVAL_SEXPR:return "S-Expression";
-  case LVAL_BOOL:return "Boolean";
-  case LVAL_STR:return "String";
-  case LVAL_VOID:return "Void";
-  default:return "UNKONW";
+char *ltype_name(int t) {
+  switch (t) {
+  case LVAL_FUN:
+    return "Function";
+  case LVAL_NUM:
+    return "Number";
+  case LVAL_ERR:
+    return "Error";
+  case LVAL_SYM:
+    return "Symbol";
+  case LVAL_QEXPR:
+    return "Q-Expression";
+  case LVAL_SEXPR:
+    return "S-Expression";
+  case LVAL_BOOL:
+    return "Boolean";
+  case LVAL_STR:
+    return "String";
+  case LVAL_VOID:
+    return "Void";
+  default:
+    return "UNKONW";
   }
 }
 
-lval *lval_quote(lval *v){
-  return v;
-}
+lval *lval_quote(lval *v) { return v; }
 
-lval *lval_eval_sexpr(lenv* e, lval *v) {
-  LASSERT(v,v->count!=0,"Syntax error,Got empty s-expression");
+lval *lval_eval_sexpr(lenv *e, lval *v) {
+  LASSERT(v, v->count != 0, "Syntax error,Got empty s-expression");
 
-  v->cell[0]=lval_eval(e,v->cell[0]);
+  v->cell[0] = lval_eval(e, v->cell[0]);
   lval *f = lval_pop(v, 0);
-  if(f->type==LVAL_ERR){
+  if (f->type == LVAL_ERR) {
     lval_del(v);
     return f;
   }
 
   if (f->type != LVAL_FUN) {
-    lval* err=lval_err("first element is not a function,"
-                       "Expect %s , Got %s ",
-                       ltype_name(LVAL_FUN),ltype_name(f->type));
+    lval *err = lval_err("first element is not a function,"
+                         "Expect %s , Got %s ",
+                         ltype_name(LVAL_FUN), ltype_name(f->type));
     lval_del(f);
     lval_del(v);
     return err;
   }
 
-  if(f->builtin==builtin_quote){
+  if (f->builtin == builtin_quote) {
     lval_del(f);
-    return builtin_quote(e,v);;
+    return builtin_quote(e, v);
+    ;
   }
 
   for (int i = 0; i < v->count; i++) {
-    v->cell[i] = lval_eval(e,v->cell[i]);
+    v->cell[i] = lval_eval(e, v->cell[i]);
   }
 
   for (int i = 0; i < v->count; i++) {
@@ -454,45 +462,47 @@ lval *lval_eval_sexpr(lenv* e, lval *v) {
   return result;
 }
 
-lval *lval_lambda(lval *formals, lval *body){
-  lval *v =malloc(sizeof(lval));
-  v->type =LVAL_FUN;
-  v->builtin=NULL;
-  v->env=lenv_new();
-  v->formals =formals;
-  v->body=body;
+lval *lval_lambda(lval *formals, lval *body) {
+  lval *v = malloc(sizeof(lval));
+  v->type = LVAL_FUN;
+  v->builtin = NULL;
+  v->env = lenv_new();
+  v->formals = formals;
+  v->body = body;
   return v;
 }
 
-lval *lval_call(lenv *e,lval *f,lval* a){
+lval *lval_call(lenv *e, lval *f, lval *a) {
   /* 内置函数 */
-  if(f->builtin){
-    return f->builtin(e,a);
+  if (f->builtin) {
+    return f->builtin(e, a);
   }
 
   /* 用户自定义函数 */
-  int given=a->count;
-  int total=f->formals->count;
+  int given = a->count;
+  int total = f->formals->count;
 
-  while(a->count){
-    if(f->formals->count==0){
-      return lval_err("Function passed too many arguments. Expect %i,Got %i. ", total,given);
+  while (a->count) {
+    if (f->formals->count == 0) {
+      return lval_err("Function passed too many arguments. Expect %i,Got %i. ",
+                      total, given);
     }
-    lval* k=lval_pop(f->formals, 0);
+    lval *k = lval_pop(f->formals, 0);
 
     /* 如果包含&,则将剩下的参数作为一个单一的list传递给&后的形参 */
-    if(strcmp(k->sym, "&") ==0 ){
-      if(f->formals->count!=1){
+    if (strcmp(k->sym, "&") == 0) {
+      if (f->formals->count != 1) {
         return lval_err("Function formal invalid"
                         "Symbol & is not followed by one single symbol");
       }
-      lval* next_formal=lval_pop(f->formals, 0);
+      lval *next_formal = lval_pop(f->formals, 0);
       lenv_put(e, next_formal, builtin_list(e, a));
-      lval_del(k);lval_del(next_formal);
+      lval_del(k);
+      lval_del(next_formal);
       break;
     }
-    lval* v=lval_pop(a, 0);
-    lenv_put(f->env, k, v );
+    lval *v = lval_pop(a, 0);
+    lenv_put(f->env, k, v);
 
     lval_del(k);
     lval_del(v);
@@ -501,8 +511,7 @@ lval *lval_call(lenv *e,lval *f,lval* a){
   /* 参数已经被绑定到形参上或者形参为空所以可以释放掉 */
   lval_del(a);
   /* If '&' remains in formal list bind to empty list */
-  if (f->formals->count > 0 &&
-      strcmp(f->formals->cell[0]->sym, "&") == 0) {
+  if (f->formals->count > 0 && strcmp(f->formals->cell[0]->sym, "&") == 0) {
 
     /* Check to ensure that & is not passed invalidly. */
     if (f->formals->count != 2) {
@@ -514,50 +523,53 @@ lval *lval_call(lenv *e,lval *f,lval* a){
     lval_del(lval_pop(f->formals, 0));
 
     /* Pop next symbol and create empty list */
-    lval* sym = lval_pop(f->formals, 0);
-    lval* val = lval_qexpr();
+    lval *sym = lval_pop(f->formals, 0);
+    lval *val = lval_qexpr();
 
     /* Bind to environment and delete */
     lenv_put(f->env, sym, val);
-    lval_del(sym); lval_del(val);
+    lval_del(sym);
+    lval_del(val);
   }
-  if(f->formals->count==0){
+  if (f->formals->count == 0) {
     /* 设置上级环境 */
-    f->env->par=e;
-    return builtin_eval(f->env,lval_add(lval_sexpr(),lval_copy(f->body)));
-  }else{
+    f->env->par = e;
+    return builtin_eval(f->env, lval_add(lval_sexpr(), lval_copy(f->body)));
+  } else {
     return lval_copy(f);
   }
 }
 
-int lval_eq(lval*x ,lval* y){
+int lval_eq(lval *x, lval *y) {
   /* 比较两个类型是否等价 */
-  if(x->type!=y->type){
+  if (x->type != y->type) {
     return 0;
-  }else{
-    switch(x->type){
-    case LVAL_VOID:return 1;
-    case LVAL_NUM:return (x->num==y->num);
-    case LVAL_ERR:return strcmp(x->err,y->err);
+  } else {
+    switch (x->type) {
+    case LVAL_VOID:
+      return 1;
+    case LVAL_NUM:
+      return (x->num == y->num);
+    case LVAL_ERR:
+      return strcmp(x->err, y->err);
     case LVAL_BOOL:
     case LVAL_SYM:
-      return strcmp(x->sym,y->sym);
+      return strcmp(x->sym, y->sym);
     case LVAL_STR:
-      return strcmp(x->str,y->str)==0;
+      return strcmp(x->str, y->str) == 0;
     case LVAL_FUN:
-      if(x->builtin||y->builtin){
-        return x->builtin==y->builtin;
-      }else{
-        return lval_eq(x->formals,y->formals)
-          &&lval_eq(x->body,y->body);
+      if (x->builtin || y->builtin) {
+        return x->builtin == y->builtin;
+      } else {
+        return lval_eq(x->formals, y->formals) && lval_eq(x->body, y->body);
       }
     case LVAL_SEXPR:
     case LVAL_QEXPR:
-      if(x->count!=y->count){
+      if (x->count != y->count) {
         return 0;
-      }else{
-        for(int i=0;i<x->count;i++){
-          if(!lval_eq(x->cell[i],y->cell[i]))
+      } else {
+        for (int i = 0; i < x->count; i++) {
+          if (!lval_eq(x->cell[i], y->cell[i]))
             return 0;
         }
         return 1;
@@ -567,8 +579,8 @@ int lval_eq(lval*x ,lval* y){
   }
 }
 
-lval *lval_void(){
-  lval* v=malloc(sizeof(lval));
-  v->type=LVAL_VOID;
+lval *lval_void() {
+  lval *v = malloc(sizeof(lval));
+  v->type = LVAL_VOID;
   return v;
 }

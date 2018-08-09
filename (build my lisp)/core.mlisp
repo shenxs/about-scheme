@@ -1,13 +1,21 @@
+;; 定义函数
 (def {fun}
      (lambda {args body}
              {def (head args)
                   (lambda (cdr args) body)}))
+
+;; 返回l的长度
+;; l := Q-Expression
+;; ==> number
 (fun {len l}
      {if (=? l {})
          0
          {+ 1 (len (cdr l))}})
 
 (fun {apply f l}
+;; apply function f to q-expression
+;; f := function
+;; l := q-expression
      {eval (join (list f) l)})
 
 (fun {map f l}
