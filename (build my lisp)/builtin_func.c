@@ -138,11 +138,8 @@ lval* builtin_eval(lenv* e,lval* a){
 
   switch(x->type){
   case LVAL_QEXPR:
-    if(a->cell[0]->count==0){
-      return lval_take(a,0);
-    }
     a->cell[0]->type=LVAL_SEXPR;
-    return lval_eval(e, a->cell[0]);
+    return lval_eval_sexpr(e, a->cell[0]);
   default:
     return lval_eval(e,a->cell[0]);
   }
@@ -312,6 +309,7 @@ lval *builtin_if(lenv *e,lval *a){
       return lval_take(a,2);
     }
   }else{
+    lval_del(a);
     return lval_err("if got a invalid condition");
   }
 }
@@ -325,6 +323,7 @@ lval *builtin_cmp(lenv *e,lval *a,char* op){
   lval* n1=a->cell[0];
   lval* n2 = a->cell[1];
 
+  lval_del(a);
   int flag=-1;
 
   if(strcmp(op,"=?")==0){
@@ -391,7 +390,7 @@ lval *builtin_load(lenv *e,lval *a){
     mpc_ast_delete(r.output);
     while(expr->count){
       lval *x=lval_eval(e, lval_pop(expr, 0));
-      if(x->type==LVAL_ERR) lval_println(x);
+      if(x->type!=LVAL_VOID) lval_println(x);
       lval_del(x);
     }
     lval_del(a);
@@ -442,4 +441,9 @@ lval *builtin_mod(lenv *e, lval *a){
 lval *builtin_quote(lenv *e,lval *a){
   LASSERT_NUM("quote",a,1);
   return lval_quote(a->cell[0]);
+}
+
+lval *builtin_void(lenv *e,lval *a){
+  LASSERT_NUM("void",a,0);
+  return lval_void();
 }

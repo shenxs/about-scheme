@@ -82,6 +82,7 @@ void lenv_add_buildins(lenv *e) {
   lenv_add_builtin(e, "load", builtin_load);
   lenv_add_builtin(e, "print", builtin_print);
   lenv_add_builtin(e, "error", builtin_error);
+  lenv_add_builtin(e,"void",builtin_void);
 
   lenv_add_builtin(e, "=", builtin_put);
 }

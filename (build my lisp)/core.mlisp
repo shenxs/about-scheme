@@ -12,22 +12,34 @@
          0
          {+ 1 (len (cdr l))}})
 
-(fun {apply f l}
+
 ;; apply function f to q-expression
 ;; f := function
 ;; l := q-expression
+(fun {apply f l}
      {eval (join (list f) l)})
 
+
+;;map f to each element of l
+;;f := function
+;;l := qexpr
 (fun {map f l}
      {if (=? l {})
          {value {}}
          {join (list (f (car l))) (map f (cdr l))}})
 
+
+;; reverse list l
+;;==> list
 (fun {reverse l}
      {if (=? l {})
          {value {}}
          {join (reverse (cdr l)) (head l) }})
 
+;; use function f as a filter
+;;f := function
+;;l := list
+;;==> list
 (fun {filter f l}
      {if (=? l {})
          {value {}}
@@ -35,20 +47,68 @@
              {join (head l) (filter f (cdr l))}
              {filter f (cdr l)}}})
 
+;; 判断奇偶
+;; x:= number
+;; ==> bool
 (fun {odd? x} {=? 1 (% x 2)})
-
 (fun {even? x} {not (odd? x)})
 
+;;判断列表是否为空
+;;l := qexpr
+;;==> bool
 (fun {empty? l} {=? l {}})
 
+;;将f z 依次应用于l
+;;f := function
+;;z := 幺元
+;;l := list
 (fun {flodl f z l}
      {if (empty? l)
          z
          {flodl f (f z (car l)) (cdr l)}})
 
-
+;;绑定变量
+;;bindings := qexpr
+;;body     := qexpr
+;;
+;;example
+;;(let {{x 100}
+;;      {y 200}}
+;;      {+ x y})
+;;=====> 300
 (fun {let bindings body}
      {apply (lambda (map (lambda {x} {car x}) bindings)
                     body)
             (map (lambda {x} {car (cdr x)}) bindings)})
+
+
+(fun {first l} {car l})
+(fun {second l} {car (cdr l)})
+(fun {third l} {car (cdr (cdr l))})
+
+(fun {case x & cs}
+     {if (empty? cs)
+         {error "no case found"}
+         {if (=? x (first (first cs)))
+             (second (first cs))
+             {apply case (join (list x) (cdr cs))}}})
+
+(fun {select & cs} {
+  if (== cs nil)
+    {error "No Selection Found"}
+    {if (fst (fst cs)) {snd (fst cs)} {unpack select (tail cs)}}
+})
+
+(fun {fibnaci n} {if (=? n 0)
+                     0
+                     {if (=? n 1)
+                         1
+                         {+ (fibnaci (- n 1)) (fibnaci (- n 2))}} })
+
+(case 9
+      {1 (print "hello")}
+      {2 (print "world")}
+      {9 (print "nine")})
+ 
+(if true {print "hello"} {print "no"})
 

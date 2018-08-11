@@ -422,7 +422,7 @@ char *ltype_name(int t) {
 lval *lval_quote(lval *v) { return v; }
 
 lval *lval_eval_sexpr(lenv *e, lval *v) {
-  LASSERT(v, v->count != 0, "Syntax error,Got empty s-expression");
+  LASSERT(v, v->count != 0, "Got empty expression");
 
   v->cell[0] = lval_eval(e, v->cell[0]);
   lval *f = lval_pop(v, 0);
