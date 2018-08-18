@@ -48,3 +48,41 @@
 
 (car&cdr '(a b c) cons)
 (car&cdr '(a b c) memv)
+
+
+;; cps允许接收多个参数的过程接受两个分开的 "成功" 和 "失败" 的延续
+;; 例如下面的整数除法
+
+
+(define integer-divide
+  (lambda (x y success failure)
+    (if (= y 0)
+        (failure "divide by zero")
+        (let ([q (quotient x y)])
+          (success q (- x (* q y)))))))
+
+(integer-divide 10 3 list (lambda (x) x))
+
+(integer-divide 10 0 list (lambda (x) x))
+
+;; 明确的成功和失败的延续有时候可以避免将执行成功和执行失败分开的额外交流必要
+;; 而且这让我们有可能对应不同风味的成功和失败有多个成功和多个失败的延续,
+;; 每个可能性接收不同数量和类型的参数
+
+
+;; 事实上cps的编程风格和call/cc编写的方式是可以相互转化的,任何使用call/cc的程序都可以使用
+;; cps重写而不需要call/cc.但是需要将整个程序重写,有时候可能包括系统预设的一些函数.
+
+
+;; 使用cps重写连乘函数
+
+(define (product ls k)
+  (let ([break k])
+    (let f ([ls ls] [k k])
+      (cond
+        [(null? ls) (k 1)]
+        [(= (car ls) 0) (break 0)]
+        [else (f (cdr ls)
+                 (lambda (x)
+                   (k (* (car ls) x))))]))))
+
