@@ -2,7 +2,6 @@
 ;; 在calc的例子中错误延续ek在apply-op, complain, 和 do-calc.中传递
 ;; 尽可能向内移动这些定义消除对于ek参数的传递
 
-
 (define calc #f)
 (let ()
   (set! calc
