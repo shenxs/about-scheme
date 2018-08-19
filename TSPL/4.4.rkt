@@ -43,3 +43,34 @@ let 可以从lambda定义
 ;;let还可以有命名的
 
 
+;; 语法:(let* ((var expr) ...) body1 body2)
+;; 返回 body的最后一个表达式
+
+#|
+let* 和let比较相似,除了expr是从左向右并且expr在剩下的作用域中有效
+使用let* 时注意他是线性依赖并且解析的顺序是很重要的
+
+|#
+
+(let* ([x (* 5.0 5.0)]
+       [y (- x (* 4.0 4.0))])
+  (sqrt y))
+
+(let ([x 0] [y 1])
+  (let* ([x y] [y x])
+    (list x y)))
+
+#|
+任何 let* 都可以都可以转化为一系列嵌套的let. 以下定义定义了典型的转换
+
+(define-syntax let*
+  (syntax-rules ()
+    [(_ () e1 e2 ...)
+     (let () e1 e2 ...)]
+    [(_ ((x1 v1) (x2 v2) ...) e1 e2 ...)
+     (let ((x1 v1))
+       (let* ((x2 v2) ...) e1 e2 ...))]))
+
+|#
+
+
