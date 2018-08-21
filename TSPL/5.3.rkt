@@ -36,6 +36,7 @@ test a b必须是表达式。如果test是真则返回a，如果test是假则返
 
 
 ;; (not obj)
-;; 
-
-
+;; 布尔操作 非
+;;
+;; not 操作等价于
+;;(lambda (x) (if x #t #f))
