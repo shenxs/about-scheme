@@ -30,4 +30,23 @@
   (f 8))
 
 
+#|
+（apply procedure obj ... list）
+返回将 procedure应用与obj... 和元素list的结果
+
+
+apply 会调用 procedure ，将第一个obj作为procedure 的第一个参数，第二个obj作为第二个参数，以此类推。将list中剩下的元素当做是剩下的参数。因此 procedure所有的参数就是objs加上list中的元素。
+apply对于参数是以list呈现的时候会非常有用，这样程序员就不用解构一个list来得到参数了。
+|#
+
+(apply + '(4 5))
+
+(apply min '(6 8 3 2 5))
+
+(apply min 1 2 3 4 '( 564 21 1 0 -1) )
+
+(apply vector 'ab 'b '(c d e f))
+
+(apply append '(1 2 3) '((a b ) (c d e) (f)))
+
 
