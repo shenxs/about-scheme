@@ -109,3 +109,91 @@ test a b必须是表达式。如果test是真则返回a，如果test是假则返
 (select 3)
 (select 'b)
 (select 'e)
+
+
+
+;;语法：else
+;;语法：=>
+
+#|
+这是cond的辅助关键词，同时也是guard，case的辅助关键词
+任何其他不是作为辅助关键词的使用都是语法错误
+|#
+
+
+;;语法：(when test-expr expr1 expr2 ...)
+;;语法：(unless test expr1 expr2 ...)
+
+
+#|
+对于when来说当 test-expr是真的时候那么expr1 expr2就会依次执行
+最后一个表达式的值会作为返回值
+如果test-expr的值是#f那么没有任何后续的表达式会被执行，when的返回值将会是不确定的
+
+
+对于unless ，如果test是false，那么expr1 expr2 ...会依次执行，最后一个表达式的值会被返回
+，如果test的值是真那么没有表达式会被执行，返回值不确定
+
+|#
+(let ([x -4] [sign 'plus])
+  (when (< x 0)
+    (set! x (- 0 x))
+    (set! sign 'minus))
+  (list sign x))
+
+(define check-pair
+  (lambda (x)
+    (unless (pair? x)
+      (error 'check-pair "invalid argument" x))
+    x))
+
+(check-pair '(a b c))
+
+
+#|可以像这样定义when和unless
+(define-syntax when
+  (syntax-rules ()
+    [(_ e0 e1 e2 ...)
+     (if e0 (begin e1 e2 ...))]))
+
+
+(define-syntax unless
+  (syntax-rules ()
+    [(_ e0 e1 e2 ...)
+     (if (not e0) (begin e1 e2 ...))]))
+
+
+可以用when来定义unless
+
+(define-syntax unless
+  (syntax-rules ()
+    [(_ e0 e1 e2 ...)
+     (when (not e0) e1 e2 ...)]))
+
+|#
+
+
+;;语法：(case expr0 clause1 clause2)
+
+
+#|
+每一个clause除了最后一个必须以下面的形式呈现
+((key ...) expr1 expr2 ...)
+
+每一个clause的datum的值都是不一样的，最后一个clause的可以使以上亿的形式，也可以是else。
+
+expr0的值会被解析，然后和每一个clause的key使用eqv？比较。如果某一个clause存在相匹配的key，那么expr1 ，expr2 。。。 就会被执行，序列的最后一个表达式的值就会被返回
+
+如果没有匹配则进入else，都没有那么返回值不确定。
+
+
+
+|#
+
+(let ([x 4] [y 5])
+  (case (+ x y)
+    [(1 3 5 7 9) 'odd]
+    [(0 2 4 6 8) 'even]
+    [else 'out-of-range]))
+
+
