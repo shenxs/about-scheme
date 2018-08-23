@@ -44,3 +44,28 @@ procedure必须接受和list数量一致的参数，并且返回一个值，不�
 #|
 这个版本的map没有错误检测。在设计map时递归地调用了自身，因为有单list的特例存在所以这是可行的。
 |#
+
+
+#|
+语法：（for-each procedure list1 list2）
+返回值：不确定
+
+for-each 和map类似，除了不像那样返回一个list，for-each保证procedure是按照序列从左向右应用的，procedure必须接收和list的数量一样多的参数。没有错误检测的foreach可以这样定义
+
+(define for-each
+  (lambda (f ls . more)
+    (do ([ls ls (car ls)]
+         [more more (map cdr more)])
+        ((null? ls))
+      (apply f (car ls) (map car more)))))
+
+|#
+
+(let ([same-count 0])
+  (for-each
+   (lambda (x y)
+     (when (= x y)
+       (set! same-count (+ same-count 1))))
+   '(1 2 3 4 5 6)
+   '(2 3 3 4 7 6))
+  same-count)
