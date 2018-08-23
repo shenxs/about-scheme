@@ -132,3 +132,36 @@ list1 list2 长度必须相等，procedure应该接收和list数量一致的参�
          '(1.2 2.3 3.4 4.5)
          '(2.2 4.3 6.5 8.5))
 
+
+;;过程：(foldl procedure obj list1 list2)
+
+#|
+所有的list应该是同样长度的。procedure应该接收比list参数数量多一的参数并且返回一个值。不能改变list中的值
+
+foldl 返回obj如果list是空的。
+如果不是空则将procedure应用与obj list1 list2 。。。的头部。然后把返回值作为新的obj，list的cdr作为新的list作为参数递归下去
+|#
+
+(foldl cons '() '(1 2 3 4))
+(foldl (lambda (x a)
+         (+ a (* x x)))
+       0 '(1 2 3 4 5))
+
+(foldr
+ (lambda (a . args) (append args a))
+ '(question)
+ '(that not to)
+ '(is to be)
+ '(the be: or))
+
+;;racket对于foldl的解释和chez scheme不一样，两者在procedure的参数的顺序上不一致
+
+;;foldr和foldl类似但是应用的顺序不一样
+
+
+
+procedure: (vector-map procedure vector1 vector1 ...)
+
+#|
+
+|#
