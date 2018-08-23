@@ -163,5 +163,11 @@ foldl 返回obj如果list是空的。
 procedure: (vector-map procedure vector1 vector1 ...)
 
 #|
-
+vector-map将procedure应用于向量vector1 vector2 ...返回结果向量。vector1 vector2长度必须相等。和map类似
 |#
+
+
+;; procedure: (vector-for-each procedure vector1 vector2 ...)
+;; procedure: (string-for-each procedure string1 string2 ...)
+;;和for-each类似
+
