@@ -69,3 +69,35 @@ for-each 和map类似，除了不像那样返回一个list，for-each保证proce
    '(1 2 3 4 5 6)
    '(2 3 3 4 7 6))
   same-count)
+
+#|
+过程：(exists procedure list1 list2)
+返回：如下
+
+list1 与list2 。。。长度必须相同。procedure必须接受和list数量一致的参数并且不能修改list中的元素
+如果list是空，exists返回#f，否则exists将procedure应用与list1 list2 ...相应的元素。直到每个list只剩下一个元素或者procedure返回一个真的值t。前一种情况下exists 尾部调用exists，将剩下的元素应用与每一个list中的元素，后者exists返回t。
+
+|#
+(define exists
+  (lambda (f ls . more)
+    (and (not (null? ls))
+         (let exists ([x (car ls)] [ls (cdr ls)] [more more])
+           (if (null? ls)
+               (apply f x (map car more))
+               (or (apply f x (map car more))
+                   (exists (car ls) (cdr ls) (map cdr more))))))))
+
+(exists symbol? '(1.0 #\a "hi" '()))
+
+
+(exists member
+        '(a b c)
+        '((c b) (b a) (a c)))
+
+(exists (lambda (x y z) (= (+ x y) z))
+        '(1 2 3 4)
+        '(1.2 2.3 3.4 4.5)
+        '(2.3 4.4 6.4 8.6))
+
+
+
