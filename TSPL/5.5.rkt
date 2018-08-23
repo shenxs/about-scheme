@@ -100,4 +100,35 @@ list1 与list2 。。。长度必须相同。procedure必须接受和list数量�
         '(2.3 4.4 6.4 8.6))
 
 
+#|
+过程：(for-all procedure list1 list2 ...)
+
+list1 list2 长度必须相等，procedure应该接收和list数量一致的参数。
+如果list是空，返回true
+如果procedure应用于list中的元素之后返回#f，则for-all返回#f
+如果只剩下最后一个元素，则将procedure应用与此。
+定义for-all
+|#
+
+(define for-all
+  (lambda (f ls . more)
+    (or (null? ls)
+        (let for-all ([x (car ls)] [ls (cdr ls)] [more more])
+          (if (null? ls)
+              (apply f x (map car more))
+              (and (apply f x (map car more))
+                   (for-all (car ls) (cdr ls) (map cdr more))))))))
+
+
+
+(for-all symbol? '(a b c d))
+
+(for-all =
+         '(1 2 3 4)
+         '(1.0 2.0 3.0 4.0))
+
+(for-all (lambda (x y z) (= (+ x y) z))
+         '(1 2 3 4)
+         '(1.2 2.3 3.4 4.5)
+         '(2.2 4.3 6.5 8.5))
 
