@@ -36,3 +36,81 @@ call/cc获得他的延续，并将此延续传递给procedure，procedure应该�
 方式来表示一个延续。由于封装的堆栈大小是不确定的，因此必须有某种机制无限地保留
 堆栈中的内容。这可以以非常简单的高效的方式做到，并且不影响不使用延续的代码
 |#
+
+
+#|
+过程：(dynamic-wind in body out)
+返回： 从应用body返回的结果
+
+dynamic-wind可以提供某种“保护”来抵抗延续调用。当需要执行一些无论body是一般
+的代码或者延续都需要执行的任务时非常有用
+
+三个参数 in,body,out都应该是接收0个参数的函数，也就是说他们是thunk(像中空的木头，里面放着过程)。
+
+在应用body之前，或者每次body因为其内部的延续进入子表达式，in thunk会被调用。
+一旦body正常地退出，或者因为body以外创造的延续退出时，out就会被调用
+因此可以保证on至少被执行一次，另外，只要body退出，out就会被执行至少一次
+下面的例子保证了输入口在处理之后是被关闭的，无论是正常退出还是意外关闭。
+|#
+
+;; (let ([p (open-input-file "inputgile")])
+;;   (dynamic-wind
+;;     (lambda () #f)
+;;     (lambda () (process p))
+;;     (lambda () (close-input-port p))))
+
+#|
+Common lisp提供了unwind-protect这种机制来保护非本地的退出。一般来说也够用了，
+uwind-protect 提供了类似与out的保护，但是，这是因为common lisp不支持完整通用延续。可以如下定义unwind-protect
+
+(define-syntax unwind-protect
+  (syntax-rules ()
+    [(_ body cleanup ...)
+     (dynamic-wind
+       (lambda () #f)
+       (lambda () body)
+       (lambda () cleanup ...))]))
+
+((call/cc
+  (let ([x 'a])
+    (lambda (k)
+      (unwind-protect
+       (k (lambda () x))
+       (set! x 'b))))))
+
+|#
+
+
+#|
+一些scheme的实现支持所谓的流式绑定，也就是说，变量在一个给定的计算中先取一个临时的值，在计算结束后再变成原来的值。一下用dynamic-win构造的fluid-let可以允许单变量x在b1 b2 ...里面流式绑定。
+|#
+
+(define-syntax fluid-let
+  (syntax-rules ()
+    [(_ ((x e)) b1 b2 ...)
+     (let ([y e])
+       (let ([swap (lambda () (let ([t x]) (set! x y) (set! y t)))])
+         (dynamic-wind swap (lambda () b1 b2 ...) swap)))]))
+
+#|
+支持fluid-let的scheme实现通常会像let一样允许无限多的（x e） 序对
+效果和在进入代码后对变量赋值，返回后又赋一个新的值
+|#
+
+
+(let ([x 3])
+  (+ (fluid-let ([x 5])
+       x)
+     x))
+
+;;即使在fuild-let外创造的延续被调用了，fuild-let中流式绑定的变量依然会变成旧值
+
+(let ([x 'a])
+  (let ([f (lambda () x)])
+    (cons (call/cc (lambda (k)
+                     (fluid-let ([x 'b])
+                       (k (f)))))
+          (f))))
+
+;;如果当前的控制离开了 fluid-let的函数体，无论是正常退出还是因为调用了延续，然后调用延续之后重新进入函数体。通过fluid-bound 流式绑定的变量又恢复了,另外任何对于临时变量都会在重新进入的时候体现出来
+
