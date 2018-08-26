@@ -1,5 +1,3 @@
-#lang racket
-
 #|
 延续是一个过程，代表了给定点的接下来的计算，这可以通过(call-with-current-continuation)得到，也可以简写成call/cc
 |#
@@ -64,19 +62,19 @@ Common lisp提供了unwind-protect这种机制来保护非本地的退出。一�
 uwind-protect 提供了类似与out的保护，但是，这是因为common lisp不支持完整通用延续。可以如下定义unwind-protect
 
 (define-syntax unwind-protect
-  (syntax-rules ()
-    [(_ body cleanup ...)
-     (dynamic-wind
-       (lambda () #f)
-       (lambda () body)
-       (lambda () cleanup ...))]))
+(syntax-rules ()
+[(_ body cleanup ...)
+(dynamic-wind
+(lambda () #f)
+(lambda () body)
+(lambda () cleanup ...))]))
 
 ((call/cc
-  (let ([x 'a])
-    (lambda (k)
-      (unwind-protect
-       (k (lambda () x))
-       (set! x 'b))))))
+(let ([x 'a])
+(lambda (k)
+(unwind-protect
+(k (lambda () x))
+(set! x 'b))))))
 
 |#
 
@@ -129,4 +127,59 @@ x
 以下函数库展示了dynamic-wind 如果没有内置，如何在库函数里面实现。，以下的代码还实现了一个call/cc来使得dynamic-wind得以实现
 |#
 
+(library (dynamic-wind)
+  (export dynamic-wind call/cc
+          (rename (call/cc call-with-current-continuation)))
+  (import (rename (except (rnrs) dynamic-wind) (call/cc rnrs:call/cc)))
+  (define winder '())
+
+  (define common-tail
+    (lambda (x y)
+      (let ([lx (length x)] [ly (length y)])
+        (do ([x (if (> lx ly) (list-tail x (- lx ly) x) (cdr x))]
+             [y (if (> ly lx) (list-tail y (- ly lx) y) (cdr y))])
+            ((eq? x y) x)))))
+
+  (define do-wind
+    (lambda (new)
+      (let ([tail (common-tail new winders)])
+        (let f ([ls winders])
+          (if (not (eq? ls tail))
+              (begin
+                (set! winders (cdr ls))
+                ((cdar ls))
+                (f (cdr ls)))))
+        (let f ([ls new])
+          (if (not (eq? ls tail))
+              (begin
+                (f (cdr ls))
+                ((caar ls))
+                (set! winders ls)))))))
+
+  (define call/cc
+    (lambda (f)
+      (rnrs:call/cc
+       (lambda (k)
+         (f (let ([save winders])
+              (lambda (x)
+                (unless (eq? save winders) (do-wind save))
+                (k x))))))))
+
+  (define dynamic-wind
+    (lambda (in body out)
+      (in)
+      (set! winders (cons (cons in out) winders))
+      (let-values ([ans* (body)])
+        (set! winders (cdr winders))
+        (out)
+        (apply values ans*))))
+  )
+
+#|
+dynamic-wind和call/cc一起处理winder列表。一个winder是一对in和out的thunk。无论何时dynamic-wind被调用了，in这个thunk就会被调用。
+一个新的winder包含in和out的thunk的就会被放在winder里面，当body thunk被调用之后，winder被从winder list里面移除，然后out的thunk被调用。这个顺序保证了只有当控制权进入in而且还没有进入out时winder才在winder list里面。
+每当一个延续被捕获之后，winder list就会被保存下来，无论何时延续被调用了，被保存下来的winders list 又被充填。在重新恢复的时候 ，每个winder的 没有保存在winders list的out就会被调用。然后是每个winder的不在当前winders list里面的in。
+winders list 逐渐更新，还是为了保证winder在当前的winders list，当且仅当程序走到in还没到out这里。
+在call/cc中的（not (eq? save winders))不是必要的，只是为了节省下当前的winders list和保存下来的winders list是一样的的时候的额外开销。
+|#
 
