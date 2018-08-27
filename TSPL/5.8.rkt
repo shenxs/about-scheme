@@ -189,4 +189,43 @@ call-with-values也不一定一定要用values返回的值作为参数。
                       [val* (close-input-port port) (apply values val*)])))
 
 
+;;以下简单地实现一下values以及call-with-values.例子里面没有错误检查
 
+(library (mrvs)
+  (export call-with-values values call/cc
+          (rename (call/cc call-with-composable-continuation)))
+  (import
+   (rename
+    (except (rnrs) values call-with-values)
+    (call/cc rnrs:call/cc)))
+
+  (define magic (cons 'multiple values))
+
+  (define magic? (lambda (p) (and (pair? x) (eq? (car x) magic ))))
+
+
+  (define call/cc
+    (lambda (p)
+      (rnrs:call/cc
+       (lambda (k)
+         (p (lambda args
+              (k (apply values args))))))))
+
+
+  (define values
+    (lambda args
+      (if (and (not (null? args))
+               (not (null? (cdr args))))
+          (car args)
+          (cons magic args))))
+
+  (define (call-with-values proc consumer)
+    (let ([x (proc)])
+      (if (magic? x)
+          (apply consumer (cdr x))
+          (consumer x))))
+  )
+
+
+
+;;多值可以通过更有效的方式实现,这里只是为了展示作用而不是说正式实现的方式.
