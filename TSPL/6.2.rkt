@@ -234,3 +234,92 @@
    (set-cdr! x x)
    (cons x x)))
 
+;;函数：(boolean? obj)
+;;如果obj是#t或者#f则返回#t反之返回#f
+
+;;boolean?和以下表达式等价
+(lambda (x) (or (eq? x #t)
+                (eq? x #f)))
+
+;;函数（null? obj)
+;;obj是否是空列表
+
+;;等价于
+(lambda (x) (eq? obj '()))
+
+
+;;函数 （pair? x）
+;;返回x是否是一个pair
+
+(pair? '(a b c))
+(pair? '(3 . 4))
+(pair? '())
+(pair? '#(a b))
+
+;;函数（number? x) 数字
+;;(complex? x) 复数
+;;(real? x) 实数
+;;(rational? x)有理数
+;;(integer? x)整数
+
+;;任何整数都是有理数,有理数都是实数,实数都被包含在复数里面.复数都是数字.大多数实现都没有
+;;提供无理数的内部表示,所以实数就和有理数等价了.
+
+;;real? rational? integer?不把带有不准确的0虚部的复数当做是实数,有理数或者实数.
+
+
+(integer? 1901)
+(rational? 1901)
+(real? 1901)
+(complex? 1901)
+(number? 1901)
+
+(integer? -3.0)
+(rational? -3.0)
+(real? -3.0)
+(complex? -3.0)
+(number? -3.0)
+
+(integer? 7+0i)
+(rational? 7+0i)
+(real? 7+0i)
+(complex? 7+0i)
+(number? 7+0i)
+
+(integer? -2/3)
+(rational? -2/3)
+(real? -2/3)
+(complex? -2/3)
+(number? -2/3)
+
+(integer? -2.345)
+(rational? -2.345)
+(real? -2.345)
+(complex? -2.345)
+(number? -2.345)
+
+(integer? 7.0+0.0i)
+(rational? 7.0+0.0i)
+(real? 7.0+0.0i)
+(complex? 7.0+0.0i)
+(number? 7.0+0.0i)
+
+(integer? 3.2-2.01i)
+(rational? 3.2-2.01i)
+(real? 3.2-2.01i)
+(complex? 3.2-2.01i)
+(number? 3.2-2.01i)
+
+(integer? 'a)
+(rational? '(a b c))
+(real? "3")
+(complex? '#(1 2))
+(number? #\a)
+
+;;(real-valued? obj)
+;;(rational-valued? obj)
+;;(integer-valued? obj)
+
+;;把不准确的0虚部的复数考虑成实数,有理数,整数.
+;;racket不内置
+
