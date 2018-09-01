@@ -27,7 +27,7 @@
 (eq? #t 't)
 (eq? "abc" 'abc)
 (eq? 'hi '(hi))
-(eq? #f '())
+(eq?  '())
 
 (eq? 9/2 7/2)
 (eq? 3.4 12312)
@@ -44,7 +44,7 @@
   (eq? x x))
 
 (eq? #t #t)
-(eq? #f #f)
+(eq?  )
 
 (eq? (null? '()) #t)
 (eq? (cdr '(a)) '())
@@ -71,5 +71,88 @@
              x))])
   (eq? (f 0) (f 0)))
 
+;;语法:(eqv? obj1 obj2)
+;;返回如果相等返回#t反之#f
+;;eqv?和eq?很相似,除了eqv?保证在遇到字符时是通过char=?来判断的
+;;数字相等的条件有两个:1通过等号判断相等 2无法通过除了eq? eqv?以外的任何操作符区分
+;;对第二个条件加以说明;(eqv? -0.0 +0.0)返回的是#f,尽管(= -0.0 +0.0)在基于IEEE浮点数标准的系统里是#t.这是因为除法/可以区分这些区别:
+(/ 1.0 -0.0)
+(/ 1.0 +0.0)
+
+;;相似的,尽管3.0和3.0+0.0i在数值上是相等的,他们也不会被eqv?认为是相等的.
+
+;;对于参数是NaNs的情况,eqv?的返回值是不确定的
+
+(eqv? +nan.0 (/ 0.0 0.0))  ;;racket 返回#t
+;;eqv?在scheme的实现里更加通用,但是通常这是要付出代价的
+
+(eqv? 'a 3)
+(eqv? #t 't)
+(eqv? "abc" 'abc)
+(eqv? "hi" '(hi))
+(eqv?  #f '())
+(eqv? 9/2 7/2)
+(eqv? 3.4 53344)
+(eqv? 3 3.0)
+(eqv? 1/3 #i1/3)
+
+
+
+(eqv? 9/2 9/2)
+(eqv? 3.4 (+ 3.0 .4))
+(let ([x (* 12345678987654321 2)])
+  (eqv? x x))
+(eqv? #\a #\b)
+(eqv? #\a #\a)
+(let ([x (string-ref "hi" 0)])
+  (eqv? x x))
+(eqv? #t #t)
+(eqv? #f #f)
+(eqv? #t #f)
+(eqv? (null? '()) #t)
+
+
+(eqv? (null? '(a)) #f)
+(eqv? (cdr '(a)) '())
+(eqv? 'a 'a)
+(eqv? 'a 'b)
+(eqv? 'a (string->symbol "a"))
+(eqv? '(a) '(b))
+(eqv? '(a) '(a))
+(let ([x '(a . b)]) (eqv? x x))
+
+(let ([x (cons 'a 'b)])
+  (eqv? x x))
+(eqv? (cons 'a 'b) (cons 'a 'b))
+(eqv? "abc" "cba")
+(eqv? "abc" "abc")
+(let ([x "hi"]) (eqv? x x))
+(let ([x (string #\h #\i)]) (eqv? x x))
+(eqv? (string #\h #\i)
+      (string #\h #\i))
+(eqv? '#vu8(1) '#vu8(1))
+(eqv? '#vu8(1) '#vu8(2))
+(let ([x (make-bytevector 10 0)])
+  (eqv? x x))
+(let ([x (make-bytevector 10 0)])
+  (eqv? x (make-bytevector 10 0)))
+(eqv? '#(a) '#(b))
+(eqv? '#(a) '#(a))
+(let ([x '#(a)]) (eqv? x x))
+(let ([x (vector 'a)])
+  (eqv? x x))
+(eqv? (vector 'a) (vector 'a))
+(eqv? car car)
+(eqv? car cdr)
+(let ([f (lambda (x) x)])
+  (eqv? f f))
+(let ([f (lambda () (lambda (x) x))])
+  (eqv? (f) (f)))
+(eqv? (lambda (x) x) (lambda (y) y))
+(let ([f (lambda (x)
+           (lambda ()
+             (set! x (+ x 1))
+             x))])
+  (eqv? (f 0) (f 0)))
 
 
