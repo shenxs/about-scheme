@@ -24,3 +24,50 @@
 ;;list-ref也不需要检测了list中是否存在圈,因为他是通过递归来递增下标的.
 
 
+;;函数(cons obj1 obj2)
+;;返回一个car是obj1 cdr是obj2的序对
+
+;;(car pair) 返回pair的car部分
+;;(cdr pair) 返回pair的cdr部分
+;;(set-car! pair obj) 设置pair的car为obj
+;;(set-cdr! pair obj) 如上
+
+;;caar cadr cddddr
+;;c和r之间的字母分别代表了car和cdr,并且对其参数从右向左应用
+;;例如cadr等价于(lambda (x) (car (cdr x)))
+
+
+
+;;(list obj ...) 返回一个obj ...组成的列表
+
+;;函数(cons* obj ... final-obj)
+;;返回由final-obj组成的一个list(可能不是良构的)
+
+;;(list? obj) 返回obj是否是一个良构的list
+
+;;(length list) 返回list的element的个数
+;;使用龟兔赛跑算法来计算
+
+
+;;函数(list-ref list n)
+;;返回返回list中的第n和值(从0开始)
+
+;;函数(list-tail list n)
+;;返回从n开始的剩下的元素。
+
+
+;;函数(append)
+;;函数(append list ... obj)
+
+;;append 将第一个和第二个列表,第三个列表的...的元素组合在一起组成一个列表,除了最后一个元素之外剩下的都必须是序对构成的.最后一个元素会简单地放在列表的末尾.
+
+;;(reverse list)
+;;将一个list倒置
+
+;;(member obj list)
+;;(memq obj list)
+;;(memv obj list)
+
+;;返回第一个tail,tail的car等于obj,不然就返回#f
+
+
