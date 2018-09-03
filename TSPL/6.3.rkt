@@ -69,5 +69,72 @@
 ;;(memv obj list)
 
 ;;返回第一个tail,tail的car等于obj,不然就返回#f
+;;memq  -- eq?
+;;memv  -- eqv?
+;;member equal?
+;;区别是比较函数不同
+
+(memq 'a '(b c a d e))
+(memq 'a '(b c d e g))
+(memq 'a '(a a c d f))
+
+
+;;(memf pro list)
+;;chez scheme叫做memp
+;;类似于member,使用pro寻找元素,pro接收一个参数
+
+
+;;(remq obj list)
+;;(remv obj list)
+;;(remove obj list)
+;;将list中出现的obj移除,
+;;使用的比较函数分别是eq? eqv? equal?
+
+;;(remf pro list)使用pro
+;;使用pro来判断是否删除删除
+
+
+;;(filter procedure list)
+;;返回 list包含procedure返回true的部分
+
+
+;;(partition pro list)
+;;pro接收一个参数返回一个返回值,不能修改list
+;;partition接收一个list返回两个list一个是pro返回true的list
+;;另一个是pro返回false的list
+
+;;(find pro list)
+;;找到第一个pro返回true的元素
+
+
+;;(assq obj alist)
+;;(assv obj alist)
+;;(assoc obj alist)
+;;返回第一个alist中car等于obj的元素,不存在则返回#f
+
+(define (assq x ls)
+  (cond
+    [(null? ls) #f]
+    [(eq? (caar ls) x) (car ls)]
+    [else (assq x (cdr ls))]))
+
+;;assv 和assoc和其不同之处是使用eqv? 和equal?来代替eq?作比较
+
+(assq 'b '((a . 1) (b . 2)))
+
+
+;;(assp procedure alist)
+;;使用procedure做判断,如果不存在则返回#f
+;;a-list必须是协同列表,每个列表的元素都是(key . value)的形式
+
+(assf odd? '((1 . a) (2 . b)))
+
+
+;;(list-sort predicate list)
+;;根据predicate将list排序
+;;predicate 应该接收两个参数,如果说以第一参数应该排在第二参数之前那就返回#t
+;;predicate有可能被调用nlogn次,n为列表长度.
+
+(sort  '(3 4 1 3 4 9 7 3 1 1 -1) <)
 
 
