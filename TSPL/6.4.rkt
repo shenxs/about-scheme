@@ -44,6 +44,69 @@
 
 
 ;;(exact? num)
+;(inexact? num)
+
+(exact? 1)
+(exact? -15/16)
+(exact? 2.01)
+(exact? #i77)
+(exact? #i2/3)
+(exact? 1.0-2i)
 
 
+;;(= n1 n2 ...)
+;;(> n1 n2 ...)
+;;(< n1 n2 ...)
+;;(>= n1 n2 ...)
+;;(<= n1 n2 ...)
+
+;;常规数字比较操作
+;;复数在实部和虚部全部相等的情况下是相等的.如果比较的数字包括了NaNs的话会返回#f.
+
+;+
+;-
+;*
+;/
+
+(+)
+(*)
+
+;;negative? positive? 正复数
+;;even? odd?  奇偶数
+;;finite? infinite? 是否是有限数
+;;nan? 是否是NaN,
+
+
+;;(quotient int1 int2) (remainder int1 int2)
+;;int1 除以int2得到的商数和余数
+
+;;(modulo int1 int2) 取模余数;
+
+;;remainder的到的值符号和int1相同,而modulo得到的值和int2相同
+
+;;(div x1 x2)
+;;(mod x1 x2)
+;;(div-and-mod x1 x2)
+
+;;按照数字理论的整数除法和对应的remainder或者modulo.都可以用在实数上
+;;div-and-mod 是一个多值返回,同时包括商和余数
+
+
+;;div0 mod0 div0-and-mod0 和上一组类似
+;;判别式是 x1=n*x2+m   -|x2/2| <= m < |x2/2|
+
+
+
+;;(truncate real)
+;;real向0方向最接近的一个整数
+
+
+
+;;(flool real)
+;;real向负无穷方向最接近的一个整数
+
+
+;;(ceiling real)
+
+;;real 在正无穷方向最接近的一个整数
 
