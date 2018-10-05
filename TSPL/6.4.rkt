@@ -110,3 +110,50 @@
 
 ;;real 在正无穷方向最接近的一个整数
 
+;;(round real)
+;;real最接近的整数
+
+;;(abs real)
+;;real的绝对值
+
+;;(max real1 real2 real3 ...)
+;;real1 real2 。。。的最大值
+
+
+;;min 最小值
+
+;;(gcd int ...)
+;;最大公约数
+(gcd)
+(gcd 34)
+(gcd 33 15)
+(gcd 70 -42 28)
+
+;;(lcm int ...)
+;;int的最小公倍数
+
+(lcm)
+(lcm 34)
+(lcm 33.0 15.0)
+(lcm 70 -42 28)
+(lcm 17.0 0)
+
+
+;;(expt num1 num2)
+;;num1的num2次
+
+(expt 2 10)
+(expt 2 -10)
+(expt 2 -10.0)
+(expt -1/2 5)
+(expt 3.0 3)
+(expt +i 2)
+
+
+;;exact inexact
+;; exact->inexact inexact->exact
+
+;;将数字进行精确和非精确的转换
+
+
+
