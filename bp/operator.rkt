@@ -4,6 +4,27 @@
 (provide ADD
          MUL)
 
+
+
+(define (DIV x y)
+  (define result (make-tensor 0))
+  (define (div-op)
+    (tensor-set! result
+                 (/ (tensor-get x) (tensor-get y) )))
+
+  (define (gradient)
+    (let ([delta (tensor-get-delta result)]
+          [in1 (tensor-get x)]
+          [in2 (tensor-get y)])
+      (tensor-update! x (* delta (/ 1 (tensor-get y))))
+      (tensor-update! y (* delta (- (/ in1 (sqr in2)))))))
+
+  (div-op)
+
+  (tensor-add-forward x div-op)
+  (tensor-add-forward y div-op)
+  (tensor-add-backward result gradient))
+
 ;;operation add
 ;;x y are tensor
 ;;return a tensor
