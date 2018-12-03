@@ -47,6 +47,26 @@
 
   result)
 
+(define (MINUS x y)
+  (define result (make-tensor 0))
+  (define (minus-operator)
+    (let ([a (tensor-get x)]
+          [b (tensor-get y)])
+      (tensor-set! result (- a b))))
+
+  (define (gradient)
+    (let ([delta (tensor-get-delta result)])
+      (tensor-update! x delta)
+      (tensor-update! y (- delta))))
+
+  (add-operator)
+  (tensor-add-forward x minus-operator)
+  (tensor-add-forward y minus-operator)
+  (tensor-add-backward result gradient)
+
+  result)
+
+
 
 (define (MUL x y)
   (define result (make-tensor 0))
