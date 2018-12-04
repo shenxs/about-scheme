@@ -1,5 +1,4 @@
 #lang racket
-
 (require "tensor.rkt")
 (require "operator.rkt")
 (require "lose.rkt")
@@ -19,12 +18,11 @@
   )
 
 (call/cc (lambda (k)
-           (for ([i (range 10)])
+           (for ([i (range 100)])
              (writeln (format "~a iteration:" i))
              (look)
              (writeln (format "Loss = ~a"  (square-lose f 100 0.001 1 k i)))
              (newline)
              )))
-
 
 

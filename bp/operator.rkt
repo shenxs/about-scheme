@@ -1,91 +1,119 @@
 #lang racket
 (require "tensor.rkt")
 
-(provide ADD
-         MUL)
+(provide (all-defined-out))
 
 
+;; in 输入 list of tensor 例如 (list x y)
+;; op 计算函数 function 参数对应计算的数量 参数为 tensor中的值 而非整个tensor
+;; gradient  梯度下降函数  在反向传播时被调用 负责梯度下降和更新
+(define (make-operator in op gradient)
+  (define (abstract-op) (apply op (map tensor-get in)) )
+  (define result (make-tensor (abstract-op)))
 
-(define (DIV x y)
-  (define result (make-tensor 0))
-  (define (div-op)
-    (tensor-set! result
-                 (/ (tensor-get x) (tensor-get y) )))
+  (define (abstract-gradient) (apply gradient
+                                     (cons (tensor-get-delta result)
+                                           (map tensor-get in))))
+  (for ([i in])
+    (tensor-add-forward i
+                        (lambda ()
+                          (tensor-set! result (abstract-op)))))
+  (tensor-add-backward result abstract-gradient)
 
-  (define (gradient)
-    (let ([delta (tensor-get-delta result)]
-          [in1 (tensor-get x)]
-          [in2 (tensor-get y)])
-      (tensor-update! x (* delta (/ 1 (tensor-get y))))
-      (tensor-update! y (* delta (- (/ in1 (sqr in2)))))))
+  result)
 
-  (div-op)
-
-  (tensor-add-forward x div-op)
-  (tensor-add-forward y div-op)
-  (tensor-add-backward result gradient))
-
-;;operation add
-;;x y are tensor
-;;return a tensor
 (define (ADD x y)
-  (define result (make-tensor 0))
-  (define (add-operator)
-    (let ([a (tensor-get x)]
-          [b (tensor-get y)])
-      (tensor-set! result (+ a b))))
-
-  (define (gradient)
-    (let ([delta (tensor-get-delta result)])
-      (tensor-update! x delta)
-      (tensor-update! y delta)))
-
-  (add-operator)
-  (tensor-add-forward x add-operator)
-  (tensor-add-forward y add-operator)
-  (tensor-add-backward result gradient)
-
-  result)
-
-(define (MINUS x y)
-  (define result (make-tensor 0))
-  (define (minus-operator)
-    (let ([a (tensor-get x)]
-          [b (tensor-get y)])
-      (tensor-set! result (- a b))))
-
-  (define (gradient)
-    (let ([delta (tensor-get-delta result)])
-      (tensor-update! x delta)
-      (tensor-update! y (- delta))))
-
-  (add-operator)
-  (tensor-add-forward x minus-operator)
-  (tensor-add-forward y minus-operator)
-  (tensor-add-backward result gradient)
-
-  result)
-
-
+  (define (add-op _x _y)
+    (+ _x _y))
+  (define (gradient delta _x _y)
+    (tensor-update! x delta)
+    (tensor-update! y delta))
+  (make-operator (list x y) add-op gradient)
+  )
 
 (define (MUL x y)
-  (define result (make-tensor 0))
-  (define (mul-operator)
-    (let ([a (tensor-get x)]
-          [b (tensor-get y)])
-      (tensor-set! result (* a b))))
-  (define (gradient)
-    (let ([delta (tensor-get-delta result)]
-          [_x (tensor-get x)]
-          [_y (tensor-get y)])
-      (tensor-update! x (* _y delta))
-      (tensor-update! y (* _x delta))))
-  (mul-operator)
-  (tensor-add-forward x mul-operator)
-  (tensor-add-forward y mul-operator)
-  (tensor-add-backward result gradient)
+  (define (mul-op _x _y)
+    (* _x _y))
+  (define (gradient delta _x _y)
+    (tensor-update! x (* delta _y))
+    (tensor-update! y (* delta _x)))
+  (make-operator (list x y) mul-op gradient)
+  )
 
-  result)
+(define (DIV x y)
+  (define (div-op _x _y)
+    (/ _x _y))
+  (define (gradient delta _x _y)
+    (tensor-update! x (* delta (/ 1 _y)))
+    (tensor-update! y (* delta (- (/ _x (sqr _y))))))
+  (make-operator (list x y) div-op gradient)
+  )
 
 
+(define (MINUS x y)
+  (define (minus-op _x _y)
+    (- _x _y))
+  (define (gradient delta _x _y)
+    (tensor-update! x delta)
+    (tensor-update! y (- delta)))
+  (make-operator (list x y) minus-op gradient))
+
+(define (SIN x)
+  (define (sin-op _x)
+    (sin _x))
+  (define (gradient delta _x)
+    (tensor-update! x (* (cos _x) delta)))
+  (make-operator (list x) sin-op gradient)
+  )
+
+(define (COS x)
+  (define (cos-op _x)
+    (cos _x))
+  (define (gradient delta _x)
+    (tensor-update! x (* delta (- (sin _x)))))
+  (make-operator (list x) cos-op gradient)
+  )
+
+(define (TAN x)
+  (define (tan-op _x)
+    (tensor-set! x (tan _x)))
+  (define (gradient delta _x)
+    (tensor-update! x (* delta (/ 1 (sqr (cos _x))))))
+  (make-operator (list x) tan-op gradient)
+  )
+
+(define (LN x)
+  (define (ln-op _x)
+     (log _x))
+  (define (gradient delta _x)
+    (tensor-update! x (* delta (/ 1 _x))))
+  (make-operator (list x) ln-op gradient)
+  )
+
+(define (EXP x)
+  (define (exp-op _x)
+    (exp _x))
+  (define (gradient delta _x)
+    (tensor-update! x (* delta (exp _x))))
+  (make-operator (list x) exp-op gradient)
+  )
+
+(define (EXPT x y)
+  (define (power-op _x _y)
+    (expt _x _y))
+  (define (gradient delta _x _y)
+    (tensor-update! x (* delta (* _y (expt _x (- _y 1)))))
+    (tensor-update! y (* delta (* (log _x)
+                                  (exp (* _y (log _x)))))))
+  (make-operator (list x y) power-op gradient))
+
+(define (LOG x y)
+  (define (log-op _x _y)
+    (/ (log (tensor-get _x))
+       (log (tensor-get _y))))
+  (define (gradient delta _x _y)
+    (tensor-update! x (* delta (- (/ (log _y)
+                                     (* _x (sqr (log _x)))))))
+    (tensor-update! y (* delta (/ 1 (* _y (log _x))))))
+  (make-operator (list x y) log-op gradient))
 
