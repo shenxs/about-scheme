@@ -12,6 +12,7 @@
 ## ing
 
  - The scheme Programming Language
+ - BP 包含一个简单的梯度下降，反向传播的网络
 
 ## 计划之中
 - 《The Little Schemer》
