@@ -8,10 +8,6 @@
  - 完全使用匿名函数，使用匿名函数实现递归
  - 添加了[FearOfMacros](http://www.greghendershott.com/fear-of-macros/)的内容
  - [buildyourownlisp](http://www.buildyourownlisp.com/)  写一个简单的lisp解释器
-
-## ing
-
- - The scheme Programming Language
  - BP 包含一个简单的梯度下降，反向传播的网络
 
 ## 计划之中
