@@ -13,7 +13,9 @@
      [(= 0 y) a]
      [(even? y) (iter a (double x) (halve y))]
      [else (iter (+ a x) x (- y 1))]))
-  (iter 0 a b))
+  (if (> a b)
+      (iter 0 a b)
+      (iter 0 b a)))
 
 
 (and (equal? 0 (my-multi 4 0))
