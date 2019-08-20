@@ -18,14 +18,13 @@
   )
 
 (call/cc (lambda (k)
-           (for ([i (range 100)])
+           (for ([i (range 500)])
              (writeln (format "~a iteration:" i))
-             (look)
-             (writeln (format "Loss = ~a"  (square-lose f 100 0.001 1 k i)))
+             ;; (look)
+             (writeln
+              (format "Loss = ~a"  (square-lose f 0.1 0.001 k i)))
              (newline)
              )))
 
-
-
-
+(look)
 

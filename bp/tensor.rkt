@@ -1,6 +1,7 @@
 #lang racket
 
 (provide make-tensor
+         tensor?
          tensor-get
          tensor-get-delta
          tensor-set!
@@ -10,6 +11,7 @@
 
 (define (make-tensor n)
   (let ([content n]
+        [type 'tensor]
         [delta 0]
         [forward-procs '()]
         [backward-procs '()])
@@ -44,10 +46,15 @@
         [(symbol=? action 'update) update]
         [(symbol=? action 'add-forward) add-forward-procs]
         [(symbol=? action 'add-backward) add-backward-procs]
+        [(symbol=? action 'get-type) type]
         [else (error "Unknow action")]))
 
     dispatcher))
 
+
+(define (tensor? t)
+  (with-handlers ( [exn:fail?  (lambda (e) #f)])
+    (symbol=? 'tensor (t 'get-type))))
 
 (define (tensor-get t)
   (t 'get))
