@@ -23,6 +23,6 @@
 (search-for-primes 19960101 (lambda (x) (if (odd? x)
                                         (+ x 2)
                                         (+ x 1)))
-                   75)
+                   10)
 
 
