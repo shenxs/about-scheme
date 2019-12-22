@@ -9,10 +9,6 @@
   (display n)
   (start-prime-test n (runtime)))
 
-
-(define (start-prime-test n start-time)
-  (if ))
-
 (define (fast-mod a x y n)
   (cond
    [(= y 1) (remainder (* a x) n)]
@@ -49,6 +45,7 @@
 (timer (lambda ()  (fast-prime? 1000)))
 (timer (lambda ()  (fast-prime? 1000000)))
 (timer (lambda ()  (fast-prime? 1000000000000)))
-(fast-prime? 9)
+
+(fast-prime? 2047)
 
 
